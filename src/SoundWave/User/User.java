@@ -6,6 +6,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public abstract class User implements Authentication {
 
@@ -18,7 +22,6 @@ public abstract class User implements Authentication {
     protected String contactNo;
     Connection conn;
     boolean isAuthenticated = false;//change datatype
-
     public String getContactNo() {
         return contactNo;
     }
@@ -64,9 +67,8 @@ public abstract class User implements Authentication {
     public void setDP(String DP) {
         this.DP = DP;
     }
-
     //methods
-    protected void viewProfile(String userName){
+    public void viewProfile(String userName){
         try{
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"'");
@@ -80,21 +82,35 @@ public abstract class User implements Authentication {
             }
         }catch (Exception e){
             System.out.println(e);
+        }finally{
+
         }
     }
-    protected void editProfile(String userName,String password, String name, String email, String contactNo, String dp){
-        try{
-            //userName cannot be changed!
+    public void editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
+        try {
             Statement statement = conn.createStatement();
-            int rowsAffected = statement.executeUpdate("Update user set UserName='"+userName+"',Password='"+password+"',Name='"+name+"',Email='"+email+"',ContactNo='"+contactNo+"',DP='"+dp+"' where UserName='"+userName+"'");
-            if(rowsAffected>0){
-                System.out.println("Profile Update Success!");
+            //delete old DP
+            ResultSet result = statement.executeQuery("SELECT DP FROM user WHERE UserName='" + userName + "'");
+            if (result.next()) {
+                String oldDp = result.getString("DP");
+                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + oldDp;
+                File oldFile = new File(oldDpFilePath);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
             }
-            else{
-                System.out.println("Profile Update UnSuccess");
+            //Update data
+            int rowsAffected = statement.executeUpdate("UPDATE user SET Password='" + password + "', Name='" + name + "', Email='" + email + "', ContactNo='" + contactNo + "', DP='" + dp + "' WHERE UserName='" + userName + "'");
+            if (rowsAffected > 0) {
+                //update DP
+                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
+                boolean isDpSaved = saveFile(dpInputStream, dpFilePath);
+                isAuthenticated = true;
+            } else {
+                System.out.println("Profile update unsuccessful.");
             }
-        }catch (Exception e){
-            System.out.println(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     //interface methods
@@ -114,7 +130,7 @@ public abstract class User implements Authentication {
         }
         return isAuthenticated;
     }
-    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp);
+    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream);
     public boolean logOut(){
 
         return true;
@@ -138,7 +154,15 @@ public abstract class User implements Authentication {
         }
         return isAuthenticated;
     }
-
+    protected boolean saveFile(InputStream inputStream, String filePath) {
+        try {
+            Files.copy(inputStream, Paths.get(filePath));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
 }

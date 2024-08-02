@@ -2,7 +2,7 @@ package SoundWave.Music;
 import java.util.List;
 
 public class PlayList {
-    private String playlistId,name,image;
+    private String playlistId,name,image,listenerId;
     List<Song> song;
     //getter setter
     public String getPlaylistId() {
@@ -29,7 +29,7 @@ public class PlayList {
         this.image = image;
     }
 
-    //methods
+//methods
 
     public void addSong(){}
     public void removeSong(){}
