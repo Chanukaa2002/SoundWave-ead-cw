@@ -14,20 +14,17 @@ public abstract class User implements Authentication {
     protected String name;
     protected String email;
     protected String password;
-    protected String DP; //change datatype
+    protected String DP;
+    protected String contactNo;
+    Connection conn;
+    boolean isAuthenticated = false;//change datatype
 
     public String getContactNo() {
         return contactNo;
     }
-
     public void setContactNo(String contactNo) {
         this.contactNo = contactNo;
     }
-
-    protected String contactNo;
-    Connection conn;
-    boolean isAuthenticated = false;
-
     public User(){
         try{
             conn=DBConnection.getConnection();
@@ -36,44 +33,34 @@ public abstract class User implements Authentication {
             System.out.println(e);
         }
     }
-
     //getters and setters
     public String getUserName() {
         return userName;
     }
-
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
     public String getDP() {
         return DP;
     }
-
     public void setDP(String DP) {
         this.DP = DP;
     }
@@ -97,6 +84,7 @@ public abstract class User implements Authentication {
     }
     protected void editProfile(String userName,String password, String name, String email, String contactNo, String dp){
         try{
+            //userName cannot be changed!
             Statement statement = conn.createStatement();
             int rowsAffected = statement.executeUpdate("Update user set UserName='"+userName+"',Password='"+password+"',Name='"+name+"',Email='"+email+"',ContactNo='"+contactNo+"',DP='"+dp+"' where UserName='"+userName+"'");
             if(rowsAffected>0){
@@ -126,29 +114,7 @@ public abstract class User implements Authentication {
         }
         return isAuthenticated;
     }
-    public boolean register(String userName,String password, String name, String email, String contactNo, String dp){
-        try {
-            Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"'");
-            if(!(result.next())){
-                int rowsAffected =statement.executeUpdate("Insert into user (UserName,Password,Name,Email,ContactNo) values('"+userName+"','"+password+"','"+name+"','"+email+"','"+contactNo+"')");
-                if(rowsAffected>0){
-                    isAuthenticated=true;
-                }
-            }
-            else{
-                System.out.println("User Name has been used!");
-            }
-
-        }
-        catch(Exception e){
-            System.out.println(e);
-        }
-        finally{
-            //conn.close
-        }
-        return isAuthenticated;
-    }
+    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp);
     public boolean logOut(){
 
         return true;
