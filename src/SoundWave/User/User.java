@@ -2,10 +2,8 @@ package SoundWave.User;
 
 import SoundWave.Authentication.Authentication;
 import SoundWave.DBConnection.DBConnection;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -21,7 +19,6 @@ public abstract class User implements Authentication {
     protected String DP;
     protected String contactNo;
     Connection conn;
-    Statement statement;
     boolean isAuthenticated = false;//change datatype
     public String getContactNo() {
         return contactNo;
@@ -31,7 +28,6 @@ public abstract class User implements Authentication {
     public User(){
         try{
             conn=DBConnection.getConnection();
-            statement=conn.createStatement();
         }
         catch(SQLException e){
             System.out.println(e);
@@ -74,8 +70,10 @@ public abstract class User implements Authentication {
     //methods
     public void viewProfile(String userName){
         try{
-
-            ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"'");
+            String sql = "Select * from user where UserName=?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,userName);
+            ResultSet result =statement.executeQuery();
             while(result.next()){
                 this.userName = result.getString("UserName");
                 this.password = result.getString("Password");
@@ -91,8 +89,13 @@ public abstract class User implements Authentication {
     }
     public void editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
         try {
+            String sql1 = "SELECT DP FROM user WHERE UserName=?";
+            String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, ContactNo=?, DP=? WHERE UserName=?";
+
             //delete old DP
-            ResultSet result = statement.executeQuery("SELECT DP FROM user WHERE UserName='" + userName + "'");
+            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+            selectStatement.setString(1,userName);
+            ResultSet result = selectStatement.executeQuery();
 
             if (result.next()) {
                 String oldDp = result.getString("DP");
@@ -104,7 +107,14 @@ public abstract class User implements Authentication {
             }
 
             //Update data
-            int rowsAffected = statement.executeUpdate("UPDATE user SET Password='" + password + "', Name='" + name + "', Email='" + email + "', ContactNo='" + contactNo + "', DP='" + dp + "' WHERE UserName='" + userName + "'");
+            PreparedStatement updateStatement  = conn.prepareStatement(sql2);
+            updateStatement.setString(1,password);
+            updateStatement.setString(2,name);
+            updateStatement.setString(3,email);
+            updateStatement.setString(4,contactNo);
+            updateStatement.setString(5,dp);
+            updateStatement.setString(6,userName);
+            int rowsAffected = updateStatement.executeUpdate();
             if (rowsAffected > 0) {
                 //update DP
                 String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
@@ -120,7 +130,12 @@ public abstract class User implements Authentication {
     //interface methods
     public boolean login(String userName, String password){
         try{
-            ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"' and Password='"+password+"'");
+            String sql = "Select * from user where UserName=? and Password=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,userName);
+            selectStatement.setString(2,password);
+
+            ResultSet result = selectStatement.executeQuery();
             if(result.next()){
                 this.isAuthenticated=true;
             }
@@ -140,9 +155,21 @@ public abstract class User implements Authentication {
     }
     public boolean forgetPassword(String userName,String password){
         try{
-            ResultSet result = statement.executeQuery("Select * from user where Password='"+password+"' and  UserName='"+userName+"'");
+            String sql1 = "Select * from user where Password=? and  UserName=?";
+            String sql2 = "Update user set Password=? where  UserName=?";
+
+            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+            selectStatement.setString(1,password);
+            selectStatement.setString(2,userName);
+
+            ResultSet result = selectStatement.executeQuery();
             if(!(result.next())){
-                int rowAffected = statement.executeUpdate("Update user set Password='"+password+"' where  UserName='"+userName+"'");
+
+                PreparedStatement updateStatement = conn.prepareStatement(sql2);
+                updateStatement.setString(1,password);
+                updateStatement.setString(2,userName);
+
+                int rowAffected = updateStatement.executeUpdate();
                 if(rowAffected>0){
                     isAuthenticated=true;
                 }

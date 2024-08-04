@@ -1,6 +1,8 @@
 package SoundWave.User;
 
 import SoundWave.Music.PlayList;
+
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,36 +15,44 @@ public class Listener extends User{
     public void createPlayList(String name,String coverImg,InputStream inputCoverImg,String listenerId){
         try{
             String playlistId;
+            String sql1 ="Select Max(ListenerId) from playlist";
+            String sql2 = "Insert into playlist (PlayListId,Name,CoverImg,ListenerId) values(?,?,?,?)";
                 //auto increment id
-                ResultSet result = statement.executeQuery("Select Max(ListenerId) from playlist");
+            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+            ResultSet result = selectStatement.executeQuery();
 
-                if (result.next()) {
-                    String maxId = result.getString(1);
+            if (result.next()) {
+                String maxId = result.getString(1);
 
-                    if (maxId != null) {
-                        int numaricPart = Integer.parseInt(maxId.substring(1));
-                        numaricPart++;
-                        playlistId = String.format("P%03d", numaricPart);
+                if (maxId != null) {
+                    int numaricPart = Integer.parseInt(maxId.substring(1));
+                    numaricPart++;
+                    playlistId = String.format("P%03d", numaricPart);
 
-                    }
-                    else
-                    {
-                        playlistId = "P001";
-                    }
-                    int rowsAffected= statement.executeUpdate("Insert into playlist (PlayListId,Name,CoverImg,ListenerId) values('"+playlistId+"','"+name+"','"+coverImg+"','"+listenerId+"')");
+                }
+                else
+                {
+                    playlistId = "P001";
+                }
+                PreparedStatement inputStatement = conn.prepareStatement(sql2);
+                inputStatement.setString(1,playlistId);
+                inputStatement.setString(2,name);
+                inputStatement.setString(3,coverImg);
+                inputStatement.setString(4,listenerId);
+                int rowsAffected= inputStatement.executeUpdate();
 
-                    if(rowsAffected>0){
-                        //upload image into local storage
-                        String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + coverImg;
-                        boolean isDpSaved = saveFile(inputCoverImg,coverImgPath);
+                if(rowsAffected>0){
+                    //upload image into local storage
+                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + coverImg;
+                    boolean isDpSaved = saveFile(inputCoverImg,coverImgPath);
 
-                        if(isDpSaved){
-                            isAuthenticated=true;
-                        }else {
-                            System.out.println("Failed to save cover Image.");
-                        }
+                    if(isDpSaved){
+                        isAuthenticated=true;
+                    }else {
+                        System.out.println("Failed to save cover Image.");
                     }
                 }
+            }
 
         }catch(Exception e){
             System.out.println(e);
@@ -56,16 +66,24 @@ public class Listener extends User{
     public void exploreSong(){}
     public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
         try {
+            String sql1 = "Select * from user where UserName=?";
+            String sql2 = "Select Max(ListenerId) from listener";
+            String sql3 = "Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values(?,?,?,?,?,?)";
+            String sql4 = "Insert into listener(ListenerId,UserName) values(?,?)";
             //initialize Listener Id for inset sql
             String ListenerId;
-
             //sql command-1
-            ResultSet result1 = statement.executeQuery("Select * from user where UserName='"+userName+"'");
+            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+            selectStatement.setString(1,userName);
+            ResultSet result1 = selectStatement.executeQuery();
+
             if(!(result1.next())){
 
                     //auto increment id
                 //sql command-2
-                ResultSet result2 = statement.executeQuery("Select Max(ListenerId) from listener");
+                PreparedStatement selectMacIDStatement = conn.prepareStatement(sql2);
+                ResultSet result2 = selectMacIDStatement.executeQuery();
+
                 if(result2.next()){
                     String maxId = result2.getString(1);
                     if(maxId!=null){
@@ -77,8 +95,21 @@ public class Listener extends User{
                         ListenerId = "L001";
                     }
                     //insert sql command
-                    int rowsAffected1 =statement.executeUpdate("Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values('"+userName+"','"+password+"','"+name+"','"+email+"','"+contactNo+"','"+dp+"')");
-                    int rowsAffected2 = statement.executeUpdate("Insert into listener(ListenerId,UserName) values('"+ListenerId+"','"+userName+"')");
+                    PreparedStatement insertStatementOne = conn.prepareStatement(sql3);
+                    insertStatementOne.setString(1,userName);
+                    insertStatementOne.setString(2,password);
+                    insertStatementOne.setString(3,name);
+                    insertStatementOne.setString(4,email);
+                    insertStatementOne.setString(5,contactNo);
+                    insertStatementOne.setString(6,dp);
+
+                    int rowsAffected1 =insertStatementOne.executeUpdate();
+
+                    PreparedStatement insertStatementTwo = conn.prepareStatement(sql4);
+                    insertStatementTwo.setString(1,ListenerId);
+                    insertStatementTwo.setString(2,userName);
+
+                    int rowsAffected2 = insertStatementTwo.executeUpdate();
 
                     //check command was true
                     if(rowsAffected1>0 && rowsAffected2>0){
@@ -107,6 +138,5 @@ public class Listener extends User{
         }
         return isAuthenticated;
     }
-
 
 }
