@@ -6,13 +6,11 @@ import java.io.InputStream;
 
 public class Artist extends User{
 
-
     //methods
-
     public void uploadSong(String title,float duration,String coverImg,InputStream coverImgStream,String artistId){
         try{
             String songId;
-            Statement statement = conn.createStatement();
+            //Statement statement = conn.createStatement();
             //auto increment id
             ResultSet result = statement.executeQuery("Select Max(ListenerId) from song");
             if (result.next()) {
@@ -42,7 +40,7 @@ public class Artist extends User{
     }
     public void updateSong(String songId,String title,float duration,String coverImg,InputStream coverImgStream,String artistId){
         try {
-            Statement statement = conn.createStatement();
+            //Statement statement = conn.createStatement();
             //delete old coverImg
             ResultSet result = statement.executeQuery("SELECT CoverImg FROM song WHERE SongId='" + songId + "'");
             if (result.next()) {
@@ -69,11 +67,14 @@ public class Artist extends User{
     }
     public void removeSong(String songId){
         try {
-            Statement statement = conn.createStatement();
+            //Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery("SELECT CoverImg FROM song WHERE SongId='" + songId + "'");
+
             if (result.next()) {
+                //removing image from local storage
                 String oldCoverImg = result.getString("CoverImg");
                 String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
+
                 File oldFile = new File(oldDpFilePath);
                 if (oldFile.exists()) {
                     boolean delete = oldFile.delete();
@@ -92,14 +93,18 @@ public class Artist extends User{
     public  boolean register(String userName,String password, String name, String email, String contactNo, String dp,InputStream dpInputStream){
         try {
             String artistId;
-            Statement statement = conn.createStatement();
+
+            //Statement statement = conn.createStatement();
+
             ResultSet result1 = statement.executeQuery("Select * from user where UserName='"+userName+"'");
             if(!(result1.next())){
                 result1.close();
                 //auto increment id
                 ResultSet result2 = statement.executeQuery("Select Max(ArtistId) from artist");
+
                 if(result2.next()){
                     String maxId = result2.getString(1);
+
                     if(maxId!=null){
                         int numaricPart = Integer.parseInt(maxId.substring(1));
                         numaricPart++;
@@ -111,6 +116,7 @@ public class Artist extends User{
                     int rowsAffected1 =statement.executeUpdate("Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values('"+userName+"','"+password+"','"+name+"','"+email+"','"+contactNo+"','"+dp+"')");
                     int rowsAffected2 = statement.executeUpdate("Insert into artist(ArtistId,UserName) values('"+artistId+"','"+userName+"')");
                     if(rowsAffected1>0 && rowsAffected2>0){
+                        //upload image
                         String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){

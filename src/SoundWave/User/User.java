@@ -21,20 +21,24 @@ public abstract class User implements Authentication {
     protected String DP;
     protected String contactNo;
     Connection conn;
+    Statement statement;
     boolean isAuthenticated = false;//change datatype
     public String getContactNo() {
         return contactNo;
     }
-    public void setContactNo(String contactNo) {
-        this.contactNo = contactNo;
-    }
+
+    //constractor
     public User(){
         try{
             conn=DBConnection.getConnection();
+            statement=conn.createStatement();
         }
         catch(SQLException e){
             System.out.println(e);
         }
+    }
+    public void setContactNo(String contactNo) {
+        this.contactNo = contactNo;
     }
     //getters and setters
     public String getUserName() {
@@ -70,7 +74,7 @@ public abstract class User implements Authentication {
     //methods
     public void viewProfile(String userName){
         try{
-            Statement statement = conn.createStatement();
+
             ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"'");
             while(result.next()){
                 this.userName = result.getString("UserName");
@@ -83,14 +87,13 @@ public abstract class User implements Authentication {
         }catch (Exception e){
             System.out.println(e);
         }finally{
-
         }
     }
     public void editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
         try {
-            Statement statement = conn.createStatement();
             //delete old DP
             ResultSet result = statement.executeQuery("SELECT DP FROM user WHERE UserName='" + userName + "'");
+
             if (result.next()) {
                 String oldDp = result.getString("DP");
                 String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + oldDp;
@@ -99,6 +102,7 @@ public abstract class User implements Authentication {
                     oldFile.delete();
                 }
             }
+
             //Update data
             int rowsAffected = statement.executeUpdate("UPDATE user SET Password='" + password + "', Name='" + name + "', Email='" + email + "', ContactNo='" + contactNo + "', DP='" + dp + "' WHERE UserName='" + userName + "'");
             if (rowsAffected > 0) {
@@ -116,7 +120,6 @@ public abstract class User implements Authentication {
     //interface methods
     public boolean login(String userName, String password){
         try{
-            Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"' and Password='"+password+"'");
             if(result.next()){
                 this.isAuthenticated=true;
@@ -137,7 +140,6 @@ public abstract class User implements Authentication {
     }
     public boolean forgetPassword(String userName,String password){
         try{
-            Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery("Select * from user where Password='"+password+"' and  UserName='"+userName+"'");
             if(!(result.next())){
                 int rowAffected = statement.executeUpdate("Update user set Password='"+password+"' where  UserName='"+userName+"'");
@@ -159,10 +161,8 @@ public abstract class User implements Authentication {
             Files.copy(inputStream, Paths.get(filePath));
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e);
             return false;
         }
     }
-
-
 }
