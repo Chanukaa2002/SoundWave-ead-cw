@@ -50,7 +50,7 @@ public class Artist extends User{
         }catch(Exception e){
             System.out.println(e);
         }
-    }
+    }//-------------------Not checked------------
     public void updateSong(String songId,String title,float duration,String coverImg,InputStream coverImgStream,String artistId){
         try {
             String sql1 = "SELECT CoverImg FROM song WHERE SongId=?";
@@ -90,7 +90,7 @@ public class Artist extends User{
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }//-------------------Not checked------------
     public void removeSong(String songId){
         try {
             String sql1 = "SELECT CoverImg FROM song WHERE SongId=?";
@@ -122,8 +122,7 @@ public class Artist extends User{
         catch(Exception e){
             System.out.println("Error"+e);
         }
-    }
-    public void viewSongFeedback(){}
+    }//-------------------Not checked------------
     public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
         try {
             String sql1 = "Select * from user where UserName=?";
@@ -199,5 +198,5 @@ public class Artist extends User{
             //conn.close
         }
         return isAuthenticated;
-    }
+    }//Checked
 }

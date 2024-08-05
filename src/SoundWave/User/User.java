@@ -23,7 +23,6 @@ public abstract class User implements Authentication {
     public String getContactNo() {
         return contactNo;
     }
-
     //constractor
     public User(){
         try{
@@ -86,8 +85,8 @@ public abstract class User implements Authentication {
             System.out.println(e);
         }finally{
         }
-    }
-    public void editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
+    }//Checked
+    public boolean editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
         try {
             String sql1 = "SELECT DP FROM user WHERE UserName=?";
             String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, ContactNo=?, DP=? WHERE UserName=?";
@@ -124,9 +123,10 @@ public abstract class User implements Authentication {
                 System.out.println("Profile update unsuccessful.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error: "+e);
         }
-    }
+        return isAuthenticated;
+    }//Checked
     //interface methods
     public boolean login(String userName, String password){
         try{
@@ -147,12 +147,12 @@ public abstract class User implements Authentication {
             //close connection
         }
         return isAuthenticated;
-    }
-    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream);
+    }//Checked
+    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream);//Checked
     public boolean logOut(){
 
         return true;
-    }
+    }//-------------------Not checked------------
     public boolean forgetPassword(String userName,String password){
         try{
             String sql1 = "Select * from user where Password=? and  UserName=?";
@@ -182,7 +182,21 @@ public abstract class User implements Authentication {
             System.out.println(e);
         }
         return isAuthenticated;
-    }
+    }//Checked
+    public int viewLikeCount(String songId){
+        int count = 0;
+        try{
+            String sql = "SELECT COUNT(Likes) FROM feedback WHERE SongId=?;";
+
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,songId);
+            count = selectStatement.executeUpdate();
+        }
+        catch(Exception e){
+            System.out.println("Error: " + e);
+        }
+        return count;
+    } //-------------------Not checked------------
     protected boolean saveFile(InputStream inputStream, String filePath) {
         try {
             Files.copy(inputStream, Paths.get(filePath));
@@ -191,5 +205,5 @@ public abstract class User implements Authentication {
             System.out.println("Error: " + e);
             return false;
         }
-    }
+    }//Checked
 }

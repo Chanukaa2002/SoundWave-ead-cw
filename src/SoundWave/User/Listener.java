@@ -57,13 +57,79 @@ public class Listener extends User{
         }catch(Exception e){
             System.out.println(e);
                 }
-    }
-    public void addSongToPlayList(String playlistId, String songId){}
-    public void removeSongFromPlayList(String playlistId, String songId){}
-    public void controlSong(){}
-    public boolean likeSong(String songId){return true;}
-    public double rateSong(String feedbackId,String songId){return 0.0;}
-    public void exploreSong(){}
+    }//-------------------Not checked------------
+    public void addSongToPlayList(String playlistId, String songId){}//-------------------Not checked------------
+    public void removeSongFromPlayList(String playlistId, String songId){}//-------------------Not checked------------
+    public void controlSong(){}//-------------------Not checked------------
+    public boolean likeSong(String songId,String listenerId){
+        try{
+            String sql1 = "Select Max(FeedbackId) from feedback";
+            String sql2 = "Insert into feedback(FeedbackId,Likes,SongId,ListenerId values(?,?,?,?)";
+            String feedBackId;
+
+            //auto increment id
+            PreparedStatement selectMaxIDStatement = conn.prepareStatement(sql1);
+            ResultSet result = selectMaxIDStatement.executeQuery();
+            if(result.next()){
+                String maxId = result.getString(1);
+                if(maxId!=null){
+                    int numaricPart = Integer.parseInt(maxId.substring(1));
+                    numaricPart++;
+                    feedBackId = String.format("F%03d",numaricPart);
+                }
+                else{
+                    feedBackId = "F001";
+                }
+                PreparedStatement insertStatement = conn.prepareStatement(sql2);
+                insertStatement.setString(1,feedBackId);
+                insertStatement.setInt(2,1);
+                insertStatement.setString(3,songId);
+                insertStatement.setString(4,listenerId);
+
+                int rowsAffected = insertStatement.executeUpdate();
+                if(rowsAffected>0){
+                    isAuthenticated = true;
+                }
+            }
+
+        }
+        catch(Exception e){
+            isAuthenticated=false;
+            System.out.println("Error: "+e);
+        }
+        return isAuthenticated;
+    }//-------------------Not checked------------
+    public boolean unlikeSong(String songId,String listenerId){
+        try{
+            String sql = "Delete from feedback where ListenerId=? and SongId = ?";
+            PreparedStatement deleteStatement = conn.prepareStatement(sql);
+            deleteStatement.setString(1,listenerId);
+            deleteStatement.setString(2,songId);
+
+            int rowsAffected = deleteStatement.executeUpdate();
+            if(rowsAffected>0){
+                isAuthenticated=true;
+            }
+        }
+        catch(Exception e){
+            System.out.println("Error: " + e);
+        }
+        return isAuthenticated;
+    }//-------------------Not checked------------
+    public void exploreSong(){
+        try{
+            String sql = "Select * from song";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            ResultSet result = selectStatement.executeQuery();
+            ArrayList<String[]> songList = new ArrayList<>();
+            while(result.next()){
+
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error:"+e);
+        }
+    }//-------------------Not checked------------
     public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
         try {
             String sql1 = "Select * from user where UserName=?";
@@ -81,8 +147,8 @@ public class Listener extends User{
 
                     //auto increment id
                 //sql command-2
-                PreparedStatement selectMacIDStatement = conn.prepareStatement(sql2);
-                ResultSet result2 = selectMacIDStatement.executeQuery();
+                PreparedStatement selectMaxIDStatement = conn.prepareStatement(sql2);
+                ResultSet result2 = selectMaxIDStatement.executeQuery();
 
                 if(result2.next()){
                     String maxId = result2.getString(1);
@@ -127,10 +193,12 @@ public class Listener extends User{
             }
             else{
                 System.out.println("User Name has been used!");
+                isAuthenticated=false;
             }
 
         }
         catch(Exception e){
+            isAuthenticated=false;
             System.out.println(e);
         }
         finally{
@@ -138,5 +206,6 @@ public class Listener extends User{
         }
         return isAuthenticated;
     }
+    //Checked
 
 }
