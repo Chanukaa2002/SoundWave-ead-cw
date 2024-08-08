@@ -2,7 +2,6 @@ package SoundWave.User;
 
 import SoundWave.Authentication.Authentication;
 import SoundWave.DBConnection.DBConnection;
-
 import java.sql.*;
 import java.io.File;
 import java.io.InputStream;
@@ -67,7 +66,7 @@ public abstract class User implements Authentication {
         this.DP = DP;
     }
     //methods
-    public void viewProfile(String userName){
+    public void viewProfile(String userName) throws SQLException {
         try{
             String sql = "Select * from user where UserName=?";
             PreparedStatement statement = conn.prepareStatement(sql);
@@ -81,12 +80,14 @@ public abstract class User implements Authentication {
                 this.contactNo = result.getString("ContactNo");
                 this.DP = result.getString("DP");
             }
+            result.close();
         }catch (Exception e){
             System.out.println(e);
         }finally{
+                conn.close();
         }
     }//Checked
-    public boolean editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
+    public boolean editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
             String sql1 = "SELECT DP FROM user WHERE UserName=?";
             String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, ContactNo=?, DP=? WHERE UserName=?";
@@ -122,13 +123,17 @@ public abstract class User implements Authentication {
             } else {
                 System.out.println("Profile update unsuccessful.");
             }
+            result.close();
         } catch (Exception e) {
             System.out.println("Error: "+e);
+        }
+        finally{
+            conn.close();
         }
         return isAuthenticated;
     }//Checked
     //interface methods
-    public boolean login(String userName, String password){
+    public boolean login(String userName, String password) throws SQLException {
         try{
             String sql = "Select * from user where UserName=? and Password=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
@@ -139,21 +144,22 @@ public abstract class User implements Authentication {
             if(result.next()){
                 this.isAuthenticated=true;
             }
+            result.close();
         }
         catch(Exception e){
             System.out.println(e);
         }
         finally {
-            //close connection
+            conn.close();
         }
         return isAuthenticated;
     }//Checked
-    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream);//Checked
+    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException;//Checked
     public boolean logOut(){
 
         return true;
     }//-------------------Not checked------------
-    public boolean forgetPassword(String userName,String password){
+    public boolean forgetPassword(String userName,String password) throws SQLException {
         try{
             String sql1 = "Select * from user where Password=? and  UserName=?";
             String sql2 = "Update user set Password=? where  UserName=?";
@@ -177,9 +183,13 @@ public abstract class User implements Authentication {
             else {
                 System.out.println("This Password is previous one please enter another one!");
             }
+            result.close();
         }
         catch (Exception e){
             System.out.println(e);
+        }
+        finally{
+            conn.close();
         }
         return isAuthenticated;
     }//Checked
@@ -190,13 +200,16 @@ public abstract class User implements Authentication {
 
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,songId);
-            count = selectStatement.executeUpdate();
+            ResultSet resultSet = selectStatement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
         }
         catch(Exception e){
             System.out.println("Error: " + e);
         }
         return count;
-    } //-------------------Not checked------------
+    } //checked
     protected boolean saveFile(InputStream inputStream, String filePath) {
         try {
             Files.copy(inputStream, Paths.get(filePath));

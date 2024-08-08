@@ -1,19 +1,16 @@
 package SoundWave.User;
 
-import SoundWave.Music.PlayList;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 import java.io.InputStream;
 public class Listener extends User{
 
     //methods
-    public void createPlayList(String name,String coverImg,InputStream inputCoverImg,String listenerId){
+    public void createPlayList(String name,String coverImg,InputStream inputCoverImg,String listenerId) throws SQLException {
         try{
+            conn.setAutoCommit(false);
             String playlistId;
             String sql1 ="Select Max(ListenerId) from playlist";
             String sql2 = "Insert into playlist (PlayListId,Name,CoverImg,ListenerId) values(?,?,?,?)";
@@ -47,24 +44,69 @@ public class Listener extends User{
                     boolean isDpSaved = saveFile(inputCoverImg,coverImgPath);
 
                     if(isDpSaved){
+                        conn.commit();
                         isAuthenticated=true;
                     }else {
+                        conn.rollback();
                         System.out.println("Failed to save cover Image.");
                     }
                 }
             }
-
+            result.close();
         }catch(Exception e){
-            System.out.println(e);
-                }
-    }//-------------------Not checked------------
-    public void addSongToPlayList(String playlistId, String songId){}//-------------------Not checked------------
-    public void removeSongFromPlayList(String playlistId, String songId){}//-------------------Not checked------------
+            conn.rollback();
+            System.out.println("Error "+e);
+        }finally {
+            try {
+                conn.setAutoCommit(true);  // Restore auto-commit mode
+            } catch (SQLException ex) {
+                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
+            }
+        }
+    }//checked
+    public boolean addSongToPlayList(String playlistId, String songId) throws SQLException {
+        try{
+            String sql = "insert into playlist_song (PlayListId,SongId) values(?,?)";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,playlistId);
+            statement.setString(2,songId);
+
+            int rowAffected = statement.executeUpdate();
+            if(rowAffected>0){
+                isAuthenticated=true;
+            }
+        }catch(Exception e){
+            System.out.println("Error: "+e);
+        }
+        finally{
+            conn.close();
+        }
+        return isAuthenticated;
+    }//checked
+    public boolean removeSongFromPlayList(String playlistId, String songId) throws SQLException {
+        try{
+            String sql = "delete from playlist_song where PlayListId=? and SongId=?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,playlistId);
+            statement.setString(2,songId);
+
+            int rowAffected = statement.executeUpdate();
+            if(rowAffected>0){
+                isAuthenticated=true;
+            }
+        }catch(Exception e){
+            System.out.println("Error: "+e);
+        }
+        finally{
+            conn.close();
+        }
+        return isAuthenticated;
+    }//checked
     public void controlSong(){}//-------------------Not checked------------
-    public boolean likeSong(String songId,String listenerId){
+    public void likeSong(String songId, String listenerId) throws SQLException {
         try{
             String sql1 = "Select Max(FeedbackId) from feedback";
-            String sql2 = "Insert into feedback(FeedbackId,Likes,SongId,ListenerId values(?,?,?,?)";
+            String sql2 = "Insert into feedback(FeedbackId,Likes,SongId,ListenerId) values(?,?,?,?)";
             String feedBackId;
 
             //auto increment id
@@ -91,15 +133,17 @@ public class Listener extends User{
                     isAuthenticated = true;
                 }
             }
-
+            result.close();
         }
         catch(Exception e){
-            isAuthenticated=false;
+
             System.out.println("Error: "+e);
         }
-        return isAuthenticated;
-    }//-------------------Not checked------------
-    public boolean unlikeSong(String songId,String listenerId){
+        finally{
+            conn.close();
+        }
+    }//checked
+    public void unlikeSong(String songId, String listenerId) throws SQLException {
         try{
             String sql = "Delete from feedback where ListenerId=? and SongId = ?";
             PreparedStatement deleteStatement = conn.prepareStatement(sql);
@@ -114,8 +158,10 @@ public class Listener extends User{
         catch(Exception e){
             System.out.println("Error: " + e);
         }
-        return isAuthenticated;
-    }//-------------------Not checked------------
+        finally{
+            conn.close();
+        }
+    }//checked
     public void exploreSong(){
         try{
             String sql = "Select * from song";
@@ -124,13 +170,14 @@ public class Listener extends User{
             ArrayList<String[]> songList = new ArrayList<>();
             while(result.next()){
 
+                //:(
             }
         }
         catch (Exception e){
             System.out.println("Error:"+e);
         }
-    }//-------------------Not checked------------
-    public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
+    }//-------------------Not checked------------//working on this
+    public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
             String sql1 = "Select * from user where UserName=?";
             String sql2 = "Select Max(ListenerId) from listener";
@@ -195,17 +242,16 @@ public class Listener extends User{
                 System.out.println("User Name has been used!");
                 isAuthenticated=false;
             }
-
+            result1.close();
         }
         catch(Exception e){
             isAuthenticated=false;
-            System.out.println(e);
+            System.out.println("Error "+e);
         }
         finally{
-            //conn.close
+            conn.close();
         }
         return isAuthenticated;
     }
     //Checked
-
 }

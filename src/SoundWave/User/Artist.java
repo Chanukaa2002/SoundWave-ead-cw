@@ -1,18 +1,22 @@
 package SoundWave.User;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.io.InputStream;
 
 public class Artist extends User{
-
+//-----------------------------------------------------------------------|DONE|------------------------------------------------
     //methods
-    public void uploadSong(String title,float duration,String coverImg,InputStream coverImgStream,String artistId){
+    public boolean uploadSong(String title,String duration,String coverImg,InputStream coverImgStream,String artistId,InputStream songStream,String songPath) throws SQLException {
         try{
+            conn.setAutoCommit(false);
+
             String songId;
-            String sql1 = "Select Max(ListenerId) from song";
-            String sql2 = "Insert into song (SongId,Title,Duration,CoverImg,ArtistId) values(?,?,?,?,?)";
+            String sql1 = "Select Max(SongId) from song";
+            String sql2 = "Insert into song (SongId,Title,Song,Duration,CoverImg,ArtistId) values(?,?,?,?,?,?)";
 
             //auto increment id
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
@@ -31,30 +35,44 @@ public class Artist extends User{
                 PreparedStatement insertStatement = conn.prepareStatement(sql2);
                 insertStatement.setString(1,songId);
                 insertStatement.setString(2,title);
-                insertStatement.setFloat(3,duration);
-                insertStatement.setString(4,coverImg);
-                insertStatement.setString(5,artistId);
+                insertStatement.setString(3,songPath);
+                insertStatement.setString(4,duration);
+                insertStatement.setString(5,coverImg);
+                insertStatement.setString(6,artistId);
 
                 int rowsAffected= insertStatement.executeUpdate();
                 if(rowsAffected>0){
                     String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + coverImg;
                     boolean isDpSaved = saveFile(coverImgStream,coverImgPath);
-                    if(isDpSaved){
+                    String songFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" +songPath;
+                    boolean isSongSaved = saveSong(songStream,songFilePath);
+                    if(isDpSaved && isSongSaved){
+                        conn.commit();
                         isAuthenticated=true;
                     }else {
-                        System.out.println("Failed to save cover Image.");
+                        conn.rollback();
+                        System.out.println("Failed to save cover Image or song.");
                     }
                 }
             }
 
         }catch(Exception e){
-            System.out.println(e);
+            conn.rollback();
+            System.out.println("Error" +e);
+        }finally {
+            try {
+                conn.setAutoCommit(true);  // Restore auto-commit mode
+            } catch (SQLException ex) {
+                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
+            }
         }
-    }//-------------------Not checked------------
-    public void updateSong(String songId,String title,float duration,String coverImg,InputStream coverImgStream,String artistId){
+        return isAuthenticated;
+    }//checked
+    public void updateSong(String songId, String title, String duration, String coverImg, InputStream coverImgStream) throws SQLException {
         try {
-            String sql1 = "SELECT CoverImg FROM song WHERE SongId=?";
-            String sql2 = "UPDATE song SET Title=?, Duration=?, CoverImg=? WHERE SongId=? and ArtistId=?";
+            conn.setAutoCommit(false);
+            String sql1 = "SELECT CoverImg,Song FROM song WHERE SongId=?";
+            String sql2 = "UPDATE song SET Title=?, Duration=?, CoverImg=? WHERE SongId=?";
             //delete old coverImg
 
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
@@ -72,10 +90,9 @@ public class Artist extends User{
             //Update data
             PreparedStatement updateStatement = conn.prepareStatement(sql2);
             updateStatement.setString(1,title);
-            updateStatement.setFloat(2,duration);
+            updateStatement.setString(2,duration);
             updateStatement.setString(3,coverImg);
             updateStatement.setString(4,songId);
-            updateStatement.setString(5,artistId);
 
             int rowsAffected = updateStatement.executeUpdate();
 
@@ -83,17 +100,28 @@ public class Artist extends User{
                 //update DP
                 String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + coverImg;
                 boolean isDpSaved = saveFile(coverImgStream, dpFilePath);
-                isAuthenticated = true;
+                conn.commit();
+                System.out.println("Song update successful.");
             } else {
+                conn.rollback();
                 System.out.println("Song update unsuccessful.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            conn.rollback();
+            System.out.println("Error" +e);
         }
-    }//-------------------Not checked------------
-    public void removeSong(String songId){
+        finally {
+            try {
+                conn.setAutoCommit(true);  // Restore auto-commit mode
+            } catch (SQLException ex) {
+                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
+            }
+        }
+    }//checked
+    public boolean removeSong(String songId){
         try {
-            String sql1 = "SELECT CoverImg FROM song WHERE SongId=?";
+            conn.setAutoCommit(false);
+            String sql1 = "SELECT CoverImg,Song FROM song WHERE SongId=?";
             String sql2 = "Delete from song where SongId=?";
 
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
@@ -104,27 +132,39 @@ public class Artist extends User{
             if (result.next()) {
                 //removing image from local storage
                 String oldCoverImg = result.getString("CoverImg");
+                String songName =result.getString("Song");
                 String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
+                String oldSongFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + songName;
 
-                File oldFile = new File(oldDpFilePath);
-                if (oldFile.exists()) {
-                    boolean delete = oldFile.delete();
+                File image = new File(oldDpFilePath);
+                File song = new File(oldDpFilePath);
+
+                if (image.exists() &&song.exists()) {
+                    image.delete();
+                    song.delete();
+                    PreparedStatement removeStatement = conn.prepareStatement(sql2);
+                    removeStatement.setString(1,songId);
+                    int rowsAffected = removeStatement.executeUpdate();
+                    conn.commit();
+                    if(rowsAffected>0){
+                        System.out.println("Song removed successfully!");
+                        isAuthenticated = true;
+                    }
+                }
+                else{
+                    conn.rollback();
                 }
             }
-            PreparedStatement removeStatement = conn.prepareStatement(sql2);
-            removeStatement.setString(1,songId);
 
-            int rowsAffected = removeStatement.executeUpdate();
-            if(rowsAffected>0){
-                System.out.println("Song removed successfully!");
-            }
         }
         catch(Exception e){
             System.out.println("Error"+e);
         }
-    }//-------------------Not checked------------
-    public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream){
+        return isAuthenticated;
+    }//checked
+    public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
+            conn.setAutoCommit(false);
             String sql1 = "Select * from user where UserName=?";
             String sql2 = "Select Max(ArtistId) from listener";
             String sql3 = "Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values(?,?,?,?,?,?)";
@@ -178,25 +218,41 @@ public class Artist extends User{
                         String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
+                            conn.commit();
                             //if file upload success, return true !
                             isAuthenticated=true;
                         }else {
+                            conn.rollback();
                             System.out.println("Failed to save display picture.");
                         }
                     }
                 }
             }
             else{
+                conn.rollback();
                 System.out.println("User Name has been used!");
             }
 
         }
         catch(Exception e){
-            System.out.println(e);
-        }
-        finally{
-            //conn.close
+            conn.rollback();
+            System.out.println("Error" +e);
+        }finally {
+            try {
+                conn.setAutoCommit(true);  // Restore auto-commit mode
+            } catch (SQLException ex) {
+                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
+            }
         }
         return isAuthenticated;
     }//Checked
+    private boolean saveSong(InputStream inputStream, String filePath) {
+        try {
+            Files.copy(inputStream, Paths.get(filePath));
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            return false;
+        }
+    }//work
 }
