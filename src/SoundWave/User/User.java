@@ -19,10 +19,6 @@ public abstract class User implements Authentication {
     protected String contactNo;
     Connection conn;
     boolean isAuthenticated = false;//change datatype
-    public String getContactNo() {
-        return contactNo;
-    }
-    //constractor
     public User(){
         try{
             conn=DBConnection.getConnection();
@@ -31,39 +27,26 @@ public abstract class User implements Authentication {
             System.out.println(e);
         }
     }
-    public void setContactNo(String contactNo) {
-        this.contactNo = contactNo;
+    public String getContactNo() {
+        return contactNo;
     }
+    //constractor
+
     //getters and setters
     public String getUserName() {
         return userName;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
     public String getName() {
         return name;
-    }
-    public void setName(String name) {
-        this.name = name;
     }
     public String getEmail() {
         return email;
     }
-    public void setEmail(String email) {
-        this.email = email;
-    }
     public String getPassword() {
         return password;
     }
-    public void setPassword(String password) {
-        this.password = password;
-    }
     public String getDP() {
         return DP;
-    }
-    public void setDP(String DP) {
-        this.DP = DP;
     }
     //methods
     public void viewProfile(String userName) throws SQLException {
@@ -158,7 +141,7 @@ public abstract class User implements Authentication {
     public boolean logOut(){
 
         return true;
-    }//-------------------Not checked------------
+    }//-------------------work on this------------
     public boolean forgetPassword(String userName,String password) throws SQLException {
         try{
             String sql1 = "Select * from user where Password=? and  UserName=?";

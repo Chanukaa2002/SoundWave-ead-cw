@@ -254,5 +254,5 @@ public class Artist extends User{
             System.out.println("Error: " + e);
             return false;
         }
-    }//work
+    }//checked
 }

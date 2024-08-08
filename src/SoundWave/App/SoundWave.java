@@ -27,7 +27,7 @@ public class SoundWave {
              //isSet = ((Artist) a).uploadSong("SongTitle","2.0","test.PNG",dpInputStream,"A001",songInputStream,"Sample.wav");
             //((Artist) a).updateSong("S002","TestSong","5","dp.jpg",dpInputStream);
             //((Listener) u).createPlayList("DemoPlayList","dp.JPG",dpInputStream,"L001");
-            //((Listener) u).likeSong("S002","L002");
+            //((Listener) u).likeSong("S002","L003");
 //            isSet=((Listener) u).removeSongFromPlayList("P001","S002");
 //            if (isSet) {
 //                System.out.println("Okay");

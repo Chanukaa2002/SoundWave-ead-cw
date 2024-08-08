@@ -102,38 +102,47 @@ public class Listener extends User{
         }
         return isAuthenticated;
     }//checked
-    public void controlSong(){}//-------------------Not checked------------
+    public void controlSong(){}//-------------------work on this------------
     public void likeSong(String songId, String listenerId) throws SQLException {
         try{
             String sql1 = "Select Max(FeedbackId) from feedback";
             String sql2 = "Insert into feedback(FeedbackId,Likes,SongId,ListenerId) values(?,?,?,?)";
+            String sql3 = "Select FeedbackId from feedback where SongId=? and ListenerId=?";
             String feedBackId;
-
-            //auto increment id
-            PreparedStatement selectMaxIDStatement = conn.prepareStatement(sql1);
-            ResultSet result = selectMaxIDStatement.executeQuery();
-            if(result.next()){
-                String maxId = result.getString(1);
-                if(maxId!=null){
-                    int numaricPart = Integer.parseInt(maxId.substring(1));
-                    numaricPart++;
-                    feedBackId = String.format("F%03d",numaricPart);
-                }
-                else{
-                    feedBackId = "F001";
-                }
-                PreparedStatement insertStatement = conn.prepareStatement(sql2);
-                insertStatement.setString(1,feedBackId);
-                insertStatement.setInt(2,1);
-                insertStatement.setString(3,songId);
-                insertStatement.setString(4,listenerId);
-
-                int rowsAffected = insertStatement.executeUpdate();
-                if(rowsAffected>0){
-                    isAuthenticated = true;
-                }
+            PreparedStatement checkStatement = conn.prepareStatement(sql3);
+            checkStatement.setString(1,songId);
+            checkStatement.setString(2,listenerId);
+            ResultSet res = checkStatement.executeQuery();
+            if(res.next()){
+                unlikeSong(songId,listenerId);
             }
-            result.close();
+            else{
+                PreparedStatement selectMaxIDStatement = conn.prepareStatement(sql1);
+                ResultSet result = selectMaxIDStatement.executeQuery();
+                if(result.next()){
+                    String maxId = result.getString(1);
+                    if(maxId!=null){
+                        int numaricPart = Integer.parseInt(maxId.substring(1));
+                        numaricPart++;
+                        feedBackId = String.format("F%03d",numaricPart);
+                    }
+                    else{
+                        feedBackId = "F001";
+                    }
+                    PreparedStatement insertStatement = conn.prepareStatement(sql2);
+                    insertStatement.setString(1,feedBackId);
+                    insertStatement.setInt(2,1);
+                    insertStatement.setString(3,songId);
+                    insertStatement.setString(4,listenerId);
+
+                    int rowsAffected = insertStatement.executeUpdate();
+                    if(rowsAffected>0){
+                        isAuthenticated = true;
+                    }
+                }
+                result.close();
+            }
+
         }
         catch(Exception e){
 
@@ -176,7 +185,7 @@ public class Listener extends User{
         catch (Exception e){
             System.out.println("Error:"+e);
         }
-    }//-------------------Not checked------------//working on this
+    }//-------------------working on this------------
     public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
             String sql1 = "Select * from user where UserName=?";
@@ -252,6 +261,5 @@ public class Listener extends User{
             conn.close();
         }
         return isAuthenticated;
-    }
-    //Checked
+    }//Checked
 }
