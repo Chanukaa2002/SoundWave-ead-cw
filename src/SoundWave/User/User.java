@@ -2,10 +2,11 @@ package SoundWave.User;
 
 import SoundWave.Authentication.Authentication;
 import SoundWave.DBConnection.DBConnection;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public abstract class User implements Authentication {
 
@@ -18,13 +19,10 @@ public abstract class User implements Authentication {
     protected String contactNo;
     Connection conn;
     boolean isAuthenticated = false;//change datatype
-
     public String getContactNo() {
         return contactNo;
     }
-    public void setContactNo(String contactNo) {
-        this.contactNo = contactNo;
-    }
+    //constractor
     public User(){
         try{
             conn=DBConnection.getConnection();
@@ -32,6 +30,9 @@ public abstract class User implements Authentication {
         catch(SQLException e){
             System.out.println(e);
         }
+    }
+    public void setContactNo(String contactNo) {
+        this.contactNo = contactNo;
     }
     //getters and setters
     public String getUserName() {
@@ -64,12 +65,13 @@ public abstract class User implements Authentication {
     public void setDP(String DP) {
         this.DP = DP;
     }
-
     //methods
-    protected void viewProfile(String userName){
+    public void viewProfile(String userName) throws SQLException {
         try{
-            Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"'");
+            String sql = "Select * from user where UserName=?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,userName);
+            ResultSet result =statement.executeQuery();
             while(result.next()){
                 this.userName = result.getString("UserName");
                 this.password = result.getString("Password");
@@ -78,53 +80,102 @@ public abstract class User implements Authentication {
                 this.contactNo = result.getString("ContactNo");
                 this.DP = result.getString("DP");
             }
+            result.close();
         }catch (Exception e){
             System.out.println(e);
+        }finally{
+                conn.close();
         }
-    }
-    protected void editProfile(String userName,String password, String name, String email, String contactNo, String dp){
-        try{
-            //userName cannot be changed!
-            Statement statement = conn.createStatement();
-            int rowsAffected = statement.executeUpdate("Update user set UserName='"+userName+"',Password='"+password+"',Name='"+name+"',Email='"+email+"',ContactNo='"+contactNo+"',DP='"+dp+"' where UserName='"+userName+"'");
-            if(rowsAffected>0){
-                System.out.println("Profile Update Success!");
+    }//Checked
+    public boolean editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
+        try {
+            String sql1 = "SELECT DP FROM user WHERE UserName=?";
+            String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, ContactNo=?, DP=? WHERE UserName=?";
+
+            //delete old DP
+            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+            selectStatement.setString(1,userName);
+            ResultSet result = selectStatement.executeQuery();
+
+            if (result.next()) {
+                String oldDp = result.getString("DP");
+                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + oldDp;
+                File oldFile = new File(oldDpFilePath);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
             }
-            else{
-                System.out.println("Profile Update UnSuccess");
+
+            //Update data
+            PreparedStatement updateStatement  = conn.prepareStatement(sql2);
+            updateStatement.setString(1,password);
+            updateStatement.setString(2,name);
+            updateStatement.setString(3,email);
+            updateStatement.setString(4,contactNo);
+            updateStatement.setString(5,dp);
+            updateStatement.setString(6,userName);
+            int rowsAffected = updateStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                //update DP
+                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
+                boolean isDpSaved = saveFile(dpInputStream, dpFilePath);
+                isAuthenticated = true;
+            } else {
+                System.out.println("Profile update unsuccessful.");
             }
-        }catch (Exception e){
-            System.out.println(e);
+            result.close();
+        } catch (Exception e) {
+            System.out.println("Error: "+e);
         }
-    }
+        finally{
+            conn.close();
+        }
+        return isAuthenticated;
+    }//Checked
     //interface methods
-    public boolean login(String userName, String password){
+    public boolean login(String userName, String password) throws SQLException {
         try{
-            Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery("Select * from user where UserName='"+userName+"' and Password='"+password+"'");
+            String sql = "Select * from user where UserName=? and Password=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,userName);
+            selectStatement.setString(2,password);
+
+            ResultSet result = selectStatement.executeQuery();
             if(result.next()){
                 this.isAuthenticated=true;
             }
+            result.close();
         }
         catch(Exception e){
             System.out.println(e);
         }
         finally {
-            //close connection
+            conn.close();
         }
         return isAuthenticated;
-    }
-    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp);
+    }//Checked
+    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException;//Checked
     public boolean logOut(){
 
         return true;
-    }
-    public boolean forgetPassword(String userName,String password){
+    }//-------------------Not checked------------
+    public boolean forgetPassword(String userName,String password) throws SQLException {
         try{
-            Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery("Select * from user where Password='"+password+"' and  UserName='"+userName+"'");
+            String sql1 = "Select * from user where Password=? and  UserName=?";
+            String sql2 = "Update user set Password=? where  UserName=?";
+
+            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+            selectStatement.setString(1,password);
+            selectStatement.setString(2,userName);
+
+            ResultSet result = selectStatement.executeQuery();
             if(!(result.next())){
-                int rowAffected = statement.executeUpdate("Update user set Password='"+password+"' where  UserName='"+userName+"'");
+
+                PreparedStatement updateStatement = conn.prepareStatement(sql2);
+                updateStatement.setString(1,password);
+                updateStatement.setString(2,userName);
+
+                int rowAffected = updateStatement.executeUpdate();
                 if(rowAffected>0){
                     isAuthenticated=true;
                 }
@@ -132,13 +183,40 @@ public abstract class User implements Authentication {
             else {
                 System.out.println("This Password is previous one please enter another one!");
             }
+            result.close();
         }
         catch (Exception e){
             System.out.println(e);
         }
+        finally{
+            conn.close();
+        }
         return isAuthenticated;
-    }
+    }//Checked
+    public int viewLikeCount(String songId){
+        int count = 0;
+        try{
+            String sql = "SELECT COUNT(Likes) FROM feedback WHERE SongId=?;";
 
-
-
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,songId);
+            ResultSet resultSet = selectStatement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+        }
+        catch(Exception e){
+            System.out.println("Error: " + e);
+        }
+        return count;
+    } //checked
+    protected boolean saveFile(InputStream inputStream, String filePath) {
+        try {
+            Files.copy(inputStream, Paths.get(filePath));
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            return false;
+        }
+    }//Checked
 }
