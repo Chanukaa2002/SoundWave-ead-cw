@@ -1,14 +1,20 @@
 package SoundWave.User;
 
+import SoundWave.Music.Song;
+
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.io.InputStream;
+import java.util.Scanner;
+
 public class Listener extends User{
 
     //methods
-    public void createPlayList(String name,String coverImg,InputStream inputCoverImg,String listenerId) throws SQLException {
+    public boolean createPlayList(String name,String coverImg,InputStream inputCoverImg,String listenerId) throws SQLException {
+        boolean status = false;
         try{
             conn.setAutoCommit(false);
             String playlistId;
@@ -42,10 +48,9 @@ public class Listener extends User{
                     //upload image into local storage
                     String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + coverImg;
                     boolean isDpSaved = saveFile(inputCoverImg,coverImgPath);
-
                     if(isDpSaved){
                         conn.commit();
-                        isAuthenticated=true;
+                        status=true;
                     }else {
                         conn.rollback();
                         System.out.println("Failed to save cover Image.");
@@ -63,8 +68,58 @@ public class Listener extends User{
                 System.out.println("Failed to restore auto-commit: " + ex.getMessage());
             }
         }
+        return status;
     }//checked
+    public boolean deletePlayList(String playListId) throws SQLException {
+        boolean status = false;
+        try {
+            String sqlSelect = "SELECT CoverImg FROM playlist WHERE PlayListId=?";
+            String sqlDeletePlayList = "DELETE FROM playList WHERE PlayListId=?;";
+            String sqlDeletePlayListSong = "DELETE FROM playlist_song WHERE PlayListId=?; ";
+
+            conn.setAutoCommit(false);
+            PreparedStatement selectStatement = conn.prepareStatement(sqlSelect);
+            selectStatement.setString(1, playListId);
+            ResultSet result = selectStatement.executeQuery();
+
+            if (result.next()) {
+                String oldCoverImg = result.getString("CoverImg");
+                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + oldCoverImg;
+                File image = new File(oldDpFilePath);
+                if (image.exists()) {
+                    PreparedStatement removePlaListSongStatement = conn.prepareStatement(sqlDeletePlayListSong);
+                    PreparedStatement removePlaListStatement = conn.prepareStatement(sqlDeletePlayList);
+                    removePlaListSongStatement.setString(1, playListId);
+                    removePlaListStatement.setString(1, playListId);
+                    int rowsAffected1 = removePlaListSongStatement.executeUpdate();
+                    int rowsAffected2 = removePlaListStatement.executeUpdate();
+
+                    if (rowsAffected1 > 0 && rowsAffected2>0) {
+                        image.delete();
+                        conn.commit();
+                        System.out.println("PlayList removed successfully!");
+                        status=true;
+                    } else {
+                        conn.rollback();
+                    }
+
+                } else {
+                    conn.rollback();
+                }
+            }
+
+        } catch (Exception e) {
+            conn.rollback();
+            System.out.println("Error: " + e);
+        } finally {
+            conn.setAutoCommit(true);
+            conn.close();
+        }
+
+        return status;
+    }
     public boolean addSongToPlayList(String playlistId, String songId) throws SQLException {
+        boolean status = false;
         try{
             String sql = "insert into playlist_song (PlayListId,SongId) values(?,?)";
             PreparedStatement statement = conn.prepareStatement(sql);
@@ -73,7 +128,7 @@ public class Listener extends User{
 
             int rowAffected = statement.executeUpdate();
             if(rowAffected>0){
-                isAuthenticated=true;
+                status=true;
             }
         }catch(Exception e){
             System.out.println("Error: "+e);
@@ -81,9 +136,10 @@ public class Listener extends User{
         finally{
             conn.close();
         }
-        return isAuthenticated;
+        return status;
     }//checked
     public boolean removeSongFromPlayList(String playlistId, String songId) throws SQLException {
+        boolean status=false;
         try{
             String sql = "delete from playlist_song where PlayListId=? and SongId=?";
             PreparedStatement statement = conn.prepareStatement(sql);
@@ -92,7 +148,7 @@ public class Listener extends User{
 
             int rowAffected = statement.executeUpdate();
             if(rowAffected>0){
-                isAuthenticated=true;
+                status=true;
             }
         }catch(Exception e){
             System.out.println("Error: "+e);
@@ -100,10 +156,38 @@ public class Listener extends User{
         finally{
             conn.close();
         }
-        return isAuthenticated;
+        return status;
     }//checked
-    public void controlSong(){}//-------------------work on this------------
-    public void likeSong(String songId, String listenerId) throws SQLException {
+    //stay for java swing coding after gui was code, implement that correctly
+    public void controlSong(String songPath) {
+        Song s = new Song();
+        Scanner scn = new Scanner(System.in);
+        String command;
+
+        do {
+            command = scn.nextLine();
+            switch (command) {
+                case "start":
+                    s.start(songPath); // Play the song from the beginning
+                    break;
+                case "p":
+                    s.pause();
+                    break;
+                case "resume":
+                    s.resume();
+                    break;
+                case "stop":
+                    s.stop();
+                    break;
+                default:
+                    System.out.println("Unknown command. Please use 'start', 'p', 'resume', or 'stop'.");
+            }
+        } while (!command.equals("stop"));
+
+        scn.close();
+    }//-------------------work on this------------
+    public boolean likeSong(String songId, String listenerId) throws SQLException {
+        boolean status = false;
         try{
             String sql1 = "Select Max(FeedbackId) from feedback";
             String sql2 = "Insert into feedback(FeedbackId,Likes,SongId,ListenerId) values(?,?,?,?)";
@@ -137,7 +221,7 @@ public class Listener extends User{
 
                     int rowsAffected = insertStatement.executeUpdate();
                     if(rowsAffected>0){
-                        isAuthenticated = true;
+                        status = true;
                     }
                 }
                 result.close();
@@ -151,6 +235,7 @@ public class Listener extends User{
         finally{
             conn.close();
         }
+        return status;
     }//checked
     public void unlikeSong(String songId, String listenerId) throws SQLException {
         try{
@@ -158,11 +243,7 @@ public class Listener extends User{
             PreparedStatement deleteStatement = conn.prepareStatement(sql);
             deleteStatement.setString(1,listenerId);
             deleteStatement.setString(2,songId);
-
-            int rowsAffected = deleteStatement.executeUpdate();
-            if(rowsAffected>0){
-                isAuthenticated=true;
-            }
+            deleteStatement.executeUpdate();
         }
         catch(Exception e){
             System.out.println("Error: " + e);
@@ -171,21 +252,33 @@ public class Listener extends User{
             conn.close();
         }
     }//checked
-    public void exploreSong(){
+    public ArrayList<String[]> exploreSong(){
+        ArrayList<String[]> songList = new ArrayList<>();
         try{
-            String sql = "Select * from song";
+            String sql = "SELECT s.SongId,s.Title, s.Song, s.Duration, s.CoverImg,s.ArtistId,u.Name " +
+                    "FROM song s " +
+                    "INNER JOIN artist a ON s.ArtistId = a.ArtistId " +
+                    "INNER JOIN user u ON a.UserName = u.UserName";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             ResultSet result = selectStatement.executeQuery();
-            ArrayList<String[]> songList = new ArrayList<>();
-            while(result.next()){
 
-                //:(
+            while(result.next()){
+                String[] songDetails = new String[6];
+                songDetails[0] = result.getString("SongId");
+                songDetails[1] = result.getString("Title");
+                songDetails[2] = result.getString("Song");
+                songDetails[3] = result.getString("Duration");
+                songDetails[4] = result.getString("CoverImg");
+                songDetails[5] = result.getString("Name");
+
+                songList.add(songDetails);
             }
         }
         catch (Exception e){
             System.out.println("Error:"+e);
         }
-    }//-------------------working on this------------
+        return songList;
+    }//checked-
     public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
             String sql1 = "Select * from user where UserName=?";

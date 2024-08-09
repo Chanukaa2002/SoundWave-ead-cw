@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public abstract class User implements Authentication {
 
@@ -49,26 +50,33 @@ public abstract class User implements Authentication {
         return DP;
     }
     //methods
-    public void viewProfile(String userName) throws SQLException {
+    public ArrayList<String[]> viewProfile(String userName) throws SQLException {
+        ArrayList<String[]> userDetails = new ArrayList<>();
+        String[] details = new String[6];
         try{
             String sql = "Select * from user where UserName=?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1,userName);
             ResultSet result =statement.executeQuery();
-            while(result.next()){
-                this.userName = result.getString("UserName");
-                this.password = result.getString("Password");
-                this.name = result.getString("Name");
-                this.email = result.getString("Email");
-                this.contactNo = result.getString("ContactNo");
-                this.DP = result.getString("DP");
+            if (result.next()) {
+                do {
+                    for (int i = 0; i < 6; i++) {
+                        details[i] = result.getString(i + 1);
+                    }
+                    userDetails.add(details);
+                } while (result.next());
+            } else {
+                userDetails = null;  // Set to null if no user is found
             }
+
             result.close();
         }catch (Exception e){
-            System.out.println(e);
+            userDetails = null;
+            System.out.println("Error: "+e);
         }finally{
-                conn.close();
+            conn.close();
         }
+        return userDetails;
     }//Checked
     public boolean editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {

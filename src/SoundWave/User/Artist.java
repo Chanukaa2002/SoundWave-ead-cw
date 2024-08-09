@@ -11,6 +11,7 @@ public class Artist extends User{
 //-----------------------------------------------------------------------|DONE|------------------------------------------------
     //methods
     public boolean uploadSong(String title,String duration,String coverImg,InputStream coverImgStream,String artistId,InputStream songStream,String songPath) throws SQLException {
+        boolean status=false;
         try{
             conn.setAutoCommit(false);
 
@@ -48,7 +49,7 @@ public class Artist extends User{
                     boolean isSongSaved = saveSong(songStream,songFilePath);
                     if(isDpSaved && isSongSaved){
                         conn.commit();
-                        isAuthenticated=true;
+                        status=true;
                     }else {
                         conn.rollback();
                         System.out.println("Failed to save cover Image or song.");
@@ -66,9 +67,10 @@ public class Artist extends User{
                 System.out.println("Failed to restore auto-commit: " + ex.getMessage());
             }
         }
-        return isAuthenticated;
+        return status;
     }//checked
-    public void updateSong(String songId, String title, String duration, String coverImg, InputStream coverImgStream) throws SQLException {
+    public boolean updateSong(String songId, String title, String duration, String coverImg, InputStream coverImgStream) throws SQLException {
+        boolean status=false;
         try {
             conn.setAutoCommit(false);
             String sql1 = "SELECT CoverImg,Song FROM song WHERE SongId=?";
@@ -101,6 +103,7 @@ public class Artist extends User{
                 String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + coverImg;
                 boolean isDpSaved = saveFile(coverImgStream, dpFilePath);
                 conn.commit();
+                status = true;
                 System.out.println("Song update successful.");
             } else {
                 conn.rollback();
@@ -111,56 +114,71 @@ public class Artist extends User{
             System.out.println("Error" +e);
         }
         finally {
-            try {
-                conn.setAutoCommit(true);  // Restore auto-commit mode
-            } catch (SQLException ex) {
-                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
-            }
+            conn.setAutoCommit(true);
+            conn.close();
         }
+        return status;
     }//checked
-    public boolean removeSong(String songId){
+    public boolean removeSong(String songId) throws SQLException {
+        boolean status=false;
         try {
+            String sqlSelect = "SELECT CoverImg, Song FROM song WHERE SongId=?";
+            String sqlDeleteFeedback = "DELETE FROM feedback WHERE SongId=?";
+            String sqlDeletePlaListSong = "DELETE FROM playlist_song WHERE SongId=?";
+            String sqlDeleteSong = "DELETE FROM song WHERE SongId=?";
             conn.setAutoCommit(false);
-            String sql1 = "SELECT CoverImg,Song FROM song WHERE SongId=?";
-            String sql2 = "Delete from song where SongId=?";
 
-            PreparedStatement selectStatement = conn.prepareStatement(sql1);
-            selectStatement.setString(1,songId);
-
+            PreparedStatement selectStatement = conn.prepareStatement(sqlSelect);
+            selectStatement.setString(1, songId);
             ResultSet result = selectStatement.executeQuery();
 
             if (result.next()) {
-                //removing image from local storage
                 String oldCoverImg = result.getString("CoverImg");
-                String songName =result.getString("Song");
+                String songName = result.getString("Song");
                 String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
-                String oldSongFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + songName;
+                String oldSongFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" + songName;
 
                 File image = new File(oldDpFilePath);
-                File song = new File(oldDpFilePath);
+                File song = new File(oldSongFilePath);
 
-                if (image.exists() &&song.exists()) {
-                    image.delete();
-                    song.delete();
-                    PreparedStatement removeStatement = conn.prepareStatement(sql2);
-                    removeStatement.setString(1,songId);
-                    int rowsAffected = removeStatement.executeUpdate();
-                    conn.commit();
-                    if(rowsAffected>0){
+                if (image.exists() && song.exists()) {
+
+                    PreparedStatement removeFeedbackStatement = conn.prepareStatement(sqlDeleteFeedback);
+                    PreparedStatement removeFeedbackSongStatement = conn.prepareStatement(sqlDeletePlaListSong);
+                    PreparedStatement removeSongStatement = conn.prepareStatement(sqlDeleteSong);
+
+                    removeFeedbackStatement.setString(1, songId);
+                    removeFeedbackSongStatement.setString(1, songId);
+                    removeSongStatement.setString(1, songId);
+
+                    removeFeedbackStatement.executeUpdate();
+                    removeFeedbackSongStatement.executeUpdate();
+                    int rowsAffected = removeSongStatement.executeUpdate();
+
+                    if (rowsAffected > 0 ) {
+                        image.delete();
+                        song.delete();
+                        conn.commit();
                         System.out.println("Song removed successfully!");
-                        isAuthenticated = true;
+                        status=true;
+                    } else {
+                        conn.rollback();
                     }
-                }
-                else{
+
+                } else {
                     conn.rollback();
                 }
             }
 
+        } catch (Exception e) {
+            conn.rollback();
+            System.out.println("Error: " + e);
+        } finally {
+            conn.setAutoCommit(true);
+            conn.close();
         }
-        catch(Exception e){
-            System.out.println("Error"+e);
-        }
-        return isAuthenticated;
+
+        return status;
     }//checked
     public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
@@ -211,15 +229,12 @@ public class Artist extends User{
                     insertStatementTwo.setString(2,userName);
 
                     int rowsAffected2 = insertStatementTwo.executeUpdate();
-
-                    //check command was true
                     if(rowsAffected1>0 && rowsAffected2>0){
                         //uploading image into local file
                         String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             conn.commit();
-                            //if file upload success, return true !
                             isAuthenticated=true;
                         }else {
                             conn.rollback();
@@ -232,17 +247,13 @@ public class Artist extends User{
                 conn.rollback();
                 System.out.println("User Name has been used!");
             }
-
         }
         catch(Exception e){
             conn.rollback();
             System.out.println("Error" +e);
         }finally {
-            try {
-                conn.setAutoCommit(true);  // Restore auto-commit mode
-            } catch (SQLException ex) {
-                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
-            }
+            conn.setAutoCommit(true);
+            conn.close();
         }
         return isAuthenticated;
     }//Checked

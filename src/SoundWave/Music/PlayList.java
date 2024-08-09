@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayList {
@@ -14,11 +15,13 @@ public class PlayList {
     public PlayList(){
         try{
             conn= DBConnection.getConnection();
+            songs = new ArrayList<>();
         }
         catch(SQLException e){
             System.out.println(e);
         }
     }
+
     //getter setter
     public String getPlaylistId() {
         return playlistId;
@@ -39,8 +42,7 @@ public class PlayList {
         this.image = image;
     }
 
-//methods
-
+    //methods
     public void addSong(){}
     public void removeSong(){}
     public void playAll(){}
@@ -63,6 +65,6 @@ public class PlayList {
             conn.close();
         }
         return songs;
-    }//----------------------------not checked-------------------------
+    }//checked
 
 }
