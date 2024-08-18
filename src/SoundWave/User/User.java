@@ -31,7 +31,6 @@ public abstract class User implements Authentication {
     public String getContactNo() {
         return contactNo;
     }
-    //constractor
 
     //getters and setters
     public String getUserName() {
@@ -49,6 +48,7 @@ public abstract class User implements Authentication {
     public String getDP() {
         return DP;
     }
+
     //methods
     public ArrayList<String[]> viewProfile(String userName) throws SQLException {
         ArrayList<String[]> userDetails = new ArrayList<>();
