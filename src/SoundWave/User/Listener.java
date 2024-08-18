@@ -279,6 +279,27 @@ public class Listener extends User{
         }
         return songList;
     }//checked-
+    public ArrayList<String[]> searchSong(String title){
+        ArrayList<String[]> searchSong = new ArrayList<>();
+        try{
+            String sql = "Select SongId,Title from song where Like ?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            ResultSet result = selectStatement.executeQuery();
+
+            while(result.next()){
+                String[] songDetails = new String[2];
+                songDetails[0] = result.getString("SongId");
+                songDetails[1] = result.getString("Title");
+
+                searchSong.add(songDetails);
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error:"+e);
+        }
+        return searchSong;
+
+    }//--------------------Not checked------------------------
     public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
             String sql1 = "Select * from user where UserName=?";
