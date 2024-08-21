@@ -1,8 +1,6 @@
 package SoundWave.App.ListenerUI;
 
-import SoundWave.App.ArtistUI.ArtistMainPanel;
-import SoundWave.App.ArtistUI.MainContentPanel;
-import SoundWave.App.ArtistUI.SidebarPanel;
+import SoundWave.App.ArtistUI.AMainContentPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,16 +14,15 @@ public class ListenerMainPanel extends JFrame{
             // Frame settings
             setTitle("Listener");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setSize(1000, 600);
+            setSize(1000, 700);
             setLocationRelativeTo(null);
             setLayout(new BorderLayout());
             // Add main content panel
-            MainContentPanel mainContentPanel = new MainContentPanel();
+            LMainContent mainContentPanel = new LMainContent();
             add(mainContentPanel, BorderLayout.CENTER);
 
             // Add sidebar panel
-            MainContent mc = new MainContent();
-            SideBar sidebarPanel = new SideBar(mc);
+            LSideBar sidebarPanel = new LSideBar(mainContentPanel);
             JScrollPane sideBarScroll = new JScrollPane(sidebarPanel);
             sideBarScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             sideBarScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);

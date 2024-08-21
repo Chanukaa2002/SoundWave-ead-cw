@@ -1,16 +1,8 @@
 package SoundWave.App;
 
-import SoundWave.Music.Feedback;
-import SoundWave.Music.PlayList;
-import SoundWave.Music.Song;
 import SoundWave.User.Artist;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SoundWave {
     public static void main(String[] args)  {
@@ -34,8 +26,8 @@ public class SoundWave {
 //           ((Listener) u).likeSong("S001","L001");
 //            isSet=((Listener) u).addSongToPlayList("P001","S003");
 //
-           int count = u.viewLikeCount("S001");
-            System.out.println(count);
+//           int count = u.viewLikeCount("S001");
+//            System.out.println(count);
 //            PlayList p = new PlayList();
 //            List<String> songs = p.getSongList("P001");
 //            for(String i :songs){

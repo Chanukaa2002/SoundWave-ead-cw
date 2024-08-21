@@ -1,16 +1,84 @@
 package SoundWave.User;
+import SoundWave.DBConnection.DBConnection;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public class Artist extends User{
 //-----------------------------------------------------------------------|DONE|------------------------------------------------
+    private Connection conn;
+    public String getArtistId() {
+        return artistId;
+    }
+    private String artistId;
+    public void setArtistId(String artistId) {
+        this.artistId = artistId;
+    }
+
+    public Artist(){
+        try{
+            conn= DBConnection.getConnection();
+        }
+        catch(SQLException e){
+            System.out.println(e);
+        }
+    }
+
+    @Override
+    public void viewProfile(String userName) throws SQLException {
+        try{
+            String sql = "Select u.UserName,u.Password,u.Name,u.Email,u.ContactNo,u.Dp,a.ArtistId From user u Inner Join artist a On u.UserId = a.UserId Where u.UserName = ?;";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,userName);
+            ResultSet result =statement.executeQuery();
+            if (result.next()) {
+                setArtistId(result.getString("ArtistId"));
+                setUserName(result.getString("UserName"));
+                setName(result.getString("Name"));
+                setPassword(result.getString("Password"));
+                setDP(result.getString("Dp"));
+                setContactNo(result.getString("ContactNo"));
+                setEmail(result.getString("Email"));
+            }
+
+            result.close();
+        }catch (Exception e){
+            System.out.println("Error: "+e);
+        }finally{
+            conn.close();
+        }
+    }
+
     //methods
-    public boolean uploadSong(String title,String duration,String coverImg,InputStream coverImgStream,String artistId,InputStream songStream,String songPath) throws SQLException {
+    public boolean isUser(String userName) throws SQLException {
+    boolean status=false;
+    try{
+        String sql = "Select * from artist where UserName=?";
+        PreparedStatement selectStatement = conn.prepareStatement(sql);
+        selectStatement.setString(1,userName);
+
+        ResultSet result = selectStatement.executeQuery();
+        if(result.next()){
+            status=true;
+        }
+        result.close();
+    }
+    catch(Exception e){
+        System.out.println(e);
+    }
+    finally {
+        conn.close();
+    }
+    return  status;
+}
+    public boolean uploadSong(String title,float duration,InputStream coverImgStream,String artistId,InputStream songStream,String song,String imgFileExtension) throws SQLException {
         boolean status=false;
         try{
             conn.setAutoCommit(false);
@@ -19,6 +87,9 @@ public class Artist extends User{
             String sql1 = "Select Max(SongId) from song";
             String sql2 = "Insert into song (SongId,Title,Song,Duration,CoverImg,ArtistId) values(?,?,?,?,?,?)";
 
+            String coverImg;
+            String songName;
+
             //auto increment id
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
             ResultSet result = selectStatement.executeQuery();
@@ -26,26 +97,30 @@ public class Artist extends User{
             if (result.next()) {
                 String maxId = result.getString(1);
                 if (maxId != null) {
-                    int numaricPart = Integer.parseInt(maxId.substring(1));
-                    numaricPart++;
-                    songId = String.format("S%03d", numaricPart);
+                    int numericPart = Integer.parseInt(maxId.substring(1));
+                    numericPart++;
+                    songId = String.format("S%03d", numericPart);
+                    coverImg = "Song-CoverImg-"+songId;
+                    songName = songId+"-"+song;
                 } else {
                     songId = "S001";
+                    coverImg = "Song-CoverImg-S001";
+                    songName = "S001-"+song;
                 }
 
                 PreparedStatement insertStatement = conn.prepareStatement(sql2);
                 insertStatement.setString(1,songId);
                 insertStatement.setString(2,title);
-                insertStatement.setString(3,songPath);
-                insertStatement.setString(4,duration);
-                insertStatement.setString(5,coverImg);
+                insertStatement.setString(3,song);
+                insertStatement.setFloat(4,duration);
+                insertStatement.setString(5,songName);
                 insertStatement.setString(6,artistId);
 
                 int rowsAffected= insertStatement.executeUpdate();
                 if(rowsAffected>0){
-                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + coverImg;
+                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + coverImg+"."+imgFileExtension;
                     boolean isDpSaved = saveFile(coverImgStream,coverImgPath);
-                    String songFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" +songPath;
+                    String songFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" +songName;
                     boolean isSongSaved = saveSong(songStream,songFilePath);
                     if(isDpSaved && isSongSaved){
                         conn.commit();
@@ -180,16 +255,18 @@ public class Artist extends User{
 
         return status;
     }//checked
-    public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
+    public  boolean register(String userName, String password, String name, String email, String contactNo, InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
             conn.setAutoCommit(false);
             String sql1 = "Select * from user where UserName=?";
-            String sql2 = "Select Max(ArtistId) from listener";
+            String sql2 = "Select Max(ArtistId) from artist";
             String sql3 = "Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values(?,?,?,?,?,?)";
             String sql4 = "Insert into artist(ArtistId,UserName) values(?,?)";
 
             //initialize Listener Id for inset sql
             String ArtistId;
+            String dp;
+
 
             //sql command-1
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
@@ -206,12 +283,14 @@ public class Artist extends User{
                 if(result2.next()){
                     String maxId = result2.getString(1);
                     if(maxId!=null){
-                        int numaricPart = Integer.parseInt(maxId.substring(1));
-                        numaricPart++;
-                        ArtistId = String.format("A%03d",numaricPart);
+                        int numericPart = Integer.parseInt(maxId.substring(1));
+                        numericPart++;
+                        ArtistId = String.format("A%03d",numericPart);
+                        dp = "DP-"+ArtistId;
                     }
                     else{
                         ArtistId = "A001";
+                        dp = "DP-A001";
                     }
                     //insert sql command
                     PreparedStatement insertStatementOne = conn.prepareStatement(sql3);
@@ -231,7 +310,7 @@ public class Artist extends User{
                     int rowsAffected2 = insertStatementTwo.executeUpdate();
                     if(rowsAffected1>0 && rowsAffected2>0){
                         //uploading image into local file
-                        String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
+                        String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp+"."+fileExtension;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             conn.commit();

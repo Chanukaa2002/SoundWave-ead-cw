@@ -18,7 +18,7 @@ public abstract class User implements Authentication {
     protected String password;
     protected String DP;
     protected String contactNo;
-    Connection conn;
+    private Connection conn;
     boolean isAuthenticated = false;//change datatype
     public User(){
         try{
@@ -33,6 +33,25 @@ public abstract class User implements Authentication {
     }
 
     //getters and setters
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public void setDP(String DP) {
+        this.DP = DP;
+    }
+    public void setContactNo(String contactNo) {
+        this.contactNo = contactNo;
+    }
     public String getUserName() {
         return userName;
     }
@@ -50,34 +69,7 @@ public abstract class User implements Authentication {
     }
 
     //methods
-    public ArrayList<String[]> viewProfile(String userName) throws SQLException {
-        ArrayList<String[]> userDetails = new ArrayList<>();
-        String[] details = new String[6];
-        try{
-            String sql = "Select * from user where UserName=?";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1,userName);
-            ResultSet result =statement.executeQuery();
-            if (result.next()) {
-                do {
-                    for (int i = 0; i < 6; i++) {
-                        details[i] = result.getString(i + 1);
-                    }
-                    userDetails.add(details);
-                } while (result.next());
-            } else {
-                userDetails = null;  // Set to null if no user is found
-            }
-
-            result.close();
-        }catch (Exception e){
-            userDetails = null;
-            System.out.println("Error: "+e);
-        }finally{
-            conn.close();
-        }
-        return userDetails;
-    }//Checked
+    public abstract void viewProfile(String userName) throws SQLException;//Checked
     public boolean editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
         try {
             String sql1 = "SELECT DP FROM user WHERE UserName=?";
@@ -145,7 +137,7 @@ public abstract class User implements Authentication {
         }
         return isAuthenticated;
     }//Checked
-    public abstract boolean register(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException;//Checked
+    public abstract boolean register(String userName,String password, String name, String email, String contactNo, InputStream dpInputStream,String fileExtension) throws SQLException;//Checked
     public boolean logOut(){
 
         return true;
@@ -201,6 +193,7 @@ public abstract class User implements Authentication {
         }
         return count;
     } //checked
+    public abstract boolean isUser(String userName) throws SQLException;
     protected boolean saveFile(InputStream inputStream, String filePath) {
         try {
             Files.copy(inputStream, Paths.get(filePath));

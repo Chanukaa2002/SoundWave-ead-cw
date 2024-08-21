@@ -17,11 +17,11 @@ public class ArtistMainPanel extends JFrame {
             setLocationRelativeTo(null);
             setLayout(new BorderLayout());
             // Add main content panel
-            MainContentPanel mainContentPanel = new MainContentPanel();
+            AMainContentPanel mainContentPanel = new AMainContentPanel();
             add(mainContentPanel, BorderLayout.CENTER);
 
             // Add sidebar panel
-            SidebarPanel sidebarPanel = new SidebarPanel(mainContentPanel);
+            ASidebarPanel sidebarPanel = new ASidebarPanel(mainContentPanel);
             add(sidebarPanel, BorderLayout.WEST);
 
             setVisible(true);
