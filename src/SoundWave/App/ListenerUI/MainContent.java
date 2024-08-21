@@ -1,4 +1,0 @@
-package SoundWave.App.ListenerUI;
-
-public class MainContent {
-}

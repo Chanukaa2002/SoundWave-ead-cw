@@ -1,8 +1,10 @@
 package SoundWave.User;
 
+import SoundWave.DBConnection.DBConnection;
 import SoundWave.Music.Song;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +14,37 @@ import java.util.Scanner;
 
 public class Listener extends User{
 
+    private Connection conn;
+    public Listener(){
+        try{
+            conn= DBConnection.getConnection();
+        }
+        catch(SQLException e){
+            System.out.println(e);
+        }
+    }
     //methods
+    public boolean isUser(String userName) throws SQLException {
+        boolean status=false;
+        try{
+            String sql = "Select * from listener where UserName=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,userName);
+
+            ResultSet result = selectStatement.executeQuery();
+            if(result.next()){
+                status=true;
+            }
+            result.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        finally {
+            conn.close();
+        }
+        return  status;
+    }
     public boolean createPlayList(String name,String coverImg,InputStream inputCoverImg,String listenerId) throws SQLException {
         boolean status = false;
         try{
@@ -158,7 +190,6 @@ public class Listener extends User{
         }
         return status;
     }//checked
-    //stay for java swing coding after gui was code, implement that correctly
     public void controlSong(String songPath) {
         Song s = new Song();
         Scanner scn = new Scanner(System.in);
@@ -300,14 +331,19 @@ public class Listener extends User{
         return searchSong;
 
     }//--------------------Not checked------------------------
-    public  boolean register(String userName, String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
+    public  boolean register(String userName, String password, String name, String email, String contactNo, InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
             String sql1 = "Select * from user where UserName=?";
             String sql2 = "Select Max(ListenerId) from listener";
             String sql3 = "Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values(?,?,?,?,?,?)";
             String sql4 = "Insert into listener(ListenerId,UserName) values(?,?)";
+
+
             //initialize Listener Id for inset sql
             String ListenerId;
+            String dp;
+
+
             //sql command-1
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
             selectStatement.setString(1,userName);
@@ -322,13 +358,16 @@ public class Listener extends User{
 
                 if(result2.next()){
                     String maxId = result2.getString(1);
+
                     if(maxId!=null){
                         int numaricPart = Integer.parseInt(maxId.substring(1));
                         numaricPart++;
                         ListenerId = String.format("L%03d",numaricPart);
+                        dp = "DP-"+ListenerId;
                     }
                     else{
                         ListenerId = "L001";
+                        dp = "DP-L001";
                     }
                     //insert sql command
                     PreparedStatement insertStatementOne = conn.prepareStatement(sql3);
@@ -337,6 +376,7 @@ public class Listener extends User{
                     insertStatementOne.setString(3,name);
                     insertStatementOne.setString(4,email);
                     insertStatementOne.setString(5,contactNo);
+                    System.out.println(dp);
                     insertStatementOne.setString(6,dp);
 
                     int rowsAffected1 =insertStatementOne.executeUpdate();
@@ -350,7 +390,7 @@ public class Listener extends User{
                     //check command was true
                     if(rowsAffected1>0 && rowsAffected2>0){
                         //uploading image into local file
-                        String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
+                        String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp+"."+fileExtension;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             //if file upload success, return true !
