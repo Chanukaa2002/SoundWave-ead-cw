@@ -1,9 +1,11 @@
 package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ListenerUI.Actions.LExploreSongBtnActions;
+import SoundWave.User.Listener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class LExplorePanel extends JPanel {
     LMainContent mc;
@@ -56,9 +58,15 @@ public class LExplorePanel extends JPanel {
             gridPanel.setBackground(new Color(58, 65, 74)); // Match the background
             gridPanel.setLayout(new GridLayout(0, 4, 20, 20));
 
+            Listener listener = new Listener();
+            ArrayList<String[]> songs = listener.exploreSong();
+            for (String[] i : songs) {
+                ImageIcon originalIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + i[4]);
 
-            for (int i = 0; i < 18; i++) {
-                songBtn = new JButton("Song Title");
+                Image scaledImg = originalIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImg);
+
+                songBtn = new JButton(scaledIcon);
                 songBtn.setPreferredSize(new Dimension(120, 120));
                 songBtn.setBackground(new Color(235, 215, 255));
                 songBtn.setForeground(Color.BLACK);
@@ -68,6 +76,7 @@ public class LExplorePanel extends JPanel {
                 songBtn.addActionListener(new LExploreSongBtnActions(mc));
                 gridPanel.add(songBtn);
             }
+
 
             add(gridPanel, borderLayout.CENTER);
         }catch (Exception e){

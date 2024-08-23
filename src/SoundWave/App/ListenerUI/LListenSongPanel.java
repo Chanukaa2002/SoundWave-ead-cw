@@ -100,7 +100,7 @@ public class LListenSongPanel extends JPanel {
             songProgressBar.setPreferredSize(new Dimension(300, 10));
             add(songProgressBar, gbc);
         }catch(Exception e){
-            System.out.println("Listen Song UI method Error: "+e);
+            System.out.println("Listen Song Progressbar method Error: "+e);
         }
     }
     private void volume(){

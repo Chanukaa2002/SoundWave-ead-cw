@@ -8,10 +8,12 @@ import SoundWave.App.ArtistUI.AUploadSongPanel;
 
 public class ASideBarBtnActions implements ActionListener {
     private AMainContentPanel mcp;
+    private String artistId;
 
-    public ASideBarBtnActions(AMainContentPanel mcp){
+    public ASideBarBtnActions(AMainContentPanel mcp, String artistId){
         try {
             this.mcp = mcp;
+            this.artistId = artistId;
         }
         catch(Exception e){
             System.out.println("Artist Side Bar Btn Actions constructor Error: "+e);
@@ -23,9 +25,10 @@ public class ASideBarBtnActions implements ActionListener {
             String clickedBtnCommand = e.getActionCommand();
 
             if ("Home".equals(clickedBtnCommand)) {
-                mcp.setContentPanel(new ASongGridPanel(mcp), "My Songs");
-            } else if ("Upload".equals(clickedBtnCommand)) {
-                mcp.setContentPanel(new AUploadSongPanel(), "Upload Song");
+                mcp.setContentPanel(new ASongGridPanel(mcp,artistId), "My Songs");
+            }
+            else if ("Upload".equals(clickedBtnCommand)) {
+                mcp.setContentPanel(new AUploadSongPanel(artistId), "Upload Song");
             }
         }
         catch(Exception ex){

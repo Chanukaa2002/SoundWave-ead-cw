@@ -1,6 +1,7 @@
 package SoundWave.App.UserUI;
 
 import SoundWave.App.UserUI.Actions.LoginPageActions;
+import SoundWave.App.UserUI.Actions.RegisterPageActions;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,6 @@ public class LogInPanel extends JFrame {
     public LogInPanel() {
         UI();
     }
-
     private void UI() {
         try {
             setTitle("Log In");
@@ -68,7 +68,7 @@ public class LogInPanel extends JFrame {
             logInBtn.setFocusPainted(false);
             logInBtn.setBorderPainted(false);
             logInBtn.setActionCommand("LogIn");
-            logInBtn.addActionListener(new LoginPageActions(userNameField,passwordField));
+            logInBtn.addActionListener(new LoginPageActions(userNameField,passwordField,this));
             gbc.gridx = 0;
             gbc.gridy = 3;
             gbc.gridwidth = 2;
@@ -78,6 +78,8 @@ public class LogInPanel extends JFrame {
             createAccountBtn.setBackground(new Color(224, 143, 255));
             createAccountBtn.setFocusPainted(false);
             createAccountBtn.setBorderPainted(false);
+            createAccountBtn.setActionCommand("Create");
+            createAccountBtn.addActionListener(new LoginPageActions(this));
             gbc.gridx = 0;
             gbc.gridy = 4;
             gbc.gridwidth = 2;

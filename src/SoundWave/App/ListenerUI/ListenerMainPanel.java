@@ -6,7 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ListenerMainPanel extends JFrame{
-    public ListenerMainPanel(){
+    private String userName;
+    public ListenerMainPanel(String userName){
+        this.userName = userName;
         UI();
     }
     private void UI(){
@@ -22,7 +24,7 @@ public class ListenerMainPanel extends JFrame{
             add(mainContentPanel, BorderLayout.CENTER);
 
             // Add sidebar panel
-            LSideBar sidebarPanel = new LSideBar(mainContentPanel);
+            LSideBar sidebarPanel = new LSideBar(mainContentPanel,userName);
             JScrollPane sideBarScroll = new JScrollPane(sidebarPanel);
             sideBarScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             sideBarScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -37,7 +39,7 @@ public class ListenerMainPanel extends JFrame{
             e.getStackTrace()[0].getLineNumber();
         }
     }
-    public static void main(String[] args) {
-        new ListenerMainPanel();
-    }
+//    public static void main(String[] args) {
+//        new ListenerMainPanel();
+//    }
 }

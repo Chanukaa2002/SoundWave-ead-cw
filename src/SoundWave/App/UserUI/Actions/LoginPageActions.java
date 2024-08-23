@@ -1,5 +1,9 @@
 package SoundWave.App.UserUI.Actions;
 
+import SoundWave.App.ArtistUI.ArtistMainPanel;
+import SoundWave.App.ListenerUI.ListenerMainPanel;
+import SoundWave.App.UserUI.LogInPanel;
+import SoundWave.App.UserUI.RegisterPanel;
 import SoundWave.User.Artist;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
@@ -9,21 +13,30 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
+
 public class LoginPageActions implements ActionListener {
     private JTextField userNameTxt;
     private JPasswordField passwordTxt;
+    private JFrame loginFrame;
 
-    public LoginPageActions(JTextField userNameTxt,JPasswordField passwordTxt){
-        this.userNameTxt= userNameTxt;
-        this.passwordTxt = passwordTxt;
+
+    public LoginPageActions(JFrame loginFrame){
+        this.loginFrame = loginFrame;
     }
+
+    public LoginPageActions(JTextField userNameTxt, JPasswordField passwordTxt, JFrame loginFrame) {
+        this.userNameTxt = userNameTxt;
+        this.passwordTxt = passwordTxt;
+        this.loginFrame = loginFrame;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         User user = null;
-        String userName = userNameTxt.getText();
-        String password = passwordTxt.getText();
         String command = e.getActionCommand();
         if(command=="LogIn"){
+            String userName = userNameTxt.getText();
+            String password = passwordTxt.getText();
             try {
                 user = new Artist();
                 boolean isArtistLoggedIn = user.login(userName,password);
@@ -36,10 +49,12 @@ public class LoginPageActions implements ActionListener {
                 if(isArtistLoggedIn || isListenerLoggedIn){
                     System.out.println("Pass!");
                     if(artist){
-                        //load artist panels
+                        loginFrame.setVisible(false);
+                        new ArtistMainPanel(userName);
                     }
                     else if(listener){
-                        //load listener panels
+                        loginFrame.setVisible(false);
+                        new ListenerMainPanel(userName);
                     }
                 }
                 else{
@@ -48,6 +63,11 @@ public class LoginPageActions implements ActionListener {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
+        }
+        else if(command=="Create"){
+            System.out.println("Reg Clicked");
+            loginFrame.setVisible(false);
+            new RegisterPanel();
         }
     }
 }

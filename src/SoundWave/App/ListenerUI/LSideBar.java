@@ -2,18 +2,27 @@ package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ListenerUI.Actions.LSideBarBtnActions;
 import SoundWave.App.ListenerUI.Actions.ListenSongBtnsActions;
+import SoundWave.User.Listener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class LSideBar extends JPanel {
     GridBagConstraints gbc;
     LMainContent mc;
     JLabel listenerLabel, playListLabel;
     JButton homeBtn, playListBtn,createPlaylistBtn,logOutBtn;
+    private String userName,listenerId;
+    private Listener listener;
 
-    public LSideBar(LMainContent mc) {
+    public LSideBar(LMainContent mc,String userName) throws SQLException {
         this.mc = mc;
+        this.userName = userName;
+
+        listener = new Listener();
+        listenerId = listener.getId(userName);
         UI();
     }
     private void UI() {
@@ -29,7 +38,7 @@ public class LSideBar extends JPanel {
             // Listener Label fixed at the top
             gbc.gridy = 0;
             gbc.gridx = 0;
-            this.listenerLabel = new JLabel("Listener UserName", SwingConstants.CENTER);
+            this.listenerLabel = new JLabel("Welcome "+userName, SwingConstants.CENTER);
             listenerLabel.setForeground(Color.WHITE);
             listenerLabel.addMouseListener(new LSideBarBtnActions(mc));
             add(listenerLabel, gbc);
@@ -92,14 +101,15 @@ public class LSideBar extends JPanel {
     }
     private void playlists() {
         try {
-            for (int i = 0; i < 8; i++) {
-                this.playListBtn = new JButton("PlayList " + (i + 1));
-
+            Listener listener = new Listener();
+            ArrayList<String[]> playlists = listener.viewAllPlayList(listenerId);
+            for (String[] i : playlists) {
+                this.playListBtn = new JButton(i[1]);
                 playListBtn.setBackground(new Color(224, 143, 255));
                 playListBtn.setFocusPainted(false);
                 playListBtn.setBorderPainted(false);
                 playListBtn.setActionCommand("PlayList");
-                 playListBtn.addActionListener(new LSideBarBtnActions(mc));
+                 playListBtn.addActionListener(new LSideBarBtnActions(mc,i[0]));
 
                 gbc.gridy++;
                 add(playListBtn, gbc);

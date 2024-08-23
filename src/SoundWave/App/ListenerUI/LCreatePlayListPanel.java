@@ -1,5 +1,7 @@
 package SoundWave.App.ListenerUI;
 
+import SoundWave.App.ListenerUI.Actions.LCreatePlayListBtnActions;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -48,20 +50,15 @@ public class LCreatePlayListPanel extends JPanel {
             // add image now use btn for that!
 
             //btn
-            coverImageBtn = new JButton();
+            coverImageBtn = new JButton("Add ImageCover");
             coverImageBtn.setBackground(new Color(224, 143, 255));
             coverImageBtn.setPreferredSize(new Dimension(200,200));
             coverImageBtn.setForeground(Color.BLACK);
             coverImageBtn.setFocusPainted(false);
             coverImageBtn.setBorderPainted(false);
+            coverImageBtn.setActionCommand("CoverImage");
+            coverImageBtn.addActionListener(new LCreatePlayListBtnActions(coverImageBtn));
             add(coverImageBtn,gbc);
-
-            //lbl
-            gbc.gridx++;
-            imgLabel = new JLabel("Add Cover Image");
-            imgLabel.setForeground(Color.WHITE);
-            imgLabel.setFont(new Font("Font.SERIF",Font.BOLD,16));
-            add(imgLabel,gbc);
 
         }
         catch (Exception e){
@@ -80,6 +77,7 @@ public class LCreatePlayListPanel extends JPanel {
             createBtn.setFocusPainted(false);
             createBtn.setBorderPainted(false);
             createBtn.setActionCommand("Create");
+            createBtn.addActionListener(new LCreatePlayListBtnActions(playListText));
             bottomPanel.add(createBtn);
 
             //cancel btn

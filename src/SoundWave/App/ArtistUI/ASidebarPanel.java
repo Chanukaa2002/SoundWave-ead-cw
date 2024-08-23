@@ -1,18 +1,24 @@
 package SoundWave.App.ArtistUI;
 
 import SoundWave.App.ArtistUI.Actions.ASideBarBtnActions;
+import SoundWave.User.Artist;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 public class ASidebarPanel extends JPanel {
     GridBagConstraints gbc;
     AMainContentPanel mainContentPanel;
     JLabel artistLabel;
     JButton homeButton,uploadButton,logoutButton;
+    private Artist artist;
 
-    public ASidebarPanel(AMainContentPanel mainContentPanel) {
+    private String userName,artistId;
+    public ASidebarPanel(AMainContentPanel mainContentPanel, String userName,String artistId) throws SQLException {
         this.mainContentPanel = mainContentPanel;
+        this.userName = userName;
+        this.artistId = artistId;
         UI();
     }
     private void UI(){
@@ -28,7 +34,7 @@ public class ASidebarPanel extends JPanel {
             gbc.fill = GridBagConstraints.HORIZONTAL;
 
             // Artist Username
-            this.artistLabel = new JLabel("Artist UserName", SwingConstants.CENTER);
+            this.artistLabel = new JLabel("Welcome "+userName, SwingConstants.CENTER);
             artistLabel.setForeground(Color.WHITE);
             add(artistLabel, gbc);
 
@@ -64,7 +70,7 @@ public class ASidebarPanel extends JPanel {
             homeButton.setBorderPainted(false);
             homeButton.setFocusPainted(false);
             homeButton.setActionCommand("Home");
-            homeButton.addActionListener(new ASideBarBtnActions(mainContentPanel));
+            homeButton.addActionListener(new ASideBarBtnActions(mainContentPanel,artistId));
             add(homeButton, gbc);
         }
         catch (Exception e){
@@ -81,7 +87,7 @@ public class ASidebarPanel extends JPanel {
             uploadButton.setBorderPainted(false);
             uploadButton.setFocusPainted(false);
             uploadButton.setActionCommand("Upload");
-            uploadButton.addActionListener(new ASideBarBtnActions(mainContentPanel));
+            uploadButton.addActionListener(new ASideBarBtnActions(mainContentPanel,artistId));
             add(uploadButton, gbc);
         }
         catch (Exception e){

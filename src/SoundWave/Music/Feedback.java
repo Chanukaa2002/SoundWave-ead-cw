@@ -3,45 +3,38 @@ package SoundWave.Music;
 import SoundWave.DBConnection.DBConnection;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Feedback {
-    public String feedbackId,userId,songId;
-    public double rating;
-    Connection conn;
+    private String feedbackId, userId, songId;
+    private double rating;
+    private Connection conn;
 
-    public Feedback(){
-        try{
-            conn= DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println("Error: "+e);
+    public Feedback() {
+        try {
+            conn = DBConnection.getConnection();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
         }
     }
-    //methods
-    public ArrayList<String[]> getFeedbackDetails(String artistId) throws SQLException {
-        ArrayList<String[]> FeedbackList = new ArrayList<>();
-        try{
-            String sql ="SELECT s.Title,SUM(f.Likes) AS TotalLikes FROM feedback f INNER JOIN song s ON s.SongId = f.SongId where s.ArtistId=? GROUP BY s.Title";
+
+    // Method to get feedback details for a specific song
+    public String getFeedbackDetails(String songId) throws SQLException {
+        String totCount="0";
+        try {
+            String sql = "SELECT  SUM(Likes) AS TotalLikes from feedback WHERE SongId = ? GROUP BY SongId";
 
             PreparedStatement selectStatement = conn.prepareStatement(sql);
-            selectStatement.setString(1,artistId);
+            selectStatement.setString(1, songId);
 
             ResultSet result = selectStatement.executeQuery();
-            while(result.next()){
-                String[] details = new String[2];
-                details[0] = result.getString("Title");
-                details[1] = result.getString("TotalLikes");
-                FeedbackList.add(details);
+            if (result.next()) {
+                totCount = result.getString("TotalLikes");
             }
-        }
-        catch(Exception e){
-            System.out.println("Error: "+e);
-        }
-        finally{
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        } finally {
             conn.close();
         }
-        return FeedbackList;
+        return totCount;
     }
 }

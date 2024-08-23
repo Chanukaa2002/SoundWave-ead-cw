@@ -1,4 +1,5 @@
 package SoundWave.App.UserUI.Actions;
+import SoundWave.App.UserUI.LogInPanel;
 import SoundWave.App.Validations;
 import SoundWave.User.Artist;
 import SoundWave.User.Listener;
@@ -23,11 +24,12 @@ public class RegisterPageActions implements ActionListener {
     private static String fileExtension = "";
     private JComboBox<String> userTypeCombo;
     User user;
+    private JFrame regPanel;
 
     public RegisterPageActions(JLabel dpImage) {
         this.dpImageLabel = dpImage;
     }
-    public RegisterPageActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JPasswordField passwordTxt, JPasswordField confirmPasswordTxt,JTextField contactNo,JComboBox<String> userTypeCombo) {
+    public RegisterPageActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JPasswordField passwordTxt, JPasswordField confirmPasswordTxt,JTextField contactNo,JComboBox<String> userTypeCombo,JFrame regPanel) {
         this.userNameTxt = userNameTxt;
         this.nameTxt = nameTxt;
         this.emailTxt = emailTxt;
@@ -35,6 +37,7 @@ public class RegisterPageActions implements ActionListener {
         this.confirmPasswordTxt = confirmPasswordTxt;
         this.contactNoTxt = contactNo;
         this.userTypeCombo = userTypeCombo;
+        this.regPanel = regPanel;
     }
 
     @Override
@@ -87,22 +90,31 @@ public class RegisterPageActions implements ActionListener {
             }
             if(Validations.isFieldEmpty(nameTxt)){
                 JOptionPane.showMessageDialog(null, "Name is required.");
+                return;
             }
             if(Validations.isFieldEmpty(userNameTxt)){
                 JOptionPane.showMessageDialog(null, "User Name is required.");
+                return;
             }
             if(Validations.isFieldEmpty(passwordTxt)){
                 JOptionPane.showMessageDialog(null, "Password is required.");
+                return;
             }
             if(Validations.isFieldEmpty(confirmPasswordTxt)){
                 JOptionPane.showMessageDialog(null, "Confirm Password is required.");
+                return;
             }
-            if(Validations.PasswordsMatch(passwordTxt,confirmPasswordTxt))
-            if(Validations.isEmailValid(emailTxt)){
-                JOptionPane.showMessageDialog(null, "Password not Match is required.");
+            if(!Validations.PasswordsMatch(passwordTxt,confirmPasswordTxt)){
+                JOptionPane.showMessageDialog(null, "Passwords not match!.");
+            }
+
+            if(Validations.isFieldEmpty(emailTxt)){
+                JOptionPane.showMessageDialog(null, "Email not Match is required.");
+                return;
             }
             if(Validations.isFieldEmpty(contactNoTxt)){
                 JOptionPane.showMessageDialog(null, "Contact No is required.");
+                return;
             }
 
             String userName = userNameTxt.getText();
@@ -117,6 +129,7 @@ public class RegisterPageActions implements ActionListener {
                 if(userType == "Artist") {
                     user= new Artist();
                     isRegister = user.register(userName, password, name, email, contactNo, dpInputStream, fileExtension);
+
                 }
                 else if(userType == "Listener") {
                     user= new Listener();
@@ -124,9 +137,13 @@ public class RegisterPageActions implements ActionListener {
                 }
                 if (isRegister) {
                     System.out.println("done");
-                } else {
-                    System.out.println("fail");
+                    regPanel.setVisible(false);
+                    new LogInPanel();
                 }
+                else{
+                    System.out.println("Fail");
+                }
+
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }

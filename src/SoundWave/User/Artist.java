@@ -21,7 +21,6 @@ public class Artist extends User{
     public void setArtistId(String artistId) {
         this.artistId = artistId;
     }
-
     public Artist(){
         try{
             conn= DBConnection.getConnection();
@@ -55,7 +54,6 @@ public class Artist extends User{
             conn.close();
         }
     }
-
     //methods
     public boolean isUser(String userName) throws SQLException {
     boolean status=false;
@@ -78,6 +76,27 @@ public class Artist extends User{
     }
     return  status;
 }
+    public String getId(String userName)throws  SQLException{
+        String artistId="";
+        try{
+            String sql = "Select ArtistId from artist where UserName=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,userName);
+
+            ResultSet result = selectStatement.executeQuery();
+            if(result.next()){
+                artistId= result.getString(1);
+            }
+            result.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        finally {
+            conn.close();
+        }
+        return artistId;
+    }
     public boolean uploadSong(String title,float duration,InputStream coverImgStream,String artistId,InputStream songStream,String song,String imgFileExtension) throws SQLException {
         boolean status=false;
         try{
@@ -100,25 +119,25 @@ public class Artist extends User{
                     int numericPart = Integer.parseInt(maxId.substring(1));
                     numericPart++;
                     songId = String.format("S%03d", numericPart);
-                    coverImg = "Song-CoverImg-"+songId;
+                    coverImg = "Song-CoverImg-"+songId+"."+imgFileExtension;
                     songName = songId+"-"+song;
                 } else {
                     songId = "S001";
-                    coverImg = "Song-CoverImg-S001";
+                    coverImg = "Song-CoverImg-S001"+"."+imgFileExtension;
                     songName = "S001-"+song;
                 }
 
                 PreparedStatement insertStatement = conn.prepareStatement(sql2);
                 insertStatement.setString(1,songId);
                 insertStatement.setString(2,title);
-                insertStatement.setString(3,song);
+                insertStatement.setString(3,songName);
                 insertStatement.setFloat(4,duration);
-                insertStatement.setString(5,songName);
+                insertStatement.setString(5,coverImg);
                 insertStatement.setString(6,artistId);
 
                 int rowsAffected= insertStatement.executeUpdate();
                 if(rowsAffected>0){
-                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + coverImg+"."+imgFileExtension;
+                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + coverImg;
                     boolean isDpSaved = saveFile(coverImgStream,coverImgPath);
                     String songFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" +songName;
                     boolean isSongSaved = saveSong(songStream,songFilePath);
@@ -144,56 +163,56 @@ public class Artist extends User{
         }
         return status;
     }//checked
-    public boolean updateSong(String songId, String title, String duration, String coverImg, InputStream coverImgStream) throws SQLException {
-        boolean status=false;
-        try {
-            conn.setAutoCommit(false);
-            String sql1 = "SELECT CoverImg,Song FROM song WHERE SongId=?";
-            String sql2 = "UPDATE song SET Title=?, Duration=?, CoverImg=? WHERE SongId=?";
-            //delete old coverImg
-
-            PreparedStatement selectStatement = conn.prepareStatement(sql1);
-            selectStatement.setString(1,songId);
-            ResultSet result = selectStatement.executeQuery();
-
-            if (result.next()) {
-                String oldCoverImg = result.getString("CoverImg");
-                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
-                File oldFile = new File(oldDpFilePath);
-                if (oldFile.exists()) {
-                    oldFile.delete();
-                }
-            }
-            //Update data
-            PreparedStatement updateStatement = conn.prepareStatement(sql2);
-            updateStatement.setString(1,title);
-            updateStatement.setString(2,duration);
-            updateStatement.setString(3,coverImg);
-            updateStatement.setString(4,songId);
-
-            int rowsAffected = updateStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                //update DP
-                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + coverImg;
-                boolean isDpSaved = saveFile(coverImgStream, dpFilePath);
-                conn.commit();
-                status = true;
-                System.out.println("Song update successful.");
-            } else {
-                conn.rollback();
-                System.out.println("Song update unsuccessful.");
-            }
-        } catch (Exception e) {
-            conn.rollback();
-            System.out.println("Error" +e);
-        }
-        finally {
-            conn.setAutoCommit(true);
-            conn.close();
-        }
-        return status;
-    }//checked
+//    public boolean updateSong(String songId, String title, String duration, InputStream coverImgStream,String imgFileExtension) throws SQLException {
+//        boolean status=false;
+//        try {
+//            conn.setAutoCommit(false);
+//            String sql1 = "SELECT CoverImg,Song FROM song WHERE SongId=?";
+//            String sql2 = "UPDATE song SET Title=?, Duration=?, CoverImg=? WHERE SongId=?";
+//            //delete old coverImg
+//
+//            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+//            selectStatement.setString(1,songId);
+//            ResultSet result = selectStatement.executeQuery();
+//
+//            if (result.next()) {
+//                String oldCoverImg = result.getString("CoverImg");
+//                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
+//                File oldFile = new File(oldDpFilePath);
+//                if (oldFile.exists()) {
+//                    oldFile.delete();
+//                }
+//            }
+//            //Update data
+//            PreparedStatement updateStatement = conn.prepareStatement(sql2);
+//            updateStatement.setString(1,title);
+//            updateStatement.setString(2,duration);
+//            updateStatement.setString(3,coverImg);
+//            updateStatement.setString(4,songId);
+//
+//            int rowsAffected = updateStatement.executeUpdate();
+//
+//            if (rowsAffected > 0) {
+//                //update DP
+//                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + coverImg;
+//                boolean isDpSaved = saveFile(coverImgStream, dpFilePath);
+//                conn.commit();
+//                status = true;
+//                System.out.println("Song update successful.");
+//            } else {
+//                conn.rollback();
+//                System.out.println("Song update unsuccessful.");
+//            }
+//        } catch (Exception e) {
+//            conn.rollback();
+//            System.out.println("Error" +e);
+//        }
+//        finally {
+//            conn.setAutoCommit(true);
+//            conn.close();
+//        }
+//        return status;
+//    }//checked
     public boolean removeSong(String songId) throws SQLException {
         boolean status=false;
         try {
@@ -210,11 +229,20 @@ public class Artist extends User{
             if (result.next()) {
                 String oldCoverImg = result.getString("CoverImg");
                 String songName = result.getString("Song");
+
+                //get the Extension
+                String imgFileExtension="";
+                int dotIndex = oldCoverImg.lastIndexOf('.');
+                if (dotIndex > 0 && dotIndex < oldCoverImg.length() - 1) {
+                    imgFileExtension = oldCoverImg.substring(dotIndex + 1).toLowerCase();
+                }
                 String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
                 String oldSongFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" + songName;
 
                 File image = new File(oldDpFilePath);
                 File song = new File(oldSongFilePath);
+                System.out.println("Image Path: " + oldDpFilePath);
+                System.out.println("Song Path: " + oldSongFilePath);
 
                 if (image.exists() && song.exists()) {
 
@@ -345,4 +373,27 @@ public class Artist extends User{
             return false;
         }
     }//checked
+    public ArrayList<String[]> viewMyAllSong(String artistId){
+        ArrayList<String[]> songList = new ArrayList<>();
+        try{
+            String sql = "select * from song where ArtistId=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,artistId);
+            ResultSet result = selectStatement.executeQuery();
+
+            while(result.next()){
+                String[] songDetails = new String[6];
+                songDetails[0] = result.getString("SongId");
+                songDetails[1] = result.getString("Title");
+                songDetails[2] = result.getString("Song");
+                songDetails[3] = result.getString("Duration");
+                songDetails[4] = result.getString("CoverImg");
+
+                songList.add(songDetails);
+            }
+        }catch (Exception e){
+            System.out.println("Artist view All Playlist Error: "+e);
+        }
+        return songList;
+    }
 }

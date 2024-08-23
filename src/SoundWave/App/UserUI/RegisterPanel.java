@@ -157,7 +157,7 @@ public class RegisterPanel extends JFrame {
             registerBtn.setFocusPainted(false);
             registerBtn.setBorderPainted(false);
             registerBtn.setActionCommand("Register");
-            registerBtn.addActionListener(new RegisterPageActions(userNameField,nameTxt,emailTxt,passwordField,confirmPasswordTxt,contactNoTxt,userTypeComboBox));
+            registerBtn.addActionListener(new RegisterPageActions(userNameField,nameTxt,emailTxt,passwordField,confirmPasswordTxt,contactNoTxt,userTypeComboBox,this));
             gbc.gridx = 0;
             gbc.gridy = 9;
             gbc.gridwidth = 2;

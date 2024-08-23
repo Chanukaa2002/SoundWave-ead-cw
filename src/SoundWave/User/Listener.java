@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 public class Listener extends User{
 
+    private String listenerId;
     private Connection conn;
     public Listener(){
         try{
@@ -23,6 +24,39 @@ public class Listener extends User{
             System.out.println(e);
         }
     }
+
+    public String getListenerId() {
+        return listenerId;
+    }
+    public void setListenerId(String listenerId) {
+        this.listenerId = listenerId;
+    }
+
+    @Override
+    public void viewProfile(String userName) throws SQLException {
+        try{
+            String sql = "Select u.UserName,u.Password,u.Name,u.Email,u.ContactNo,u.Dp,l.ListenerId From user u Inner Join artist a On u.UserId = a.UserId Where u.UserName = ?;";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,userName);
+            ResultSet result =statement.executeQuery();
+            if (result.next()) {
+                setListenerId(result.getString("ListenerId"));
+                setUserName(result.getString("UserName"));
+                setName(result.getString("Name"));
+                setPassword(result.getString("Password"));
+                setDP(result.getString("Dp"));
+                setContactNo(result.getString("ContactNo"));
+                setEmail(result.getString("Email"));
+            }
+
+            result.close();
+        }catch (Exception e){
+            System.out.println("Error: "+e);
+        }finally{
+            conn.close();
+        }
+    }
+
     //methods
     public boolean isUser(String userName) throws SQLException {
         boolean status=false;
@@ -45,12 +79,35 @@ public class Listener extends User{
         }
         return  status;
     }
-    public boolean createPlayList(String name,String coverImg,InputStream inputCoverImg,String listenerId) throws SQLException {
+    public String getId(String userName)throws  SQLException{
+        String artistId="";
+        try{
+            String sql = "Select ListenerId from listener where UserName=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,userName);
+
+            ResultSet result = selectStatement.executeQuery();
+            if(result.next()){
+                artistId= result.getString(1);
+            }
+            result.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        finally {
+            conn.close();
+        }
+        return artistId;
+    }
+    public boolean createPlayList(String name,InputStream inputCoverImg,String listenerId,String imgExtension) throws SQLException {
         boolean status = false;
         try{
             conn.setAutoCommit(false);
             String playlistId;
-            String sql1 ="Select Max(ListenerId) from playlist";
+            String coverImg;
+
+            String sql1 ="Select Max(PlayListId) from playlist";
             String sql2 = "Insert into playlist (PlayListId,Name,CoverImg,ListenerId) values(?,?,?,?)";
                 //auto increment id
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
@@ -63,11 +120,13 @@ public class Listener extends User{
                     int numaricPart = Integer.parseInt(maxId.substring(1));
                     numaricPart++;
                     playlistId = String.format("P%03d", numaricPart);
+                    coverImg = "PlayList-CoverImg-"+playlistId;
 
                 }
                 else
                 {
                     playlistId = "P001";
+                    coverImg = "PlayList-CoverImg-P001";
                 }
                 PreparedStatement inputStatement = conn.prepareStatement(sql2);
                 inputStatement.setString(1,playlistId);
@@ -78,7 +137,7 @@ public class Listener extends User{
 
                 if(rowsAffected>0){
                     //upload image into local storage
-                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + coverImg;
+                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + coverImg+"."+imgExtension;
                     boolean isDpSaved = saveFile(inputCoverImg,coverImgPath);
                     if(isDpSaved){
                         conn.commit();
@@ -92,7 +151,7 @@ public class Listener extends User{
             result.close();
         }catch(Exception e){
             conn.rollback();
-            System.out.println("Error "+e);
+            System.out.println("Error in Listener Create Playlist: "+e);
         }finally {
             try {
                 conn.setAutoCommit(true);  // Restore auto-commit mode
@@ -283,6 +342,28 @@ public class Listener extends User{
             conn.close();
         }
     }//checked
+    public ArrayList<String[]> viewAllPlayList(String listenerId){
+        ArrayList<String[]> playLists = new ArrayList<>();
+        try{
+            String sql = "select * from playlist where ListenerId=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,listenerId);
+            ResultSet result = selectStatement.executeQuery();
+
+            while(result.next()){
+                String[] songDetails = new String[6];
+                songDetails[0] = result.getString("PlayListId");
+                songDetails[1] = result.getString("Name");
+                songDetails[2] = result.getString("CoverImg");
+                songDetails[3] = result.getString("ListenerId");
+
+                playLists.add(songDetails);
+            }
+        }catch (Exception e){
+            System.out.println("Listener view All Playlist Error: "+e);
+        }
+        return playLists;
+    }
     public ArrayList<String[]> exploreSong(){
         ArrayList<String[]> songList = new ArrayList<>();
         try{

@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 public abstract class User implements Authentication {
 
@@ -125,6 +124,7 @@ public abstract class User implements Authentication {
 
             ResultSet result = selectStatement.executeQuery();
             if(result.next()){
+//                setUserName(userName);
                 this.isAuthenticated=true;
             }
             result.close();

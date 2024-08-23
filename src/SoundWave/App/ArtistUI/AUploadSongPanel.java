@@ -11,8 +11,10 @@ public class AUploadSongPanel extends JPanel {
     private JLabel titleLbl;
     private JPanel buttonPanel;
     private GridBagConstraints gbc;
+    private String artistId;
 
-    public AUploadSongPanel() {
+    public AUploadSongPanel(String artistId) {
+        this.artistId = artistId;
         UI();
     }
     private void UI() {
@@ -85,7 +87,7 @@ public class AUploadSongPanel extends JPanel {
             releaseBtn.setFocusPainted(false);
             releaseBtn.setBorderPainted(false);
             releaseBtn.setActionCommand("Release");
-            releaseBtn.addActionListener(new AUploadSongBtnActions(songNameTxt));
+            releaseBtn.addActionListener(new AUploadSongBtnActions(songNameTxt,artistId));
             buttonPanel.add(releaseBtn);
 
             // Cancel Button

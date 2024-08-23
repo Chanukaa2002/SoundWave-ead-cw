@@ -8,9 +8,12 @@ import java.awt.event.ActionListener;
 
 public class ASongGridBtnActions implements ActionListener {
     private AMainContentPanel mcp;
+    private String songId;
+    private String songName;
 
-    public ASongGridBtnActions(AMainContentPanel mcp) {
+    public ASongGridBtnActions(AMainContentPanel mcp,String songId,String songName) {
         try {
+            this.songId = songId;
             this.mcp = mcp;
         }
         catch(Exception e){
@@ -22,7 +25,7 @@ public class ASongGridBtnActions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             String clickedBtnCommand = e.getActionCommand();
-            mcp.setContentPanel(new ASongManagePanel(mcp), "Song1");//change here titleName
+            mcp.setContentPanel(new ASongManagePanel(mcp,songId), songName);//change here titleName
         }
         catch(Exception ex){
             System.out.println("Song Grid Btn Actions action Performed override method Error: "+ex);

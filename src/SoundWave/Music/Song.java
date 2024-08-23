@@ -96,29 +96,37 @@ public class Song {
     public void next(){}
     public void back(){}
     public void volume(){}
-    public String[] getDetails(String songId){
-        String[] details = new String[6];
-        try{
-            String sql = "SELECT s.SongId s.Title, s.Song, s.Duration, s.CoverImg,u.Name  FROM song s INNER JOIN artist a ON s.ArtistId = a.ArtistId" +
-                    "INNER JOIN user u ON a.UserName = u.UserName" +
+    public String[] getDetails(String songId) {
+        String[] details = new String[7];
+        try {
+            // Corrected SQL query: Added missing commas and fixed JOIN clause syntax
+            String sql = "SELECT s.SongId, s.Title, s.Song, s.Duration, s.CoverImg, u.Name,s.ArtistId " +
+                    "FROM song s " +
+                    "INNER JOIN artist a ON s.ArtistId = a.ArtistId " +
+                    "INNER JOIN user u ON a.UserName = u.UserName " +
                     "WHERE s.SongId = ?;";
+
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1,songId);
+            statement.setString(1, songId);
+
             ResultSet result = statement.executeQuery();
-            if(result.next()){
-                for(int i=0;i<6;i++){
-                    details[i] = result.getString((i+1));
-                }
-                //song
-            }
-            else{
+            if (result.next()) {
+                details[0] = result.getString("SongId");
+                details[1] = result.getString("Title");
+                details[2] = result.getString("Song");
+                details[3] = result.getString("Duration");
+                details[4] = result.getString("CoverImg");
+                System.out.println(details[4]);
+                details[5] = result.getString("Name");
+                details[6] = result.getString("ArtistId");
+            } else {
                 details = null;
             }
-        }
-        catch(Exception e){
-            System.out.println("Error:"+e);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
         }
         return details;
-    }//-----------------Not checked--------------
+    }
+//-----------------Not checked--------------
 
 }

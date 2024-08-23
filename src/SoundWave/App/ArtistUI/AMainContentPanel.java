@@ -8,8 +8,10 @@ public class AMainContentPanel extends JPanel {
     private JPanel contentPanel;
     private JScrollPane scrollPane;
     private JLabel headerLabel;
+    private String artistId;
 
-    public AMainContentPanel() {
+    public AMainContentPanel(String artistId) {
+        this.artistId = artistId;
         UI();
     }
     private void UI(){
@@ -24,7 +26,7 @@ public class AMainContentPanel extends JPanel {
             add(headerLabel, BorderLayout.NORTH);
 
             // Initialize the scroll pane and add it to the center
-            contentPanel = new ASongGridPanel(this); // Default initial panel
+            contentPanel = new ASongGridPanel(this,artistId); // Default initial panel
             scrollPane = new JScrollPane(contentPanel);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);

@@ -10,7 +10,17 @@ import java.awt.event.MouseListener;
 
 public class LSideBarBtnActions implements ActionListener, MouseListener {
     private LMainContent mc;
+    private String playlistId;
 
+    public LSideBarBtnActions(LMainContent mc,String playListId){
+        try {
+            this.mc = mc;
+            this.playlistId = playListId;
+        }
+        catch(Exception e){
+            System.out.println("Listener Side Bar Btn Actions constructor Error: "+e);
+        }
+    }
     public LSideBarBtnActions(LMainContent mc){
         try {
             this.mc = mc;
@@ -36,7 +46,7 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
                 break;
             case "PlayList":
                 System.out.println("Clicked PlayList");
-                mc.setContentPanel(new LViewPlayListPanel(mc),"PlayList");
+                mc.setContentPanel(new LViewPlayListPanel(mc),playlistId);
                 break;
             case "LogOut":
                 System.out.println("Clicked LogOut");
