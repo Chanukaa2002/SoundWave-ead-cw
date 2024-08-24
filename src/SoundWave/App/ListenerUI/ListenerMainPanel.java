@@ -1,6 +1,7 @@
 package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ArtistUI.AMainContentPanel;
+import SoundWave.App.ListenerUI.Actions.LSideBarBtnActions;
 import SoundWave.User.Listener;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ public class ListenerMainPanel extends JFrame{
             setLayout(new BorderLayout());
             // Add main content panel
             LMainContent mainContentPanel = new LMainContent(listenerId);
+            new LSideBarBtnActions(this);
             add(mainContentPanel, BorderLayout.CENTER);
 
             // Add sidebar panel

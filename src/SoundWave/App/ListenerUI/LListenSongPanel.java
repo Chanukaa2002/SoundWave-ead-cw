@@ -80,12 +80,13 @@ public class LListenSongPanel extends JPanel {
     }
     private void coverImage(){
         try{
-            String coverImg = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" +songDetails[4];
-            ImageIcon image = new ImageIcon(coverImg);
+            ImageIcon originalIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" +songDetails[4]);
+            Image scaledImg = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImg);
             //img
             gbc.gridy=0;
             gbc.gridx=0;
-            coverImage = new JButton(image);
+            coverImage = new JButton(scaledIcon);
             coverImage.setBackground(new Color(216,191,216));
             coverImage.setPreferredSize(new Dimension(200,200));
             coverImage.setFocusPainted(false);

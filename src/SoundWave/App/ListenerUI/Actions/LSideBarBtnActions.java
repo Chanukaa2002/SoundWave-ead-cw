@@ -1,6 +1,7 @@
 package SoundWave.App.ListenerUI.Actions;
 
 import SoundWave.App.ListenerUI.*;
+import SoundWave.App.UserUI.LogInPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -9,15 +10,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
 
+
+
 public class LSideBarBtnActions implements ActionListener, MouseListener {
     private LMainContent mc;
     private String playlistId,userName,listenerId;
+    private static ListenerMainPanel lmp;
 
     public LSideBarBtnActions(LMainContent mc,String playListId,String listenerId){
         try {
             this.mc = mc;
             this.playlistId = playListId;
             this.listenerId = listenerId;
+            System.out.println("ListenerId:"+listenerId);
         }
         catch(Exception e){
             System.out.println("Listener Side Bar Btn Actions constructor Error: "+e);
@@ -32,8 +37,9 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
             System.out.println("Listener Side Bar Btn Actions constructor Error: "+e);
         }
     }
-
-
+    public LSideBarBtnActions(ListenerMainPanel lmp) {
+        this.lmp = lmp;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -42,7 +48,7 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
         switch(command){
             case "CreatePlayList":
                 System.out.println("Clicked");
-                mc.setContentPanel(new LCreatePlayListPanel(mc),"Create PlayList");//listenerId
+                mc.setContentPanel(new LCreatePlayListPanel(mc,listenerId),"Create PlayList");//listenerId
                 break;
             case "Home":
                 System.out.println("Clicked Home");
@@ -54,7 +60,8 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
                 break;
             case "LogOut":
                 System.out.println("Clicked LogOut");
-                //mc.setContentPanel(new LExplorePanel(mc),"Explore Songs");
+                lmp.dispose();
+                new LogInPanel();
                 break;
         }
 

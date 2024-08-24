@@ -104,6 +104,8 @@ public class ASidebarPanel extends JPanel {
             logoutButton.setForeground(Color.BLACK);
             logoutButton.setBorderPainted(false);
             logoutButton.setFocusPainted(false);
+            logoutButton.setActionCommand("LogOut");
+            logoutButton.addActionListener(new ASideBarBtnActions(mainContentPanel,artistId));
             add(logoutButton, gbc);
         }catch (Exception e){
             System.out.println("Side Bar Panel logoutBtn method Error: "+e);

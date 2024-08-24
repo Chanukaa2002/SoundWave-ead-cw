@@ -1,8 +1,6 @@
-package SoundWave.App.UserUI.Actions;
+package SoundWave.App.ListenerUI.Actions;
 
-import SoundWave.App.UserUI.LogInPanel;
 import SoundWave.App.Validations;
-import SoundWave.User.Artist;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
 
@@ -23,7 +21,7 @@ public class UpdateProfileBtnActions implements ActionListener {
     private static String dpPath,fileExtension,dp;
     private JTextField userNameTxt,nameTxt,emailTxt,passwordTxt,confirmPasswordTxt;
     private FileInputStream dpInputStream;
-    private User user;
+    private Listener user;
     public UpdateProfileBtnActions(JButton dpBtn){
         this.dpBtn = dpBtn;
     }

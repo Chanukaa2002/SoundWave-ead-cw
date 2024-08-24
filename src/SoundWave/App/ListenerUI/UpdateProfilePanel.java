@@ -1,6 +1,6 @@
 package SoundWave.App.ListenerUI;
 
-import SoundWave.App.UserUI.Actions.UpdateProfileBtnActions;
+import SoundWave.App.ListenerUI.Actions.UpdateProfileBtnActions;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
 

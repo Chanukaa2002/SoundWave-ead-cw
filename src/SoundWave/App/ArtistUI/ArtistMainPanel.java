@@ -1,5 +1,6 @@
 package SoundWave.App.ArtistUI;
 
+import SoundWave.App.ArtistUI.Actions.ASideBarBtnActions;
 import SoundWave.User.Artist;
 
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class ArtistMainPanel extends JFrame {
             setLocationRelativeTo(null);
             setLayout(new BorderLayout());
             // Add main content panel
+            new ASideBarBtnActions(this);
             AMainContentPanel mainContentPanel = new AMainContentPanel(artistId);
             add(mainContentPanel, BorderLayout.CENTER);
 

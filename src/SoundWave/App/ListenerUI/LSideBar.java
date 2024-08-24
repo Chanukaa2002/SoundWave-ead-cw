@@ -1,5 +1,6 @@
 package SoundWave.App.ListenerUI;
 
+import SoundWave.App.ListenerUI.Actions.LCreatePlayListBtnActions;
 import SoundWave.App.ListenerUI.Actions.LSideBarBtnActions;
 import SoundWave.App.ListenerUI.Actions.ListenSongBtnsActions;
 import SoundWave.User.Listener;
@@ -130,11 +131,19 @@ public class LSideBar extends JPanel {
             createPlaylistBtn.setBorderPainted(false);
             createPlaylistBtn.setActionCommand("CreatePlayList");
             //action->
+            createPlaylistBtn.addActionListener(new LCreatePlayListBtnActions(null, listenerId, this));
             createPlaylistBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
+
             add(createPlaylistBtn,gbc);
         }catch (Exception e){
             System.out.println("Side Bar create playlist method Error: "+e);
         }
+    }
+    public void refreshPlaylists() {
+        // Remove existing playlist buttons
+        removeAll();
+        // Rebuild the UI
+        UI();
     }
     private void logOutBtn(){
         try {

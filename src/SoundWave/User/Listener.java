@@ -54,6 +54,51 @@ public class Listener extends User{
         }
         return  status;
     }
+    public boolean editProfile(String userName,String password, String name, String email,String dp,InputStream dpInputStream,String fileExtension) throws SQLException {
+        try {
+            String sql1 = "SELECT DP FROM user WHERE UserName=?";
+            String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, DP=? WHERE UserName=?";
+
+            //delete old DP
+            PreparedStatement selectStatement = conn.prepareStatement(sql1);
+            selectStatement.setString(1,userName);
+            ResultSet result = selectStatement.executeQuery();
+
+            if (result.next()) {
+                String oldDp = result.getString("DP");
+                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + oldDp;
+                File oldFile = new File(oldDpFilePath);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+
+            //Update data
+            PreparedStatement updateStatement  = conn.prepareStatement(sql2);
+            updateStatement.setString(1,password);
+            updateStatement.setString(2,name);
+            updateStatement.setString(3,email);
+            updateStatement.setString(4,dp);
+            updateStatement.setString(5,userName);
+            int rowsAffected = updateStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                //update DP
+                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp + "." + fileExtension;
+                boolean isDpSaved = saveFile(dpInputStream, dpFilePath);
+                isAuthenticated = true;
+            } else {
+                System.out.println("Profile update unsuccessful.");
+            }
+            result.close();
+        } catch (Exception e) {
+            System.out.println("Error: "+e);
+        }
+        finally{
+            conn.close();
+        }
+        return isAuthenticated;
+    }//Checked
+
     public String getId(String userName)throws  SQLException{
         String artistId="";
         try{

@@ -12,9 +12,11 @@ public class LCreatePlayListPanel extends JPanel {
     private JPanel bottomPanel;
     private JLabel imgLabel;
     private JTextField playListText;
+    String listenerId;
 
-    public LCreatePlayListPanel(LMainContent mc){
+    public LCreatePlayListPanel(LMainContent mc,String listenerId){
         this.mc = mc;
+        this.listenerId = listenerId;
         UI();
     }
     private void UI(){
@@ -77,7 +79,7 @@ public class LCreatePlayListPanel extends JPanel {
             createBtn.setFocusPainted(false);
             createBtn.setBorderPainted(false);
             createBtn.setActionCommand("Create");
-            createBtn.addActionListener(new LCreatePlayListBtnActions(playListText));
+            createBtn.addActionListener(new LCreatePlayListBtnActions(playListText,listenerId));
             bottomPanel.add(createBtn);
 
             //cancel btn

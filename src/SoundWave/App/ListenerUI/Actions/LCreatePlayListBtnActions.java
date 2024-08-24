@@ -1,5 +1,6 @@
 package SoundWave.App.ListenerUI.Actions;
 
+import SoundWave.App.ListenerUI.LSideBar;
 import SoundWave.App.Validations;
 import SoundWave.User.Listener;
 
@@ -18,9 +19,17 @@ public class LCreatePlayListBtnActions implements ActionListener {
     private JTextField playListTxt;
     private FileInputStream coverImgInputStream;
     private static String coverImgPath,imgExtension="",fileName;
+    private static String listenerId;
+    private static LSideBar sideBar;
 
-    public LCreatePlayListBtnActions(JTextField playListTxt){
+    public LCreatePlayListBtnActions(JTextField playListTxt, String listenerId, LSideBar sideBar) {
         this.playListTxt = playListTxt;
+        this.listenerId = listenerId;
+        this.sideBar = sideBar;
+    }
+    public LCreatePlayListBtnActions(JTextField playListTxt, String listenerId) {
+        this.playListTxt = playListTxt;
+        this.listenerId = listenerId;
     }
     public LCreatePlayListBtnActions(JButton coverImg){
         this.coverImg = coverImg;
@@ -68,13 +77,13 @@ public class LCreatePlayListBtnActions implements ActionListener {
                 Listener user = new Listener();
 
                 String title = playListTxt.getText();
-                String listenerId = user.getListenerId();
                 boolean status = false;
 
                 status = user.createPlayList(title,coverImgInputStream,listenerId,imgExtension);
                 if (status) {
                     System.out.println("done");
                     playListTxt.setText("");
+                    sideBar.refreshPlaylists();
                 } else {
                     System.out.println("fail");
                 }
