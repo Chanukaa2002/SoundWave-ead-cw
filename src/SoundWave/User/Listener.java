@@ -32,31 +32,6 @@ public class Listener extends User{
         this.listenerId = listenerId;
     }
 
-    @Override
-    public void viewProfile(String userName) throws SQLException {
-        try{
-            String sql = "Select u.UserName,u.Password,u.Name,u.Email,u.ContactNo,u.Dp,l.ListenerId From user u Inner Join artist a On u.UserId = a.UserId Where u.UserName = ?;";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1,userName);
-            ResultSet result =statement.executeQuery();
-            if (result.next()) {
-                setListenerId(result.getString("ListenerId"));
-                setUserName(result.getString("UserName"));
-                setName(result.getString("Name"));
-                setPassword(result.getString("Password"));
-                setDP(result.getString("Dp"));
-                setContactNo(result.getString("ContactNo"));
-                setEmail(result.getString("Email"));
-            }
-
-            result.close();
-        }catch (Exception e){
-            System.out.println("Error: "+e);
-        }finally{
-            conn.close();
-        }
-    }
-
     //methods
     public boolean isUser(String userName) throws SQLException {
         boolean status=false;
@@ -249,33 +224,7 @@ public class Listener extends User{
         }
         return status;
     }//checked
-    public void controlSong(String songPath) {
-        Song s = new Song();
-        Scanner scn = new Scanner(System.in);
-        String command;
 
-        do {
-            command = scn.nextLine();
-            switch (command) {
-                case "start":
-                    s.start(songPath); // Play the song from the beginning
-                    break;
-                case "p":
-                    s.pause();
-                    break;
-                case "resume":
-                    s.resume();
-                    break;
-                case "stop":
-                    s.stop();
-                    break;
-                default:
-                    System.out.println("Unknown command. Please use 'start', 'p', 'resume', or 'stop'.");
-            }
-        } while (!command.equals("stop"));
-
-        scn.close();
-    }//-------------------work on this------------
     public boolean likeSong(String songId, String listenerId) throws SQLException {
         boolean status = false;
         try{

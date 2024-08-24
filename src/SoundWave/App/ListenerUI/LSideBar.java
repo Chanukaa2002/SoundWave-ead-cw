@@ -40,7 +40,7 @@ public class LSideBar extends JPanel {
             gbc.gridx = 0;
             this.listenerLabel = new JLabel("Welcome "+userName, SwingConstants.CENTER);
             listenerLabel.setForeground(Color.WHITE);
-            listenerLabel.addMouseListener(new LSideBarBtnActions(mc));
+            listenerLabel.addMouseListener(new LSideBarBtnActions(userName,mc));
             add(listenerLabel, gbc);
 
 
@@ -79,7 +79,7 @@ public class LSideBar extends JPanel {
             homeBtn.setFocusPainted(false);
             homeBtn.setBorderPainted(false);
             homeBtn.setActionCommand("Home");
-            homeBtn.addActionListener(new LSideBarBtnActions(mc));
+            homeBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
 
             gbc.gridy++; // Move to the next row
             add(homeBtn, gbc);
@@ -109,7 +109,7 @@ public class LSideBar extends JPanel {
                 playListBtn.setFocusPainted(false);
                 playListBtn.setBorderPainted(false);
                 playListBtn.setActionCommand("PlayList");
-                 playListBtn.addActionListener(new LSideBarBtnActions(mc,i[0]));
+                 playListBtn.addActionListener(new LSideBarBtnActions(mc,i[0],listenerId));
 
                 gbc.gridy++;
                 add(playListBtn, gbc);
@@ -130,7 +130,7 @@ public class LSideBar extends JPanel {
             createPlaylistBtn.setBorderPainted(false);
             createPlaylistBtn.setActionCommand("CreatePlayList");
             //action->
-            createPlaylistBtn.addActionListener(new LSideBarBtnActions(mc));
+            createPlaylistBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
             add(createPlaylistBtn,gbc);
         }catch (Exception e){
             System.out.println("Side Bar create playlist method Error: "+e);
@@ -147,7 +147,7 @@ public class LSideBar extends JPanel {
             logOutBtn.setBorderPainted(false);
             logOutBtn.setFocusPainted(false);
             logOutBtn.setActionCommand("LogOut");
-            logOutBtn.addActionListener(new LSideBarBtnActions(mc));
+            logOutBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
             add(logOutBtn, gbc);
         }catch (Exception e){
             System.out.println("Side Bar Panel logoutBtn method Error: "+e);

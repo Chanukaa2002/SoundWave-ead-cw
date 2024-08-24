@@ -29,31 +29,6 @@ public class Artist extends User{
             System.out.println(e);
         }
     }
-
-    @Override
-    public void viewProfile(String userName) throws SQLException {
-        try{
-            String sql = "Select u.UserName,u.Password,u.Name,u.Email,u.ContactNo,u.Dp,a.ArtistId From user u Inner Join artist a On u.UserId = a.UserId Where u.UserName = ?;";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1,userName);
-            ResultSet result =statement.executeQuery();
-            if (result.next()) {
-                setArtistId(result.getString("ArtistId"));
-                setUserName(result.getString("UserName"));
-                setName(result.getString("Name"));
-                setPassword(result.getString("Password"));
-                setDP(result.getString("Dp"));
-                setContactNo(result.getString("ContactNo"));
-                setEmail(result.getString("Email"));
-            }
-
-            result.close();
-        }catch (Exception e){
-            System.out.println("Error: "+e);
-        }finally{
-            conn.close();
-        }
-    }
     //methods
     public boolean isUser(String userName) throws SQLException {
     boolean status=false;

@@ -68,11 +68,34 @@ public abstract class User implements Authentication {
     }
 
     //methods
-    public abstract void viewProfile(String userName) throws SQLException;//Checked
-    public boolean editProfile(String userName,String password, String name, String email, String contactNo, String dp, InputStream dpInputStream) throws SQLException {
+    public String[]  viewProfile(String userName) throws SQLException{
+        String[] userDetails = new String[6];
+        try{
+            String sql ="Select * from User where UserName=?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,userName);
+            ResultSet result =statement.executeQuery();
+            if (result.next()) {
+                userDetails[0] = result.getString("UserName");
+                userDetails[1] = result.getString("Name");
+                userDetails[2] = result.getString("Password");
+                userDetails[3] = result.getString("Dp");
+                userDetails[4] = result.getString("ContactNo");
+                userDetails[5] = result.getString("Email");
+            }
+
+            result.close();
+        }catch (Exception e){
+            System.out.println("Error: "+e);
+        }finally{
+            conn.close();
+        }
+        return userDetails;
+    };//Checked
+    public boolean editProfile(String userName,String password, String name, String email,String dp,InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
             String sql1 = "SELECT DP FROM user WHERE UserName=?";
-            String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, ContactNo=?, DP=? WHERE UserName=?";
+            String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, DP=? WHERE UserName=?";
 
             //delete old DP
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
@@ -93,13 +116,12 @@ public abstract class User implements Authentication {
             updateStatement.setString(1,password);
             updateStatement.setString(2,name);
             updateStatement.setString(3,email);
-            updateStatement.setString(4,contactNo);
-            updateStatement.setString(5,dp);
-            updateStatement.setString(6,userName);
+            updateStatement.setString(4,dp);
+            updateStatement.setString(5,userName);
             int rowsAffected = updateStatement.executeUpdate();
             if (rowsAffected > 0) {
                 //update DP
-                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp;
+                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp + "." + fileExtension;
                 boolean isDpSaved = saveFile(dpInputStream, dpFilePath);
                 isAuthenticated = true;
             } else {
@@ -176,23 +198,23 @@ public abstract class User implements Authentication {
         }
         return isAuthenticated;
     }//Checked
-    public int viewLikeCount(String songId){
-        int count = 0;
-        try{
-            String sql = "SELECT COUNT(Likes) FROM feedback WHERE SongId=?;";
-
-            PreparedStatement selectStatement = conn.prepareStatement(sql);
-            selectStatement.setString(1,songId);
-            ResultSet resultSet = selectStatement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt(1);
-            }
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
-        return count;
-    } //checked
+//    public int viewLikeCount(String songId){
+//        int count = 0;
+//        try{
+//            String sql = "SELECT COUNT(Likes) FROM feedback WHERE SongId=?;";
+//
+//            PreparedStatement selectStatement = conn.prepareStatement(sql);
+//            selectStatement.setString(1,songId);
+//            ResultSet resultSet = selectStatement.executeQuery();
+//            if (resultSet.next()) {
+//                count = resultSet.getInt(1);
+//            }
+//        }
+//        catch(Exception e){
+//            System.out.println("Error: " + e);
+//        }
+//        return count;
+//    } //checked
     public abstract boolean isUser(String userName) throws SQLException;
     protected boolean saveFile(InputStream inputStream, String filePath) {
         try {

@@ -31,10 +31,30 @@ public class Feedback {
                 totCount = result.getString("TotalLikes");
             }
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Error getFeedbackDetails: " + e);
         } finally {
             conn.close();
         }
         return totCount;
+    }
+    public boolean isLiked(String songId,String listenerId) throws  SQLException{
+        boolean isLiked = false;
+        try {
+            String sql = "Select * from feedback where SongId=? and ListenerId=?";
+
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1, songId);
+            selectStatement.setString(2, listenerId);
+
+            ResultSet result = selectStatement.executeQuery();
+            if (result.next()) {
+                isLiked = true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error Is Liked: " + e);
+        } finally {
+            conn.close();
+        }
+        return  isLiked;
     }
 }

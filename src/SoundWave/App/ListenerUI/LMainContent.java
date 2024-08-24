@@ -7,8 +7,10 @@ public class LMainContent extends JPanel {
     private JPanel contentPanel;
     private JScrollPane scrollPane;
     private JLabel headerLabel;
+    private String listenerId;
 
-    public LMainContent() {
+    public LMainContent(String listenerId) {
+        this.listenerId = listenerId;
         UI();
     }
     private void UI(){
@@ -23,7 +25,7 @@ public class LMainContent extends JPanel {
             add(headerLabel, BorderLayout.NORTH);
 
             // Initialize the scroll pane and add it to the center
-            contentPanel = new LExplorePanel(this);
+            contentPanel = new LExplorePanel(this,listenerId);
             scrollPane = new JScrollPane(contentPanel);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);

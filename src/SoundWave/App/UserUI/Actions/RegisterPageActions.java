@@ -76,7 +76,6 @@ public class RegisterPageActions implements ActionListener {
             }
         }
         if(command == "Register"){
-            // Make sure dpInputStream is not null before proceeding
             try {
                 this.dpInputStream = new FileInputStream(dpPath);
             } catch (FileNotFoundException ex) {

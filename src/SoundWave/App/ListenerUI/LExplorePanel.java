@@ -13,9 +13,11 @@ public class LExplorePanel extends JPanel {
     JButton songBtn;
     BorderLayout borderLayout;
     JPanel searchPanel,gridPanel;
+    String listenerId;
 
-    public LExplorePanel(LMainContent mc){
+    public LExplorePanel(LMainContent mc,String listenerId){
         this.mc = mc;
+        this.listenerId = listenerId;
         UI();
     }
     private void UI(){
@@ -61,6 +63,8 @@ public class LExplorePanel extends JPanel {
             Listener listener = new Listener();
             ArrayList<String[]> songs = listener.exploreSong();
             for (String[] i : songs) {
+                String songId = i[0];
+                String songName = i[1];
                 ImageIcon originalIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + i[4]);
 
                 Image scaledImg = originalIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
@@ -73,7 +77,7 @@ public class LExplorePanel extends JPanel {
                 songBtn.setBorderPainted(false);
                 songBtn.setFocusPainted(false);
                 songBtn.setActionCommand("Song");
-                songBtn.addActionListener(new LExploreSongBtnActions(mc));
+                songBtn.addActionListener(new LExploreSongBtnActions(mc,songId,songName,listenerId));
                 gridPanel.add(songBtn);
             }
 

@@ -1,11 +1,14 @@
 package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ListenerUI.Actions.ListenSongBtnsActions;
+import SoundWave.Music.Feedback;
+import SoundWave.Music.Song;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class LListenSongPanel extends JPanel {
 
@@ -16,6 +19,11 @@ public class LListenSongPanel extends JPanel {
     private JProgressBar songProgressBar;
     private JSlider volumeSlider;
     private LMainContent mc;
+    private String songId;
+    private String likeCount;
+    private String songDetails[];
+    String listenerId;
+    Feedback feedback;
 
     public JButton getPlayBtn() {
         return playBtn;
@@ -30,8 +38,14 @@ public class LListenSongPanel extends JPanel {
         return disLikedBtn;
     }
 
-    public LListenSongPanel(LMainContent mc){
+    public LListenSongPanel(LMainContent mc,String songId,String listenerId) throws SQLException {
         this.mc = mc;
+        this.songId = songId;
+        this.listenerId = listenerId;
+        Song song = new Song();
+        songDetails =  song.getDetails(songId);
+        feedback = new Feedback();
+        likeCount= feedback.getFeedbackDetails(songId);
         UI();
     }
     private void UI(){
@@ -66,10 +80,12 @@ public class LListenSongPanel extends JPanel {
     }
     private void coverImage(){
         try{
+            String coverImg = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" +songDetails[4];
+            ImageIcon image = new ImageIcon(coverImg);
             //img
             gbc.gridy=0;
             gbc.gridx=0;
-            coverImage = new JButton();
+            coverImage = new JButton(image);
             coverImage.setBackground(new Color(216,191,216));
             coverImage.setPreferredSize(new Dimension(200,200));
             coverImage.setFocusPainted(false);
@@ -77,10 +93,10 @@ public class LListenSongPanel extends JPanel {
             add(coverImage,gbc);
 
             //title
-
+            String title = songDetails[1];
             gbc.gridy=1;
             gbc.gridx=0;
-            titleLbl = new JLabel("Title");
+            titleLbl = new JLabel(title);
             titleLbl.setForeground(Color.WHITE);
             titleLbl.setFont(new Font("Font.SERIF",Font.ITALIC,16));
             add(titleLbl,gbc);
@@ -90,18 +106,24 @@ public class LListenSongPanel extends JPanel {
     }
     private void progressBar(){
         try{
+            float duration = Float.parseFloat(songDetails[3]);
             gbc.gridy=3;
             gbc.gridx=0;
             gbc.gridwidth = 2;
             songProgressBar = new JProgressBar(0, 100);
             songProgressBar.setForeground(new Color(224, 143, 255));
-            songProgressBar.setValue(50);
             songProgressBar.setStringPainted(false);
             songProgressBar.setPreferredSize(new Dimension(300, 10));
             add(songProgressBar, gbc);
         }catch(Exception e){
             System.out.println("Listen Song Progressbar method Error: "+e);
         }
+    }
+    public JProgressBar getSongProgressBar() {
+        return songProgressBar;
+    }
+    public String[] getSongDetails() {
+        return songDetails;
     }
     private void volume(){
         try{
@@ -125,6 +147,8 @@ public class LListenSongPanel extends JPanel {
     private void likeCount(){
         try{
             //btn
+            feedback = new Feedback();
+            boolean isLiked = feedback.isLiked(songId,listenerId);
             ImageIcon likedIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/SrcImg/liked.png");
             ImageIcon unLikedIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/SrcImg/notLiked.png");
 
@@ -136,9 +160,12 @@ public class LListenSongPanel extends JPanel {
 
             likePanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
             likePanel.setBackground(new Color(58,65,74));
-
-            likedBtn.setVisible(false);
-
+            System.out.println("Is Liked : "+isLiked);
+            if(isLiked){
+                disLikedBtn.setVisible(false);
+            }else{
+                likedBtn.setVisible(false);
+            }
             likePanel.add(likedBtn);
             likePanel.add(disLikedBtn);
 
@@ -148,10 +175,10 @@ public class LListenSongPanel extends JPanel {
 
             //actions
             likedBtn.setActionCommand("Like");
-            likedBtn.addActionListener(new ListenSongBtnsActions(this));
+            likedBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
 
             disLikedBtn.setActionCommand("DisLike");
-            disLikedBtn.addActionListener(new ListenSongBtnsActions(this));
+            disLikedBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
 
             add(likePanel,gbc);
 
@@ -159,7 +186,7 @@ public class LListenSongPanel extends JPanel {
             gbc.gridx = 1;
             gbc.gridy = 2;
 
-            likeCountLbl = new JLabel("0");
+            likeCountLbl = new JLabel(likeCount);
             likeCountLbl.setForeground(Color.WHITE);
             likeCountLbl.setFont(new Font("Font.SERIF", Font.ITALIC, 16));
             add(likeCountLbl, gbc);
@@ -205,16 +232,16 @@ public class LListenSongPanel extends JPanel {
 
             //actions
             playBtn.setActionCommand("Play");
-            playBtn.addActionListener(new ListenSongBtnsActions(this));
+            playBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
 
             pauseBtn.setActionCommand("Stop");
-            pauseBtn.addActionListener(new ListenSongBtnsActions(this));
+            pauseBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
 
             nextBtn.setActionCommand("Next");
-            nextBtn.addActionListener(new ListenSongBtnsActions(this));
+            nextBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
 
             previousBtn.setActionCommand("Back");
-            previousBtn.addActionListener(new ListenSongBtnsActions(this));
+            previousBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
 
             add(controlPanel,gbc);
         }catch(Exception e){

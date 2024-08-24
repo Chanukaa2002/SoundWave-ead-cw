@@ -5,12 +5,17 @@ import SoundWave.App.ListenerUI.LMainContent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class LExploreSongBtnActions implements ActionListener {
     LMainContent mc;
+    private String songId,songName,listenerId;
 
-    public LExploreSongBtnActions(LMainContent mc){
+    public LExploreSongBtnActions(LMainContent mc,String songId,String songName,String listenerId){
         this.mc = mc;
+        this.songName = songName;
+        this.songId = songId;
+        this.listenerId = listenerId;
     }
 
     @Override
@@ -20,7 +25,11 @@ public class LExploreSongBtnActions implements ActionListener {
         switch(command){
             case "Song":
                 System.out.println("Clicked");
-                mc.setContentPanel(new LListenSongPanel(mc),"Song");
+                try {
+                    mc.setContentPanel(new LListenSongPanel(mc,songId,listenerId),songName);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
         }
 
     }

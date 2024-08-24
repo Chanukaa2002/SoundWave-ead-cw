@@ -46,7 +46,7 @@ public class Song {
     private String songId,title,artistName,image;
     private double duration;
     Connection conn;
-    Clip clip;
+    private static Clip  clip;
     private AudioInputStream audioInput;
 
     //methods
@@ -77,22 +77,32 @@ public class Song {
             System.out.println("Error: "+e);
         }
     }//-------------------------work on this-------------------------
-    public void pause() {
-        if (clip != null && clip.isRunning()) {
-            clip.stop(); // Stop the clip (simulate pause)
-        }
-    }//-------------------------work on this-------------------------
-    public void resume() {
-        if (clip != null && !clip.isRunning()) {
-            clip.start(); // Start the clip (resume from pause)
-        }
-    }//-------------------------work on this-------------------------
+//    public void pause() {
+//        if (clip != null && clip.isRunning()) {
+//            clip.stop(); // Stop the clip (simulate pause)
+//        }
+//    }//-------------------------work on this-------------------------
+//    public void resume() {
+//        if (clip != null && !clip.isRunning()) {
+//            clip.start(); // Start the clip (resume from pause)
+//        }
+//    }//-------------------------work on this-------------------------
     public void stop() {
-        if (clip != null) {
-            clip.stop(); // Stop the clip
-            clip.close(); // Close the clip and release resources
+        try {
+            System.out.println("come to stop");
+            if (clip != null && clip.isRunning()) {
+                clip.stop(); // Stop the clip
+                clip.close(); // Close the clip and release resources
+                System.out.println("Song stopped successfully.");
+            } else {
+                System.out.println("Clip is either null or not running.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error stopping the clip: " + e.getMessage());
+            e.printStackTrace();
         }
-    }//-------------------------work on this-------------------------
+    }
+    //-------------------------work on this-------------------------
     public void next(){}
     public void back(){}
     public void volume(){}

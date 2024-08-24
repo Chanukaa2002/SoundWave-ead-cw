@@ -1,14 +1,19 @@
 package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ArtistUI.AMainContentPanel;
+import SoundWave.User.Listener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 public class ListenerMainPanel extends JFrame{
-    private String userName;
-    public ListenerMainPanel(String userName){
+    private String listenerId,userName;
+    Listener listener;
+    public ListenerMainPanel(String userName) throws SQLException {
         this.userName = userName;
+        listener = new Listener();
+        listenerId = listener.getId(userName);
         UI();
     }
     private void UI(){
@@ -20,7 +25,7 @@ public class ListenerMainPanel extends JFrame{
             setLocationRelativeTo(null);
             setLayout(new BorderLayout());
             // Add main content panel
-            LMainContent mainContentPanel = new LMainContent();
+            LMainContent mainContentPanel = new LMainContent(listenerId);
             add(mainContentPanel, BorderLayout.CENTER);
 
             // Add sidebar panel
