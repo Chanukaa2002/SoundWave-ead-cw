@@ -1,6 +1,7 @@
 package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ListenerUI.Actions.ListenSongBtnsActions;
+import SoundWave.App.UserUI.FilePath;
 import SoundWave.Music.Feedback;
 import SoundWave.Music.Song;
 
@@ -25,6 +26,13 @@ public class LListenSongPanel extends JPanel {
     String listenerId;
     Feedback feedback;
 
+    public JSlider getVolumeSlider() {
+        return volumeSlider;
+    }
+    public void setVolumeSlider(JSlider volumeSlider) {
+        this.volumeSlider = volumeSlider;
+    }
+
     public JButton getPlayBtn() {
         return playBtn;
     }
@@ -37,7 +45,6 @@ public class LListenSongPanel extends JPanel {
     public JButton getDisLikedBtn() {
         return disLikedBtn;
     }
-
     public LListenSongPanel(LMainContent mc,String songId,String listenerId) throws SQLException {
         this.mc = mc;
         this.songId = songId;
@@ -80,7 +87,7 @@ public class LListenSongPanel extends JPanel {
     }
     private void coverImage(){
         try{
-            ImageIcon originalIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" +songDetails[4]);
+            ImageIcon originalIcon = new ImageIcon(FilePath.getSongCoverImgPath() +songDetails[4]);
             Image scaledImg = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
             //img
@@ -132,13 +139,13 @@ public class LListenSongPanel extends JPanel {
             gbc.gridy = 1;
             gbc.gridx = 2;
             gbc.gridheight = 2;
-            volumeSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50);
+            volumeSlider = new JSlider(JSlider.VERTICAL, 0, 2000, 1000);
             volumeSlider.setPaintTicks(false);
             volumeSlider.setPaintLabels(false);
             volumeSlider.setPreferredSize(new Dimension(20, 125));
             volumeSlider.setBackground(new Color(58, 65, 74));
             volumeSlider.setForeground(new Color(58, 65, 74));
-
+            volumeSlider.addChangeListener(new ListenSongBtnsActions(this,listenerId));
             // Add the slider to the panel
             add(volumeSlider, gbc);
         }catch(Exception e){

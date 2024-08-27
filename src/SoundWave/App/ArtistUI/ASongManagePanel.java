@@ -1,6 +1,7 @@
 package SoundWave.App.ArtistUI;
 
 import SoundWave.App.ArtistUI.Actions.ASongManageBtnAction;
+import SoundWave.App.UserUI.FilePath;
 import SoundWave.Music.Feedback;
 import SoundWave.Music.Song;
 
@@ -86,7 +87,7 @@ public class ASongManagePanel extends JPanel {
     }
     private void coverImg(){
         try {
-        ImageIcon i = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/"+songDetails[4]);
+        ImageIcon i = new ImageIcon(FilePath.getSongCoverImgPath()+songDetails[4]);
             Image scaledImg = i.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
             coverImgBtn = new JButton(scaledIcon);

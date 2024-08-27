@@ -1,6 +1,7 @@
 package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ListenerUI.Actions.UpdateProfileBtnActions;
+import SoundWave.App.UserUI.FilePath;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
 
@@ -56,7 +57,7 @@ public class UpdateProfilePanel extends JPanel {
             //btn
             gbc.gridy=0;
             gbc.gridx=1;
-            ImageIcon originalIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + userDetails[3]);
+            ImageIcon originalIcon = new ImageIcon(FilePath.getDpImgPath() + userDetails[3]);
             Image scaledImg = originalIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
             dpBtn = new JButton(scaledIcon);

@@ -19,26 +19,25 @@ public class ListenerMainPanel extends JFrame{
     }
     private void UI(){
         try {
-            // Frame settings
             setTitle("Listener");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setSize(1000, 700);
             setLocationRelativeTo(null);
             setLayout(new BorderLayout());
-            // Add main content panel
+
             LMainContent mainContentPanel = new LMainContent(listenerId);
             new LSideBarBtnActions(this);
             add(mainContentPanel, BorderLayout.CENTER);
 
-            // Add sidebar panel
+
             LSideBar sidebarPanel = new LSideBar(mainContentPanel,userName);
             JScrollPane sideBarScroll = new JScrollPane(sidebarPanel);
+
             sideBarScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             sideBarScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            sideBarScroll.setBorder(BorderFactory.createEmptyBorder()); // Remove the border
+            sideBarScroll.setBorder(BorderFactory.createEmptyBorder());
 
             add(sideBarScroll, BorderLayout.WEST);
-
             setVisible(true);
         }
         catch(Exception e){
@@ -46,7 +45,4 @@ public class ListenerMainPanel extends JFrame{
             e.getStackTrace()[0].getLineNumber();
         }
     }
-//    public static void main(String[] args) {
-//        new ListenerMainPanel();
-//    }
 }

@@ -47,26 +47,21 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
 
         switch(command){
             case "CreatePlayList":
-                System.out.println("Clicked");
-                mc.setContentPanel(new LCreatePlayListPanel(mc,listenerId),"Create PlayList");//listenerId
+                mc.setContentPanel(new LCreatePlayListPanel(mc,listenerId),"Create PlayList");
                 break;
             case "Home":
-                System.out.println("Clicked Home");
                 mc.setContentPanel(new LExplorePanel(mc,listenerId),"Explore Songs");
                 break;
             case "PlayList":
-                System.out.println("Clicked PlayList");
-                mc.setContentPanel(new LViewPlayListPanel(mc),playlistId);
+                mc.setContentPanel(new LViewPlayListPanel(mc,playlistId),"PlayList");
                 break;
             case "LogOut":
-                System.out.println("Clicked LogOut");
                 lmp.dispose();
                 new LogInPanel();
                 break;
         }
 
     }
-
     @Override
     public void mouseClicked(MouseEvent e) {
         if(e.getSource() instanceof JLabel){
@@ -78,22 +73,18 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
         }
 
     }
-
     @Override
     public void mousePressed(MouseEvent e) {
 
     }
-
     @Override
     public void mouseReleased(MouseEvent e) {
 
     }
-
     @Override
     public void mouseEntered(MouseEvent e) {
 
     }
-
     @Override
     public void mouseExited(MouseEvent e) {
 

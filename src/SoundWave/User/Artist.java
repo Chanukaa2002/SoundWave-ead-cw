@@ -1,4 +1,5 @@
 package SoundWave.User;
+import SoundWave.App.UserUI.FilePath;
 import SoundWave.DBConnection.DBConnection;
 
 import java.io.File;
@@ -112,9 +113,10 @@ public class Artist extends User{
 
                 int rowsAffected= insertStatement.executeUpdate();
                 if(rowsAffected>0){
-                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + coverImg;
+                    String coverImgPath = FilePath.getSongCoverImgPath() + coverImg;
                     boolean isDpSaved = saveFile(coverImgStream,coverImgPath);
-                    String songFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" +songName;
+
+                    String songFilePath = FilePath.getSongPath() +songName;
                     boolean isSongSaved = saveSong(songStream,songFilePath);
                     if(isDpSaved && isSongSaved){
                         conn.commit();
@@ -211,8 +213,8 @@ public class Artist extends User{
                 if (dotIndex > 0 && dotIndex < oldCoverImg.length() - 1) {
                     imgFileExtension = oldCoverImg.substring(dotIndex + 1).toLowerCase();
                 }
-                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
-                String oldSongFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Songs/" + songName;
+                String oldDpFilePath = FilePath.getSongCoverImgPath() + oldCoverImg;
+                String oldSongFilePath = FilePath.getSongPath() + songName;
 
                 File image = new File(oldDpFilePath);
                 File song = new File(oldSongFilePath);
@@ -313,7 +315,7 @@ public class Artist extends User{
                     int rowsAffected2 = insertStatementTwo.executeUpdate();
                     if(rowsAffected1>0 && rowsAffected2>0){
                         //uploading image into local file
-                        String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp+"."+fileExtension;
+                        String dpFilePath = FilePath.getDpImgPath() + dp+"."+fileExtension;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             conn.commit();

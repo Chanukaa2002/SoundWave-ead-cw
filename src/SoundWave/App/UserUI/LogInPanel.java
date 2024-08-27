@@ -26,42 +26,42 @@ public class LogInPanel extends JFrame {
             contentPanel.setBackground(new Color(58, 65, 74));
             contentPanel.setLayout(new GridBagLayout());
 
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(10, 10, 10, 10);
-            gbc.anchor = GridBagConstraints.CENTER;
+            GridBagConstraints gridBag = new GridBagConstraints();
+            gridBag.insets = new Insets(10, 10, 10, 10);
+            gridBag.anchor = GridBagConstraints.CENTER;
 
 
             appName = new JLabel("SoundWave");
             appName.setFont(new Font("Arial", Font.BOLD, 24));
             appName.setForeground(Color.WHITE);
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.gridwidth = 2;
-            contentPanel.add(appName, gbc);
+            gridBag.gridx = 0;
+            gridBag.gridy = 0;
+            gridBag.gridwidth = 2;
+            contentPanel.add(appName, gridBag);
 
             // Username Label
             userNameLbl = new JLabel("Username:");
             userNameLbl.setForeground(Color.WHITE);
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            gbc.gridwidth = 1;
-            contentPanel.add(userNameLbl, gbc);
+            gridBag.gridx = 0;
+            gridBag.gridy = 1;
+            gridBag.gridwidth = 1;
+            contentPanel.add(userNameLbl, gridBag);
 
             userNameField = new JTextField(15);
-            gbc.gridx = 1;
-            gbc.gridy = 1;
-            contentPanel.add(userNameField, gbc);
+            gridBag.gridx = 1;
+            gridBag.gridy = 1;
+            contentPanel.add(userNameField, gridBag);
 
             passwordLbl = new JLabel("Password:");
             passwordLbl.setForeground(Color.WHITE);
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            contentPanel.add(passwordLbl, gbc);
+            gridBag.gridx = 0;
+            gridBag.gridy = 2;
+            contentPanel.add(passwordLbl, gridBag);
 
             passwordField = new JPasswordField(15);
-            gbc.gridx = 1;
-            gbc.gridy = 2;
-            contentPanel.add(passwordField, gbc);
+            gridBag.gridx = 1;
+            gridBag.gridy = 2;
+            contentPanel.add(passwordField, gridBag);
 
             logInBtn = new JButton("Log In");
             logInBtn.setBackground(new Color(224, 143, 255));
@@ -69,10 +69,10 @@ public class LogInPanel extends JFrame {
             logInBtn.setBorderPainted(false);
             logInBtn.setActionCommand("LogIn");
             logInBtn.addActionListener(new LoginPageActions(userNameField,passwordField,this));
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            gbc.gridwidth = 2;
-            contentPanel.add(logInBtn, gbc);
+            gridBag.gridx = 0;
+            gridBag.gridy = 3;
+            gridBag.gridwidth = 2;
+            contentPanel.add(logInBtn, gridBag);
 
             createAccountBtn = new JButton("Create Account");
             createAccountBtn.setBackground(new Color(224, 143, 255));
@@ -80,10 +80,10 @@ public class LogInPanel extends JFrame {
             createAccountBtn.setBorderPainted(false);
             createAccountBtn.setActionCommand("Create");
             createAccountBtn.addActionListener(new LoginPageActions(this));
-            gbc.gridx = 0;
-            gbc.gridy = 4;
-            gbc.gridwidth = 2;
-            contentPanel.add(createAccountBtn, gbc);
+            gridBag.gridx = 0;
+            gridBag.gridy = 4;
+            gridBag.gridwidth = 2;
+            contentPanel.add(createAccountBtn, gridBag);
 
             add(contentPanel);
             pack();

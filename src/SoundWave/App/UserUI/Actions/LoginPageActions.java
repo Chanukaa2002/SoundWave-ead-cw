@@ -7,7 +7,6 @@ import SoundWave.App.UserUI.RegisterPanel;
 import SoundWave.User.Artist;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,10 +19,11 @@ public class LoginPageActions implements ActionListener {
     private JFrame loginFrame;
 
 
+    // for create btn
     public LoginPageActions(JFrame loginFrame){
         this.loginFrame = loginFrame;
     }
-
+    //for login btn
     public LoginPageActions(JTextField userNameTxt, JPasswordField passwordTxt, JFrame loginFrame) {
         this.userNameTxt = userNameTxt;
         this.passwordTxt = passwordTxt;
@@ -47,7 +47,7 @@ public class LoginPageActions implements ActionListener {
                 boolean listener = user.isUser(userName);
 
                 if(isArtistLoggedIn || isListenerLoggedIn){
-                    System.out.println("Pass!");
+//                    System.out.println("Pass!");
                     if(artist){
                         loginFrame.setVisible(false);
                         new ArtistMainPanel(userName);
@@ -58,14 +58,14 @@ public class LoginPageActions implements ActionListener {
                     }
                 }
                 else{
-                    System.out.println("Fail");
+//                    System.out.println("Fail");
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         }
         else if(command=="Create"){
-            System.out.println("Reg Clicked");
+//            System.out.println("Reg Clicked");
             loginFrame.setVisible(false);
             new RegisterPanel();
         }

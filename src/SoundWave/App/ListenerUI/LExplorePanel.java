@@ -1,6 +1,7 @@
 package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ListenerUI.Actions.LExploreSongBtnActions;
+import SoundWave.App.UserUI.FilePath;
 import SoundWave.User.Listener;
 
 import javax.swing.*;
@@ -14,6 +15,7 @@ public class LExplorePanel extends JPanel {
     BorderLayout borderLayout;
     JPanel searchPanel,gridPanel;
     String listenerId;
+    JLabel titleLbl;
 
     public LExplorePanel(LMainContent mc,String listenerId){
         this.mc = mc;
@@ -65,9 +67,9 @@ public class LExplorePanel extends JPanel {
             for (String[] i : songs) {
                 String songId = i[0];
                 String songName = i[1];
-                ImageIcon originalIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + i[4]);
+                ImageIcon originalIcon = new ImageIcon(FilePath.getSongCoverImgPath() + i[4]);
 
-                Image scaledImg = originalIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                Image scaledImg = originalIcon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon = new ImageIcon(scaledImg);
 
                 songBtn = new JButton(scaledIcon);
@@ -79,6 +81,10 @@ public class LExplorePanel extends JPanel {
                 songBtn.setActionCommand("Song");
                 songBtn.addActionListener(new LExploreSongBtnActions(mc,songId,songName,listenerId));
                 gridPanel.add(songBtn);
+
+                titleLbl = new JLabel(songName);
+                titleLbl.setForeground(Color.WHITE);
+                gridPanel.add(titleLbl);
             }
 
 

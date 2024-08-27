@@ -1,6 +1,7 @@
 package SoundWave.App.ArtistUI;
 
 import SoundWave.App.ArtistUI.Actions.ASongGridBtnActions;
+import SoundWave.App.UserUI.FilePath;
 import SoundWave.User.Artist;
 
 import javax.swing.*;
@@ -25,7 +26,7 @@ public class ASongGridPanel extends JPanel {
             ArrayList<String[]> songs = artist.viewMyAllSong(artistId);
 
         for (String[] i: songs) {
-            ImageIcon originalIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + i[4]);
+            ImageIcon originalIcon = new ImageIcon(FilePath.getSongCoverImgPath() + i[4]);
 
             Image scaledImg = originalIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);

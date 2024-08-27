@@ -36,7 +36,7 @@ public class LSideBar extends JPanel {
             gbc.insets = new Insets(10, 10, 10, 10);
             gbc.fill = GridBagConstraints.HORIZONTAL;
 
-            // Listener Label fixed at the top
+
             gbc.gridy = 0;
             gbc.gridx = 0;
             this.listenerLabel = new JLabel("Welcome "+userName, SwingConstants.CENTER);
@@ -44,26 +44,23 @@ public class LSideBar extends JPanel {
             listenerLabel.addMouseListener(new LSideBarBtnActions(userName,mc));
             add(listenerLabel, gbc);
 
-
-            // space
             gbc.gridy++;
             add(Box.createVerticalStrut(10), gbc);
 
-            // home btn
             homeBtn();
             gbc.gridy++;
-            // Label
+
             playListLabel();
             gbc.gridy++;
-            // playlists
+
             playlists();
-            //create playlist btn
+
             createPlayListBtn();
 
             gbc.weighty = 1.0;
             add(Box.createVerticalGlue(), gbc);
             logOutBtn();
-            // Force revalidate and repaint to ensure proper layout
+
             revalidate();
             repaint();
         } catch (Exception e) {
@@ -82,7 +79,7 @@ public class LSideBar extends JPanel {
             homeBtn.setActionCommand("Home");
             homeBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
 
-            gbc.gridy++; // Move to the next row
+            gbc.gridy++;
             add(homeBtn, gbc);
         } catch (Exception e) {
             System.out.println("Side Bar home Btn method Error: " + e);
@@ -94,7 +91,7 @@ public class LSideBar extends JPanel {
             playListLabel.setForeground(Color.WHITE);
             playListLabel.setFont(new Font("Font.SERIF", Font.BOLD, 17));
 
-            gbc.gridy++; // Move to the next row
+            gbc.gridy++;
             add(playListLabel, gbc);
         } catch (Exception e) {
             System.out.println("Side Bar playList Label method Error: " + e);
@@ -130,8 +127,7 @@ public class LSideBar extends JPanel {
             createPlaylistBtn.setFocusPainted(false);
             createPlaylistBtn.setBorderPainted(false);
             createPlaylistBtn.setActionCommand("CreatePlayList");
-            //action->
-            createPlaylistBtn.addActionListener(new LCreatePlayListBtnActions(null, listenerId, this));
+            createPlaylistBtn.addActionListener(new LCreatePlayListBtnActions( listenerId, this));
             createPlaylistBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
 
             add(createPlaylistBtn,gbc);
@@ -140,9 +136,7 @@ public class LSideBar extends JPanel {
         }
     }
     public void refreshPlaylists() {
-        // Remove existing playlist buttons
         removeAll();
-        // Rebuild the UI
         UI();
     }
     private void logOutBtn(){
@@ -151,7 +145,7 @@ public class LSideBar extends JPanel {
             gbc.gridy++;
             this.logOutBtn = new JButton("LogOut");
             logOutBtn.setMargin(new Insets(7, 10, 7, 10));
-            logOutBtn.setBackground(new Color(224, 143, 255)); // Light purple background
+            logOutBtn.setBackground(new Color(224, 143, 255));
             logOutBtn.setForeground(Color.BLACK);
             logOutBtn.setBorderPainted(false);
             logOutBtn.setFocusPainted(false);

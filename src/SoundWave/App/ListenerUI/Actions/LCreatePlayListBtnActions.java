@@ -3,7 +3,6 @@ package SoundWave.App.ListenerUI.Actions;
 import SoundWave.App.ListenerUI.LSideBar;
 import SoundWave.App.Validations;
 import SoundWave.User.Listener;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -22,8 +21,7 @@ public class LCreatePlayListBtnActions implements ActionListener {
     private static String listenerId;
     private static LSideBar sideBar;
 
-    public LCreatePlayListBtnActions(JTextField playListTxt, String listenerId, LSideBar sideBar) {
-        this.playListTxt = playListTxt;
+    public LCreatePlayListBtnActions( String listenerId, LSideBar sideBar) {
         this.listenerId = listenerId;
         this.sideBar = sideBar;
     }
@@ -34,6 +32,7 @@ public class LCreatePlayListBtnActions implements ActionListener {
     public LCreatePlayListBtnActions(JButton coverImg){
         this.coverImg = coverImg;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
@@ -51,11 +50,9 @@ public class LCreatePlayListBtnActions implements ActionListener {
                     coverImgPath = selectedFile.getAbsolutePath();
                     Image scaledImg = img.getScaledInstance(215, 200, Image.SCALE_SMOOTH);
 
-                    //set image into coverImg
                     coverImg.setIcon(new ImageIcon(scaledImg));
                     fileName = selectedFile.getName();
 
-                    //get extension
                     int dotIndex = fileName.lastIndexOf('.');
                     if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
                         imgExtension = fileName.substring(dotIndex + 1).toLowerCase();

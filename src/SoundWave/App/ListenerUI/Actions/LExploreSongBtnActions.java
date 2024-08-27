@@ -30,6 +30,7 @@ public class LExploreSongBtnActions implements ActionListener {
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
+                break;
         }
 
     }

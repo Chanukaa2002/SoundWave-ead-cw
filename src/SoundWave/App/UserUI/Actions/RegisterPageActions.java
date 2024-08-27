@@ -26,9 +26,11 @@ public class RegisterPageActions implements ActionListener {
     User user;
     private JFrame regPanel;
 
+    //for get imageLbl
     public RegisterPageActions(JLabel dpImage) {
         this.dpImageLabel = dpImage;
     }
+    //for register
     public RegisterPageActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JPasswordField passwordTxt, JPasswordField confirmPasswordTxt,JTextField contactNo,JComboBox<String> userTypeCombo,JFrame regPanel) {
         this.userNameTxt = userNameTxt;
         this.nameTxt = nameTxt;
@@ -45,22 +47,23 @@ public class RegisterPageActions implements ActionListener {
         String command = e.getActionCommand();
 
         if ("ImportDP".equals(command)) {
-            //choose file
+
+
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
                 try {
-                    // Load the image
+                File selectedFile = fileChooser.getSelectedFile();
+
                     BufferedImage img = ImageIO.read(selectedFile);
-                    //getPath
+
                     this.dpPath = selectedFile.getAbsolutePath();
                     System.out.println(dpPath);
-                    // Scale the image to fit the JLabel
+
                     Image scaledImg = img.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
 
-                    // Set the image as the icon of the JLabel
+
                     dpImageLabel.setIcon(new ImageIcon(scaledImg));
                     String fileName = selectedFile.getName();
 
@@ -70,12 +73,13 @@ public class RegisterPageActions implements ActionListener {
                     }
 
 
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
         }
-        if(command == "Register"){
+        else if(command == "Register"){
             try {
                 this.dpInputStream = new FileInputStream(dpPath);
             } catch (FileNotFoundException ex) {

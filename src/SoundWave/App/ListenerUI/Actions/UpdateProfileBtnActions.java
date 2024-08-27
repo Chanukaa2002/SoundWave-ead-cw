@@ -22,10 +22,10 @@ public class UpdateProfileBtnActions implements ActionListener {
     private JTextField userNameTxt,nameTxt,emailTxt,passwordTxt,confirmPasswordTxt;
     private FileInputStream dpInputStream;
     private Listener user;
+
     public UpdateProfileBtnActions(JButton dpBtn){
         this.dpBtn = dpBtn;
     }
-
     public UpdateProfileBtnActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JTextField passwordTxt, JTextField confirmPasswordTxt) {
         this.userNameTxt = userNameTxt;
         this.nameTxt = nameTxt;
@@ -37,10 +37,9 @@ public class UpdateProfileBtnActions implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         String command = e.getActionCommand();
-
         if(command == "UpdateDp"){
-
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
             if(returnValue == JFileChooser.APPROVE_OPTION){
@@ -58,10 +57,9 @@ public class UpdateProfileBtnActions implements ActionListener {
                         fileExtension = fileName.substring(dotIndex+1).toLowerCase();
                     }
                 }catch (Exception ex){
-                    System.out.println("Update progile image uploading Error: "+ex);
+                    System.out.println("Update profile image uploading Error: "+ex);
                 }
             }
-
         }
         else if (command =="UpdateProfile"){
             try {

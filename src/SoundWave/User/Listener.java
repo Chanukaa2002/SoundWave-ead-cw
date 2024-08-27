@@ -1,5 +1,6 @@
 package SoundWave.User;
 
+import SoundWave.App.UserUI.FilePath;
 import SoundWave.DBConnection.DBConnection;
 import SoundWave.Music.Song;
 
@@ -66,7 +67,7 @@ public class Listener extends User{
 
             if (result.next()) {
                 String oldDp = result.getString("DP");
-                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + oldDp;
+                String oldDpFilePath = FilePath.getDpImgPath() + oldDp;
                 File oldFile = new File(oldDpFilePath);
                 if (oldFile.exists()) {
                     oldFile.delete();
@@ -83,7 +84,7 @@ public class Listener extends User{
             int rowsAffected = updateStatement.executeUpdate();
             if (rowsAffected > 0) {
                 //update DP
-                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp + "." + fileExtension;
+                String dpFilePath = FilePath.getDpImgPath() + dp + "." + fileExtension;
                 boolean isDpSaved = saveFile(dpInputStream, dpFilePath);
                 isAuthenticated = true;
             } else {
@@ -140,13 +141,13 @@ public class Listener extends User{
                     int numaricPart = Integer.parseInt(maxId.substring(1));
                     numaricPart++;
                     playlistId = String.format("P%03d", numaricPart);
-                    coverImg = "PlayList-CoverImg-"+playlistId;
+                    coverImg = "PlayList-CoverImg-"+playlistId+"."+imgExtension;
 
                 }
                 else
                 {
                     playlistId = "P001";
-                    coverImg = "PlayList-CoverImg-P001";
+                    coverImg = "PlayList-CoverImg-P001."+imgExtension;
                 }
                 PreparedStatement inputStatement = conn.prepareStatement(sql2);
                 inputStatement.setString(1,playlistId);
@@ -157,7 +158,7 @@ public class Listener extends User{
 
                 if(rowsAffected>0){
                     //upload image into local storage
-                    String coverImgPath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + coverImg+"."+imgExtension;
+                    String coverImgPath = FilePath.getPlayListCoverImgPath() + coverImg;
                     boolean isDpSaved = saveFile(inputCoverImg,coverImgPath);
                     if(isDpSaved){
                         conn.commit();
@@ -195,7 +196,7 @@ public class Listener extends User{
 
             if (result.next()) {
                 String oldCoverImg = result.getString("CoverImg");
-                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/" + oldCoverImg;
+                String oldDpFilePath = FilePath.getPlayListCoverImgPath() + oldCoverImg;
                 File image = new File(oldDpFilePath);
                 if (image.exists()) {
                     PreparedStatement removePlaListSongStatement = conn.prepareStatement(sqlDeletePlayListSong);
@@ -269,7 +270,27 @@ public class Listener extends User{
         }
         return status;
     }//checked
-
+    public String[] viewPlayList(String playlistId){
+        String[] playlistDetail = new String[4];
+        try{
+            String sql = "Select * from playlist where PlayListId=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,playlistId);
+            ResultSet result = selectStatement.executeQuery();
+            if(result.next()){
+                playlistDetail[0] = result.getString("PlayListId");
+                playlistDetail[1] = result.getString("Name");
+                playlistDetail[2] = result.getString("CoverImg");
+                playlistDetail[3] = result.getString("ListenerId");
+            }
+            else{
+                playlistDetail = null;
+            }
+        }catch (Exception e){
+            System.out.println("Listener View Playlist Error: "+e);
+        }
+        return playlistDetail;
+    }
     public boolean likeSong(String songId, String listenerId) throws SQLException {
         boolean status = false;
         try{
@@ -357,6 +378,33 @@ public class Listener extends User{
             System.out.println("Listener view All Playlist Error: "+e);
         }
         return playLists;
+    }
+    public ArrayList<String[]> exploreSongPlaylist(String playlistId){
+        ArrayList<String[]> songList = new ArrayList<>();
+        try{
+            String sql = "SELECT s.SongId, s.Title, s.Song, s.Duration, s.CoverImg, s.ArtistId " +
+                    "FROM song s " +
+                    "WHERE s.SongId NOT IN (SELECT ps.SongId FROM playlist_song ps WHERE ps.PlaylistId = ?)";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,playlistId);
+            ResultSet result = selectStatement.executeQuery();
+
+            while(result.next()){
+                String[] songDetails = new String[6];
+                songDetails[0] = result.getString("SongId");
+                songDetails[1] = result.getString("Title");
+                songDetails[2] = result.getString("Song");
+                songDetails[3] = result.getString("Duration");
+                songDetails[4] = result.getString("CoverImg");
+                songDetails[5] = result.getString("ArtistId");
+
+                songList.add(songDetails);
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error:"+e);
+        }
+        return songList;
     }
     public ArrayList<String[]> exploreSong(){
         ArrayList<String[]> songList = new ArrayList<>();
@@ -465,7 +513,7 @@ public class Listener extends User{
                     //check command was true
                     if(rowsAffected1>0 && rowsAffected2>0){
                         //uploading image into local file
-                        String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + dp+"."+fileExtension;
+                        String dpFilePath = FilePath.getDpImgPath() + dp+"."+fileExtension;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             //if file upload success, return true !

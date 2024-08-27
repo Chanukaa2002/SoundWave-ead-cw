@@ -2,6 +2,7 @@ package SoundWave.Music;
 
 import SoundWave.DBConnection.DBConnection;
 import java.io.File;
+import java.security.spec.ECField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +12,10 @@ import java.util.Scanner;
 import javax.sound.sampled.*;
 
 public class Song {
+
+
+
+
     public String getSongId() {
         return songId;
     }
@@ -48,6 +53,8 @@ public class Song {
     Connection conn;
     private static Clip  clip;
     private AudioInputStream audioInput;
+    public float currentVol=0;
+    public static FloatControl fc;
 
     //methods
     public Song(){
@@ -58,6 +65,7 @@ public class Song {
             System.out.println(e);
         }
     }
+
 
 //stay for java swing coding after gui was code, implement that correctly
     public void start(String path) {
@@ -72,7 +80,8 @@ public class Song {
             clip = AudioSystem.getClip();
             clip.open(audioInput);
             clip.start();
-            clip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the clip continuously
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         } catch (Exception e) {
             System.out.println("Error: "+e);
         }
@@ -105,7 +114,30 @@ public class Song {
     //-------------------------work on this-------------------------
     public void next(){}
     public void back(){}
-    public void volume(){}
+    public void volumeUp(){
+        try{
+            currentVol +=1.0f;
+            if(currentVol >6.0f){
+                currentVol =6.0f;
+            }
+            fc.setValue(currentVol);
+        }
+        catch (Exception e){
+            System.out.println("Song VolumeUp Error: "+e);
+        }
+    }
+    public void volumeDown(){
+        try{
+            currentVol -=1.0f;
+            if(currentVol <- 80.0f){
+                currentVol =-80.0f;
+            }
+            fc.setValue(currentVol);
+        }
+        catch (Exception e){
+            System.out.println("Song VolumeDown Error: "+e);
+        }
+    }
     public String[] getDetails(String songId) {
         String[] details = new String[7];
         try {
