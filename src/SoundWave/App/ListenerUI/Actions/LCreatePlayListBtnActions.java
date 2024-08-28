@@ -22,12 +22,22 @@ public class LCreatePlayListBtnActions implements ActionListener {
     private static LSideBar sideBar;
 
     public LCreatePlayListBtnActions( String listenerId, LSideBar sideBar) {
-        this.listenerId = listenerId;
-        this.sideBar = sideBar;
+        try{
+            this.listenerId = listenerId;
+            this.sideBar = sideBar;
+
+        }catch(Exception e){
+            System.out.println("LCreatePlayListBtnActions constructor Error: "+e);
+        }
     }
     public LCreatePlayListBtnActions(JTextField playListTxt, String listenerId) {
-        this.playListTxt = playListTxt;
-        this.listenerId = listenerId;
+        try{
+            this.playListTxt = playListTxt;
+            this.listenerId = listenerId;
+
+        }catch(Exception e){
+            System.out.println("LCreatePlayListBtnActions constructor Error: "+e);
+        }
     }
     public LCreatePlayListBtnActions(JButton coverImg){
         this.coverImg = coverImg;
@@ -78,11 +88,11 @@ public class LCreatePlayListBtnActions implements ActionListener {
 
                 status = user.createPlayList(title,coverImgInputStream,listenerId,imgExtension);
                 if (status) {
-                    System.out.println("done");
+                    JOptionPane.showMessageDialog(null, "PlayList has been Created!.");;
                     playListTxt.setText("");
                     sideBar.refreshPlaylists();
                 } else {
-                    System.out.println("fail");
+                    JOptionPane.showMessageDialog(null, "Playlist NOT Created!.");
                 }
             }catch(Exception ex){
                 System.out.println("Create payList Action class Create Playlist condition Error: ");

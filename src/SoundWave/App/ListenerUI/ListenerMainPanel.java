@@ -11,6 +11,7 @@ import java.sql.SQLException;
 public class ListenerMainPanel extends JFrame{
     private String listenerId,userName;
     Listener listener;
+
     public ListenerMainPanel(String userName) throws SQLException {
         this.userName = userName;
         listener = new Listener();
@@ -41,8 +42,7 @@ public class ListenerMainPanel extends JFrame{
             setVisible(true);
         }
         catch(Exception e){
-            System.out.println("Artist Main Panel UI method Error: "+e);
-            e.getStackTrace()[0].getLineNumber();
+            System.out.println("Listener Main Panel UI method Error: "+e);
         }
     }
 }

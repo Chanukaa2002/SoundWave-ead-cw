@@ -20,18 +20,27 @@ public class AUploadSongBtnActions implements ActionListener {
     private static String coverImgPath,songPath,fileName,artistId;
     private static String imgFileExtension = "",songFileExtension="";
     private static float durationInSeconds;
-
     private JButton coverImage,song;
     private JTextField titleTxt;
     private FileInputStream coverImgInputStream,songInputStream;
 
     public AUploadSongBtnActions(JButton coverImage,JButton song) {
-        this.coverImage = coverImage;
-        this.song = song;
+        try{
+            this.coverImage = coverImage;
+            this.song = song;
+
+        }catch(Exception e){
+            System.out.println("Upload song btn actions constructor  Error: "+e);
+        }
     }
     public AUploadSongBtnActions(JTextField titleTxt,String artistId) {
-        this.titleTxt = titleTxt;
-        this.artistId = artistId;
+        try{
+            this.titleTxt = titleTxt;
+            this.artistId = artistId;
+
+        }catch(Exception e){
+            System.out.println("Upload song btn actions constructor  Error: "+e);
+        }
     }
 
     @Override
@@ -50,11 +59,11 @@ public class AUploadSongBtnActions implements ActionListener {
                     this.coverImgPath = selectedFile.getAbsolutePath();
                     Image scaledImg = img.getScaledInstance(215, 200, Image.SCALE_SMOOTH);
 
-                    //set image into coverImg
+
                     coverImage.setIcon(new ImageIcon(scaledImg));
                     String fileName = selectedFile.getName();
 
-                    //get extension
+
                     int dotIndex = fileName.lastIndexOf('.');
                     if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
                         imgFileExtension = fileName.substring(dotIndex + 1).toLowerCase();
@@ -69,7 +78,8 @@ public class AUploadSongBtnActions implements ActionListener {
 
             try {
                 JFileChooser fileChooser = new JFileChooser();
-                //filter file type
+
+
                 fileChooser.setFileFilter(new FileNameExtensionFilter("WAV Files", "wav"));
                 int returnValue = fileChooser.showOpenDialog(null);
 
@@ -86,7 +96,7 @@ public class AUploadSongBtnActions implements ActionListener {
                             this.songPath = selectedFile.getAbsolutePath();
                             song.setText(fileName);
 
-                            //calculation for get duration of audio file(for make progressBar)
+                            //duration calculation
                             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(selectedFile);
                             AudioFormat format = audioInputStream.getFormat();
                             long audioFileLength = selectedFile.length();
@@ -96,7 +106,7 @@ public class AUploadSongBtnActions implements ActionListener {
 
                             System.out.println(durationInSeconds);
                         } else {
-                            System.out.println("Selected file is not a .wav file.");
+                            JOptionPane.showMessageDialog(null, "Please Select Wav File!.");
                         }
                     }
                 }
@@ -111,11 +121,12 @@ public class AUploadSongBtnActions implements ActionListener {
 
                 //validation
                 if (coverImgInputStream == null || songInputStream==null) {
-                    System.out.println("Error:  not selected.");
+                    JOptionPane.showMessageDialog(null, "Not selected!.");
                     return;
                 }
                 if(Validations.isFieldEmpty(titleTxt)){
                     JOptionPane.showMessageDialog(null, "Title is required.");
+                    return;
                 }
                 Artist user = new Artist();
 
@@ -124,15 +135,19 @@ public class AUploadSongBtnActions implements ActionListener {
                 boolean isRegister=false;
                 isRegister=user.uploadSong(title,durationInSeconds,coverImgInputStream,artistId,songInputStream,fileName,imgFileExtension);
                 if (isRegister) {
-                    System.out.println("done");
+                    JOptionPane.showMessageDialog(null, "New Song has been Released!");
                     titleTxt.setText("");
                 } else {
-                    System.out.println("fail");
+                    JOptionPane.showMessageDialog(null, "Song Not Uploaded!.");
                 }
             }
             catch (Exception ex) {
                 System.out.println("Upload Song Actions Release Error: " + ex);
             }
+
+        }
+        else if(command=="Clear"){
+            titleTxt.setText("");
 
         }
     }

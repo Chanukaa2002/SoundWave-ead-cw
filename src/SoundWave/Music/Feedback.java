@@ -5,8 +5,6 @@ import SoundWave.DBConnection.DBConnection;
 import java.sql.*;
 
 public class Feedback {
-    private String feedbackId, userId, songId;
-    private double rating;
     private Connection conn;
 
     public Feedback() {
@@ -17,7 +15,6 @@ public class Feedback {
         }
     }
 
-    // Method to get feedback details for a specific song
     public String getFeedbackDetails(String songId) throws SQLException {
         String totCount="0";
         try {

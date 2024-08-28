@@ -9,6 +9,8 @@ import SoundWave.App.ArtistUI.ArtistMainPanel;
 import SoundWave.App.ListenerUI.ListenerMainPanel;
 import SoundWave.App.UserUI.LogInPanel;
 
+import javax.swing.*;
+
 public class ASideBarBtnActions implements ActionListener {
     private AMainContentPanel mcp;
     private String artistId;
@@ -24,7 +26,11 @@ public class ASideBarBtnActions implements ActionListener {
         }
     }
     public ASideBarBtnActions(ArtistMainPanel amp) {
-        this.amp = amp;
+        try{
+            this.amp = amp;
+        }catch (Exception e){
+            System.out.println("Artist Side Bar Btn Actions constructor Error: "+e);
+        }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -38,14 +44,17 @@ public class ASideBarBtnActions implements ActionListener {
                 mcp.setContentPanel(new AUploadSongPanel(artistId), "Upload Song");
             }
             else if(clickedBtnCommand =="LogOut"){
-                System.out.println("Clicked LogOut");
-                amp.dispose();
-                new LogInPanel();
+                int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this song?", "Confirm Deletion",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+                if(response == JOptionPane.YES_OPTION){
+                    amp.dispose();
+                    new LogInPanel();
+                }
             }
         }
         catch(Exception ex){
             System.out.println("Side Bar Btn Actions actionPerformed override method Error: "+ex);
-            ex.getStackTrace()[0].getLineNumber();
         }
     }
 }

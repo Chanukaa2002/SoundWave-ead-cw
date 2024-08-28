@@ -7,19 +7,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-public class PlayList {
+public class PlayList implements Runnable {
     private String playlistId,name,image,listenerId;
     private volatile boolean shouldStop = false;
     Connection conn;
+
+    private Thread runningThread;
 
     public PlayList(){
         try{
             conn= DBConnection.getConnection();
         }
         catch(SQLException e){
-            System.out.println(e);
+            System.out.println("Playlist class constructor Error"+e);
         }
     }
 
@@ -44,47 +45,21 @@ public class PlayList {
     }
 
     //methods
-    public boolean addSong(String songId,String playListId){
-        boolean status = false;
-        try{
-            String sql = "Insert into playlist_song (PlayListId,SongId) values (?,?)";
-            PreparedStatement insertStatement = conn.prepareStatement(sql);
-            insertStatement.setString(1,playListId);
-            insertStatement.setString(2,songId);
-
-            int rowsAffected = insertStatement.executeUpdate();
-            if(rowsAffected>0){
-                status = true;
-            }
-        }catch(Exception e){
-            System.out.println("PlayList AddSong method Error: "+e);
-        }
-        return status;
-    }
-    public boolean removeSong(String songId,String playlistId){
-        boolean status = false;
-        try{
-            String sql = "delete from playlist_song where SongId=? and PlayListId=?";
-            PreparedStatement insertStatement = conn.prepareStatement(sql);
-            insertStatement.setString(1,songId);
-            insertStatement.setString(2,playlistId);
-
-            int rowsAffected = insertStatement.executeUpdate();
-            if(rowsAffected>0){
-                status = true;
-            }
-        }catch(Exception e){
-            System.out.println("PlayList removeSOng method Error: "+e);
-        }
-        return status;
-    }
-
     public void stopAll() {
-        shouldStop = true; // Set the flag to true when stopping the playlist
-    }
-
+        System.out.println("COme to stop all method");
+        shouldStop = true;
+        if(runningThread != null){
+            System.out.println("come to if condition!");
+            runningThread.interrupt();
+            runningThread = null;
+        }
+        else{
+            System.out.println("runningThread is null!");
+        }
+    }//not working
     public void playAll(String playlistId) {
-        shouldStop = false; // Reset the flag before starting playback
+        shouldStop = false;
+        this.runningThread = Thread.currentThread();
 
         try {
             // Retrieve the list of songs in the playlist
@@ -101,28 +76,24 @@ public class PlayList {
             for (String[] songDetails : songList) {
                 if (shouldStop) {
                     System.out.println("Playback stopped.");
-                    break; // Exit the loop if stop is requested
                 }
 
                 String songId = songDetails[0];
                 String songTitle = songDetails[1];
                 String songName = songDetails[3];
                 float duration = Float.parseFloat(songDetails[2]);
+                String songPath = FilePath.getSongPath() + songName;
 
-                // Get song details using songId
-
-                String songPath = FilePath.getSongPath() + songName; // Assuming the path to the song file is in the 3rd position
-
-                // Start playing the song
-                System.out.println("Now playing: " + songTitle);
-                System.out.println(duration);
+                System.out.println("Now playing: " + songTitle); // add UI
                 song.start(songPath);
 
-                // Sleep for the duration of the song
-                // The duration is in seconds, so multiply by 1000 to convert to milliseconds
-                Thread.sleep((long) ( duration * 1000));
-
-                // Stop the current song before playing the next one
+                try {
+                    Thread.sleep((long) (duration * 1000));
+                } catch (InterruptedException e) {
+                    System.out.println("Playback interrupted.");
+                    song.stop();
+                    break;
+                }
                 song.stop();
 
             }
@@ -132,9 +103,7 @@ public class PlayList {
         } catch (Exception e) {
             System.out.println("Error in PlayList playAll method: " + e);
         }
-    }
-
-
+    }//checked
     public ArrayList<String[]> getSongList(String playlistId) throws SQLException {
 
         ArrayList<String[]> songs = new ArrayList<>();
@@ -159,10 +128,11 @@ public class PlayList {
         {
             System.out.println("Error:" + e);
         }
-        finally{
-            conn.close();
-        }
         return songs;
     }//checked
 
+    @Override
+    public void run() {
+        playAll(playlistId);
+    }
 }

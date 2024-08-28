@@ -2,13 +2,10 @@ package SoundWave.Music;
 
 import SoundWave.DBConnection.DBConnection;
 import java.io.File;
-import java.security.spec.ECField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Scanner;
 import javax.sound.sampled.*;
 
 public class Song {
@@ -66,8 +63,6 @@ public class Song {
         }
     }
 
-
-//stay for java swing coding after gui was code, implement that correctly
     public void start(String path) {
         try {
             if (clip != null) {
@@ -85,63 +80,27 @@ public class Song {
         } catch (Exception e) {
             System.out.println("Error: "+e);
         }
-    }//-------------------------work on this-------------------------
-//    public void pause() {
-//        if (clip != null && clip.isRunning()) {
-//            clip.stop(); // Stop the clip (simulate pause)
-//        }
-//    }//-------------------------work on this-------------------------
-//    public void resume() {
-//        if (clip != null && !clip.isRunning()) {
-//            clip.start(); // Start the clip (resume from pause)
-//        }
-//    }//-------------------------work on this-------------------------
+    }//checked
     public void stop() {
         try {
             System.out.println("come to stop");
             if (clip != null && clip.isRunning()) {
-                clip.stop(); // Stop the clip
-                clip.close(); // Close the clip and release resources
-                System.out.println("Song stopped successfully.");
+                clip.stop();
+                clip.close();
             } else {
                 System.out.println("Clip is either null or not running.");
             }
         } catch (Exception e) {
-            System.out.println("Error stopping the clip: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error stopping the clip: " + e);
         }
-    }
+    }//checked
     //-------------------------work on this-------------------------
     public void next(){}
     public void back(){}
-    public void volumeUp(){
-        try{
-            currentVol +=1.0f;
-            if(currentVol >6.0f){
-                currentVol =6.0f;
-            }
-            fc.setValue(currentVol);
-        }
-        catch (Exception e){
-            System.out.println("Song VolumeUp Error: "+e);
-        }
-    }
-    public void volumeDown(){
-        try{
-            currentVol -=1.0f;
-            if(currentVol <- 80.0f){
-                currentVol =-80.0f;
-            }
-            fc.setValue(currentVol);
-        }
-        catch (Exception e){
-            System.out.println("Song VolumeDown Error: "+e);
-        }
-    }
     public String[] getDetails(String songId) {
         String[] details = new String[7];
         try {
-            // Corrected SQL query: Added missing commas and fixed JOIN clause syntax
+
             String sql = "SELECT s.SongId, s.Title, s.Song, s.Duration, s.CoverImg, u.Name,s.ArtistId " +
                     "FROM song s " +
                     "INNER JOIN artist a ON s.ArtistId = a.ArtistId " +
@@ -158,7 +117,6 @@ public class Song {
                 details[2] = result.getString("Song");
                 details[3] = result.getString("Duration");
                 details[4] = result.getString("CoverImg");
-                System.out.println(details[4]);
                 details[5] = result.getString("Name");
                 details[6] = result.getString("ArtistId");
             } else {
@@ -168,7 +126,6 @@ public class Song {
             System.out.println("Error: " + e);
         }
         return details;
-    }
-//-----------------Not checked--------------
+    }//checked
 
 }

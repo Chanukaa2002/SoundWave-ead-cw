@@ -24,8 +24,7 @@ public class ASongGridBtnActions implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            String clickedBtnCommand = e.getActionCommand();
-            mcp.setContentPanel(new ASongManagePanel(mcp,songId), songName);//change here titleName
+            mcp.setContentPanel(new ASongManagePanel(mcp,songId), songName);
         }
         catch(Exception ex){
             System.out.println("Song Grid Btn Actions action Performed override method Error: "+ex);

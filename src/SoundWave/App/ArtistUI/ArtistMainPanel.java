@@ -12,7 +12,7 @@ public class ArtistMainPanel extends JFrame {
     private Artist artist;
     public ArtistMainPanel(String userName) throws SQLException {
         this.userName = userName;
-        this.artist = new Artist();
+        this.artist = new Artist(); //------------------------------------>
         artistId = artist.getId(userName);
         UI();
     }

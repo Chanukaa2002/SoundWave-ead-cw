@@ -1,5 +1,6 @@
 package SoundWave.App.UserUI.Actions;
 import SoundWave.App.UserUI.LogInPanel;
+import SoundWave.App.UserUI.RegisterPanel;
 import SoundWave.App.Validations;
 import SoundWave.User.Artist;
 import SoundWave.User.Listener;
@@ -26,11 +27,12 @@ public class RegisterPageActions implements ActionListener {
     User user;
     private JFrame regPanel;
 
-    //for get imageLbl
+
     public RegisterPageActions(JLabel dpImage) {
         this.dpImageLabel = dpImage;
     }
-    //for register
+
+
     public RegisterPageActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JPasswordField passwordTxt, JPasswordField confirmPasswordTxt,JTextField contactNo,JComboBox<String> userTypeCombo,JFrame regPanel) {
         this.userNameTxt = userNameTxt;
         this.nameTxt = nameTxt;
@@ -39,6 +41,9 @@ public class RegisterPageActions implements ActionListener {
         this.confirmPasswordTxt = confirmPasswordTxt;
         this.contactNoTxt = contactNo;
         this.userTypeCombo = userTypeCombo;
+        this.regPanel = regPanel;
+    }
+    public RegisterPageActions(JFrame regPanel){
         this.regPanel = regPanel;
     }
 
@@ -88,7 +93,7 @@ public class RegisterPageActions implements ActionListener {
 
             //validating
             if (dpInputStream == null) {
-                System.out.println("Error: Display picture not selected.");
+                JOptionPane.showMessageDialog(null, "Display picture is not selected!");
                 return;
             }
             if(Validations.isFieldEmpty(nameTxt)){
@@ -139,18 +144,21 @@ public class RegisterPageActions implements ActionListener {
                     isRegister = user.register(userName, password, name, email, contactNo, dpInputStream, fileExtension);
                 }
                 if (isRegister) {
-                    System.out.println("done");
                     regPanel.setVisible(false);
                     new LogInPanel();
                 }
                 else{
-                    System.out.println("Fail");
+                    JOptionPane.showMessageDialog(null, "Registration Fail.");
                 }
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
 
+        }
+        else if(command == "LogIn"){
+            regPanel.setVisible(false);
+            new LogInPanel();
         }
     }
 }

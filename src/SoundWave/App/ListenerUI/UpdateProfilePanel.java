@@ -54,7 +54,6 @@ public class UpdateProfilePanel extends JPanel {
             dpLbl.setFont(new Font("Font.SERIF",Font.BOLD,14));
             add(dpLbl,gbc);
 
-            //btn
             gbc.gridy=0;
             gbc.gridx=1;
             ImageIcon originalIcon = new ImageIcon(FilePath.getDpImgPath() + userDetails[3]);
@@ -62,7 +61,6 @@ public class UpdateProfilePanel extends JPanel {
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
             dpBtn = new JButton(scaledIcon);
             dpBtn.setBackground(new Color(216,191,216));
-//            dpBtn.setPreferredSize(new Dimension(100,100));
             dpBtn.setFocusPainted(false);
             dpBtn.setBorderPainted(false);
             dpBtn.setActionCommand("UpdateDp");

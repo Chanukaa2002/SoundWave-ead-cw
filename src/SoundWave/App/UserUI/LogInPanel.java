@@ -1,21 +1,22 @@
 package SoundWave.App.UserUI;
 
 import SoundWave.App.UserUI.Actions.LoginPageActions;
-import SoundWave.App.UserUI.Actions.RegisterPageActions;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class LogInPanel extends JFrame {
-    private JLabel dpImage, appName, userNameLbl, passwordLbl;
+    private JLabel  appName, userNameLbl, passwordLbl;
     private JTextField userNameField;
     private JPasswordField passwordField;
     private JButton logInBtn, createAccountBtn;
     private JPanel contentPanel;
 
+
     public LogInPanel() {
         UI();
     }
+
     private void UI() {
         try {
             setTitle("Log In");
@@ -39,7 +40,6 @@ public class LogInPanel extends JFrame {
             gridBag.gridwidth = 2;
             contentPanel.add(appName, gridBag);
 
-            // Username Label
             userNameLbl = new JLabel("Username:");
             userNameLbl.setForeground(Color.WHITE);
             gridBag.gridx = 0;
@@ -68,7 +68,7 @@ public class LogInPanel extends JFrame {
             logInBtn.setFocusPainted(false);
             logInBtn.setBorderPainted(false);
             logInBtn.setActionCommand("LogIn");
-            logInBtn.addActionListener(new LoginPageActions(userNameField,passwordField,this));
+            logInBtn.addActionListener(new LoginPageActions(userNameField, passwordField, this));
             gridBag.gridx = 0;
             gridBag.gridy = 3;
             gridBag.gridwidth = 2;
@@ -88,6 +88,8 @@ public class LogInPanel extends JFrame {
             add(contentPanel);
             pack();
             setVisible(true);
+
+            getRootPane().setDefaultButton(logInBtn);
         } catch (Exception e) {
             System.out.println("LogIn UI Error: " + e);
         }
@@ -97,3 +99,4 @@ public class LogInPanel extends JFrame {
         new LogInPanel();
     }
 }
+//

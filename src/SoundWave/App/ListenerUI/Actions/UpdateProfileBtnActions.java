@@ -34,16 +34,17 @@ public class UpdateProfileBtnActions implements ActionListener {
         this.confirmPasswordTxt = confirmPasswordTxt;
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
 
         String command = e.getActionCommand();
         if(command == "UpdateDp"){
+
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
             if(returnValue == JFileChooser.APPROVE_OPTION){
                 File selectedFile = fileChooser.getSelectedFile();
+
                 try{
                     BufferedImage img = ImageIO.read(selectedFile);
                     this.dpPath = selectedFile.getAbsolutePath();
@@ -65,12 +66,12 @@ public class UpdateProfileBtnActions implements ActionListener {
             try {
                 this.dpInputStream = new FileInputStream(dpPath);
             } catch (FileNotFoundException ex) {
-                throw new RuntimeException(ex);
+                System.out.println("UpdateProfileBtnActions actionPerformed Error: "+ex);
             }
 
             //validating
             if (dpInputStream == null) {
-                System.out.println("Error: Display picture not selected.");
+                JOptionPane.showMessageDialog(null, "DP not selected.");
                 return;
             }
             if(Validations.isFieldEmpty(nameTxt)){
@@ -101,15 +102,14 @@ public class UpdateProfileBtnActions implements ActionListener {
             String userName = userNameTxt.getText();
             String name = nameTxt.getText();
             String password = passwordTxt.getText();
-            String confirmPassword = confirmPasswordTxt.getText();
             String email = emailTxt.getText();
             boolean isUpdate=false;
 
-            user = new Listener();
+            this.user = new Listener();
             try {
                 isUpdate= user.editProfile(userName,password,name,email,dp,dpInputStream,fileExtension);
                 if(isUpdate){
-                    //dialog box
+                    JOptionPane.showMessageDialog(null, "Profile has Updated!.");
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);

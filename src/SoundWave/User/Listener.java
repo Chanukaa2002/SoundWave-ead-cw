@@ -2,8 +2,6 @@ package SoundWave.User;
 
 import SoundWave.App.UserUI.FilePath;
 import SoundWave.DBConnection.DBConnection;
-import SoundWave.Music.Song;
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.io.InputStream;
-import java.util.Scanner;
 
 public class Listener extends User{
 
@@ -22,7 +19,7 @@ public class Listener extends User{
             conn= DBConnection.getConnection();
         }
         catch(SQLException e){
-            System.out.println(e);
+            System.out.println("Listener Constructor Error : "+e);
         }
     }
 
@@ -48,7 +45,7 @@ public class Listener extends User{
             result.close();
         }
         catch(Exception e){
-            System.out.println(e);
+            System.out.println("Listener isUser method Error: "+e);
         }
         finally {
             conn.close();
@@ -87,8 +84,6 @@ public class Listener extends User{
                 String dpFilePath = FilePath.getDpImgPath() + dp + "." + fileExtension;
                 boolean isDpSaved = saveFile(dpInputStream, dpFilePath);
                 isAuthenticated = true;
-            } else {
-                System.out.println("Profile update unsuccessful.");
             }
             result.close();
         } catch (Exception e) {
@@ -99,7 +94,6 @@ public class Listener extends User{
         }
         return isAuthenticated;
     }//Checked
-
     public String getId(String userName)throws  SQLException{
         String artistId="";
         try{
@@ -175,62 +169,14 @@ public class Listener extends User{
             System.out.println("Error in Listener Create Playlist: "+e);
         }finally {
             try {
-                conn.setAutoCommit(true);  // Restore auto-commit mode
+                conn.setAutoCommit(true);
             } catch (SQLException ex) {
                 System.out.println("Failed to restore auto-commit: " + ex.getMessage());
             }
         }
         return status;
     }//checked
-    public boolean deletePlayList(String playListId) throws SQLException {
-        boolean status = false;
-        try {
-            String sqlSelect = "SELECT CoverImg FROM playlist WHERE PlayListId=?";
-            String sqlDeletePlayList = "DELETE FROM playList WHERE PlayListId=?;";
-            String sqlDeletePlayListSong = "DELETE FROM playlist_song WHERE PlayListId=?; ";
-
-            conn.setAutoCommit(false);
-            PreparedStatement selectStatement = conn.prepareStatement(sqlSelect);
-            selectStatement.setString(1, playListId);
-            ResultSet result = selectStatement.executeQuery();
-
-            if (result.next()) {
-                String oldCoverImg = result.getString("CoverImg");
-                String oldDpFilePath = FilePath.getPlayListCoverImgPath() + oldCoverImg;
-                File image = new File(oldDpFilePath);
-                if (image.exists()) {
-                    PreparedStatement removePlaListSongStatement = conn.prepareStatement(sqlDeletePlayListSong);
-                    PreparedStatement removePlaListStatement = conn.prepareStatement(sqlDeletePlayList);
-                    removePlaListSongStatement.setString(1, playListId);
-                    removePlaListStatement.setString(1, playListId);
-                    int rowsAffected1 = removePlaListSongStatement.executeUpdate();
-                    int rowsAffected2 = removePlaListStatement.executeUpdate();
-
-                    if (rowsAffected1 > 0 && rowsAffected2>0) {
-                        image.delete();
-                        conn.commit();
-                        System.out.println("PlayList removed successfully!");
-                        status=true;
-                    } else {
-                        conn.rollback();
-                    }
-
-                } else {
-                    conn.rollback();
-                }
-            }
-
-        } catch (Exception e) {
-            conn.rollback();
-            System.out.println("Error: " + e);
-        } finally {
-            conn.setAutoCommit(true);
-            conn.close();
-        }
-
-        return status;
-    }
-    public boolean addSongToPlayList(String playlistId, String songId) throws SQLException {
+    public boolean addSongToPlayList(String playlistId, String songId){
         boolean status = false;
         try{
             String sql = "insert into playlist_song (PlayListId,SongId) values(?,?)";
@@ -243,14 +189,11 @@ public class Listener extends User{
                 status=true;
             }
         }catch(Exception e){
-            System.out.println("Error: "+e);
-        }
-        finally{
-            conn.close();
+            System.out.println("Listener AddSong method Error: "+e);
         }
         return status;
     }//checked
-    public boolean removeSongFromPlayList(String playlistId, String songId) throws SQLException {
+    public boolean removeSongFromPlayList(String playlistId, String songId){
         boolean status=false;
         try{
             String sql = "delete from playlist_song where PlayListId=? and SongId=?";
@@ -263,10 +206,7 @@ public class Listener extends User{
                 status=true;
             }
         }catch(Exception e){
-            System.out.println("Error: "+e);
-        }
-        finally{
-            conn.close();
+            System.out.println("PlayList removeSong method Error: "+e);
         }
         return status;
     }//checked
@@ -291,8 +231,7 @@ public class Listener extends User{
         }
         return playlistDetail;
     }
-    public boolean likeSong(String songId, String listenerId) throws SQLException {
-        boolean status = false;
+    public void likeSong(String songId, String listenerId) throws SQLException {
         try{
             String sql1 = "Select Max(FeedbackId) from feedback";
             String sql2 = "Insert into feedback(FeedbackId,Likes,SongId,ListenerId) values(?,?,?,?)";
@@ -323,11 +262,7 @@ public class Listener extends User{
                     insertStatement.setInt(2,1);
                     insertStatement.setString(3,songId);
                     insertStatement.setString(4,listenerId);
-
-                    int rowsAffected = insertStatement.executeUpdate();
-                    if(rowsAffected>0){
-                        status = true;
-                    }
+                    insertStatement.executeUpdate();
                 }
                 result.close();
             }
@@ -340,7 +275,6 @@ public class Listener extends User{
         finally{
             conn.close();
         }
-        return status;
     }//checked
     public void unlikeSong(String songId, String listenerId) throws SQLException {
         try{
@@ -433,27 +367,6 @@ public class Listener extends User{
         }
         return songList;
     }//checked-
-    public ArrayList<String[]> searchSong(String title){
-        ArrayList<String[]> searchSong = new ArrayList<>();
-        try{
-            String sql = "Select SongId,Title from song where Like ?";
-            PreparedStatement selectStatement = conn.prepareStatement(sql);
-            ResultSet result = selectStatement.executeQuery();
-
-            while(result.next()){
-                String[] songDetails = new String[2];
-                songDetails[0] = result.getString("SongId");
-                songDetails[1] = result.getString("Title");
-
-                searchSong.add(songDetails);
-            }
-        }
-        catch (Exception e){
-            System.out.println("Error:"+e);
-        }
-        return searchSong;
-
-    }//--------------------Not checked------------------------
     public  boolean register(String userName, String password, String name, String email, String contactNo, InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
             String sql1 = "Select * from user where UserName=?";
@@ -499,7 +412,6 @@ public class Listener extends User{
                     insertStatementOne.setString(3,name);
                     insertStatementOne.setString(4,email);
                     insertStatementOne.setString(5,contactNo);
-                    System.out.println(dp);
                     insertStatementOne.setString(6,dp);
 
                     int rowsAffected1 =insertStatementOne.executeUpdate();
@@ -510,13 +422,10 @@ public class Listener extends User{
 
                     int rowsAffected2 = insertStatementTwo.executeUpdate();
 
-                    //check command was true
                     if(rowsAffected1>0 && rowsAffected2>0){
-                        //uploading image into local file
                         String dpFilePath = FilePath.getDpImgPath() + dp+"."+fileExtension;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
-                            //if file upload success, return true !
                             isAuthenticated=true;
                         }else {
                             System.out.println("Failed to save display picture.");

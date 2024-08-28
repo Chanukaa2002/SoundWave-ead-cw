@@ -10,9 +10,8 @@ public class LCreatePlayListPanel extends JPanel {
     private LMainContent mc;
     private GridBagConstraints gbc;
     private JPanel bottomPanel;
-    private JLabel imgLabel;
     private JTextField playListText;
-    String listenerId;
+    private String listenerId;
 
     public LCreatePlayListPanel(LMainContent mc,String listenerId){
         this.mc = mc;
@@ -26,19 +25,11 @@ public class LCreatePlayListPanel extends JPanel {
             this.gbc = new GridBagConstraints();
             gbc.insets = new Insets(10,10,10,10);
             gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.gridx=0;
-            gbc.gridy=0;
 
-            // cover img
             coverImg();
-            gbc.gridy++;
-
-            // txt
             txt();
-            gbc.gridy++;
-
-            // bottomPanel
             bottomBtnPanel();
+
             gbc.gridy++;
             gbc.gridwidth = 2;
 
@@ -49,9 +40,9 @@ public class LCreatePlayListPanel extends JPanel {
     }
     private void coverImg(){
         try{
-            // add image now use btn for that!
+            gbc.gridx=0;
+            gbc.gridy=0;
 
-            //btn
             coverImageBtn = new JButton("Add ImageCover");
             coverImageBtn.setBackground(new Color(224, 143, 255));
             coverImageBtn.setPreferredSize(new Dimension(200,200));
@@ -69,11 +60,11 @@ public class LCreatePlayListPanel extends JPanel {
     }
     private void bottomBtnPanel(){
         try{
+            gbc.gridy++;
             gbc.gridx--;
             bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,10));
             bottomPanel.setBackground(new Color(58,65,74));
 
-            //create btn
             createBtn = new JButton("Create");
             createBtn.setBackground(new Color(224, 143, 255));
             createBtn.setFocusPainted(false);
@@ -82,7 +73,6 @@ public class LCreatePlayListPanel extends JPanel {
             createBtn.addActionListener(new LCreatePlayListBtnActions(playListText,listenerId));
             bottomPanel.add(createBtn);
 
-            //cancel btn
             cancelBtn = new JButton("Cancel");
             cancelBtn.setBackground(new Color(224, 143, 255));
             cancelBtn.setFocusPainted(false);
@@ -97,6 +87,7 @@ public class LCreatePlayListPanel extends JPanel {
     }
     private void txt(){
         try{
+            gbc.gridy++;
             gbc.gridx--;
             playListText = new JTextField(15);
             playListText.setBackground(Color.WHITE);

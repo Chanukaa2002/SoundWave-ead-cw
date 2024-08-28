@@ -22,7 +22,6 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
             this.mc = mc;
             this.playlistId = playListId;
             this.listenerId = listenerId;
-            System.out.println("ListenerId:"+listenerId);
         }
         catch(Exception e){
             System.out.println("Listener Side Bar Btn Actions constructor Error: "+e);
@@ -44,21 +43,28 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-
-        switch(command){
-            case "CreatePlayList":
-                mc.setContentPanel(new LCreatePlayListPanel(mc,listenerId),"Create PlayList");
-                break;
-            case "Home":
-                mc.setContentPanel(new LExplorePanel(mc,listenerId),"Explore Songs");
-                break;
-            case "PlayList":
-                mc.setContentPanel(new LViewPlayListPanel(mc,playlistId),"PlayList");
-                break;
-            case "LogOut":
-                lmp.dispose();
-                new LogInPanel();
-                break;
+        try{
+            switch(command){
+                case "CreatePlayList":
+                    mc.setContentPanel(new LCreatePlayListPanel(mc,listenerId),"Create PlayList");
+                    break;
+                case "Home":
+                    mc.setContentPanel(new LExplorePanel(mc,listenerId),"Explore Songs");
+                    break;
+                case "PlayList":
+                    mc.setContentPanel(new LViewPlayListPanel(mc,playlistId),"PlayList");
+                    break;
+                case "LogOut":
+                    int response = JOptionPane.showConfirmDialog(null, "Are you sure you want LogOut?", "Confirm logout",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                    if(response == JOptionPane.YES_OPTION){
+                        lmp.dispose();
+                        new LogInPanel();
+                    }
+                    break;
+            }
+        }catch(Exception ex){
+            System.out.println("LSideBarBtnActions actionPerformed Error: "+ex);
         }
 
     }
@@ -68,10 +74,9 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
             try {
                 mc.setContentPanel(new UpdateProfilePanel(mc,userName),"Update Profile");
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                System.out.println("LSideBarBtnActions mouseClicked Error: "+ex);
             }
         }
-
     }
     @Override
     public void mousePressed(MouseEvent e) {

@@ -12,6 +12,8 @@ public class ASongGridPanel extends JPanel {
     AMainContentPanel mainContentPanel;
     JButton songButton;
     private String artistId;
+    JLabel songTitle;
+
     public ASongGridPanel(AMainContentPanel mainContentPanel,String artistId) {
         this.mainContentPanel= mainContentPanel;
         this.artistId = artistId;
@@ -28,7 +30,7 @@ public class ASongGridPanel extends JPanel {
         for (String[] i: songs) {
             ImageIcon originalIcon = new ImageIcon(FilePath.getSongCoverImgPath() + i[4]);
 
-            Image scaledImg = originalIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            Image scaledImg = originalIcon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
             songButton = new JButton(scaledIcon);
             songButton.setPreferredSize(new Dimension(120, 120));
@@ -39,6 +41,11 @@ public class ASongGridPanel extends JPanel {
             songButton.setActionCommand("Song");
             songButton.addActionListener(new ASongGridBtnActions(mainContentPanel,i[0],i[1]));
             add(songButton);
+
+            songTitle = new JLabel(i[1]);
+            songTitle.setForeground(Color.WHITE);
+            add(songTitle);
+
         }
         }
         catch(Exception e){

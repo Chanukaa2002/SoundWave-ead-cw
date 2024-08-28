@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AUploadSongPanel extends JPanel {
-    private JButton uploadBtn, coverImgBtn, releaseBtn, cancelBtn;
+    private JButton uploadBtn, coverImgBtn, releaseBtn, clearBtn;
     private JTextField songNameTxt;
     private JLabel titleLbl;
     private JPanel buttonPanel;
@@ -90,12 +90,14 @@ public class AUploadSongPanel extends JPanel {
             releaseBtn.addActionListener(new AUploadSongBtnActions(songNameTxt,artistId));
             buttonPanel.add(releaseBtn);
 
-            // Cancel Button
-            cancelBtn = new JButton("Cancel");
-            cancelBtn.setBackground(new Color(224, 143, 255));
-            cancelBtn.setBorderPainted(false);
-            cancelBtn.setFocusPainted(false);
-            buttonPanel.add(cancelBtn);
+            // clear Button
+            clearBtn = new JButton("Clear");
+            clearBtn.setBackground(new Color(224, 143, 255));
+            clearBtn.setBorderPainted(false);
+            clearBtn.setFocusPainted(false);
+            clearBtn.setActionCommand("Clear");
+            clearBtn.addActionListener( new AUploadSongBtnActions(songNameTxt,artistId));
+            buttonPanel.add(clearBtn);
 
             gbc.gridx = 1;
             gbc.gridy = 5;

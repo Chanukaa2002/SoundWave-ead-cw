@@ -8,27 +8,30 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 public class LExploreSongBtnActions implements ActionListener {
-    LMainContent mc;
+    private LMainContent mc;
     private String songId,songName,listenerId;
 
     public LExploreSongBtnActions(LMainContent mc,String songId,String songName,String listenerId){
-        this.mc = mc;
-        this.songName = songName;
-        this.songId = songId;
-        this.listenerId = listenerId;
-    }
+        try{
+            this.mc = mc;
+            this.songName = songName;
+            this.songId = songId;
+            this.listenerId = listenerId;
 
+        }catch(Exception e){
+            System.out.println("LExploreSongBtnActions constructor Error: "+e);
+        }
+    }
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
         switch(command){
             case "Song":
-                System.out.println("Clicked");
                 try {
                     mc.setContentPanel(new LListenSongPanel(mc,songId,listenerId),songName);
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    System.out.println("LExploreSongBtnActions actionPerformed method Error: "+ex);
                 }
                 break;
         }

@@ -7,41 +7,31 @@ import SoundWave.User.Listener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LViewPlayListPanel extends JPanel {
 
-    GridBagConstraints gbc;
-    JLabel coverImg,titleLbl,playlistSongLbl,exploreSongLbl;
-    JButton playBtn,stopBtn;
-    JScrollPane playlistSongScroll,exploreSongScroll;
-    JPanel topPanel,leftPanel,rightPanel;
-    LMainContent mc;
-    PlayList playlist;
-    Listener listener;
-    String playlistId;
-    ArrayList<String[]> playlistSongs;
-    String[] list;
+    private GridBagConstraints gridBag;
+    private JLabel coverImg,titleLbl,playlistSongLbl,exploreSongLbl;
+    private JButton playBtn,stopBtn;
+    private JScrollPane playlistSongScroll,exploreSongScroll;
+    private JPanel topPanel,leftPanel,rightPanel;
+    private LMainContent mc;
+    private PlayList playlist;
+    private Listener listener;
+    private String playlistId;
+    private ArrayList<String[]> playlistSongs;
+    private String[] list;
+    private List<String[]> songList;
 
     public JButton getPlayBtn() {
         return playBtn;
     }
-
-    public void setPlayBtn(JButton playBtn) {
-        this.playBtn = playBtn;
-    }
-
     public JButton getStopBtn() {
         return stopBtn;
     }
 
-    public void setStopBtn(JButton stopBtn) {
-        this.stopBtn = stopBtn;
-    }
-
-    List<String[]> songList;
 
     private void customizeButton(JButton button) {
         button.setFocusPainted(false);
@@ -49,14 +39,12 @@ public class LViewPlayListPanel extends JPanel {
         button.setContentAreaFilled(false);
         button.setOpaque(false);
     }
-
     public void refreshPanel(){
-        removeAll();  // Remove all existing components
-        UI();  // Rebuild the UI components
-        revalidate();  // Revalidate the panel to update the layout
-        repaint();  // Repaint the panel to refresh the UI
+        removeAll();
+        UI();
+        revalidate();
+        repaint();
     }
-
     public  LViewPlayListPanel(LMainContent mc,String playlistId) {
         try{
             this.mc = mc;
@@ -67,16 +55,16 @@ public class LViewPlayListPanel extends JPanel {
             UI();
         }
         catch (Exception e){
-            System.out.println(e);
+            System.out.println("LViewPlayListPanel constructor error: "+e);
         }
     }
     private void UI(){
         try {
             setLayout(new GridBagLayout());
             setBackground(new Color(58, 65, 74));
-            this.gbc = new GridBagConstraints();
-            gbc.insets = new Insets(10, 10, 10, 10);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+            this.gridBag = new GridBagConstraints();
+            gridBag.insets = new Insets(10, 10, 10, 10);
+            gridBag.fill = GridBagConstraints.HORIZONTAL;
 
             topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             topPanel.setBackground(new Color(58, 65, 74));
@@ -87,22 +75,22 @@ public class LViewPlayListPanel extends JPanel {
             rightPanel = new JPanel(new BorderLayout());
             rightPanel.setBackground(new Color(224, 143, 255));
 
-            gbc.gridy=0;
-            gbc.gridx=0;
-            gbc.gridwidth=3;
-            gbc.anchor = GridBagConstraints.NORTH;
-            add(topPanel,gbc);
+            gridBag.gridy=0;
+            gridBag.gridx=0;
+            gridBag.gridwidth=3;
+            gridBag.anchor = GridBagConstraints.NORTH;
+            add(topPanel, gridBag);
 
-            gbc.gridy=1;
-            gbc.gridx=0;
-            gbc.gridwidth=1;
-            gbc.anchor = GridBagConstraints.WEST;
-            add(leftPanel,gbc);
+            gridBag.gridy=1;
+            gridBag.gridx=0;
+            gridBag.gridwidth=1;
+            gridBag.anchor = GridBagConstraints.WEST;
+            add(leftPanel, gridBag);
 
-            gbc.gridy=1;
-            gbc.gridx=2;
-            gbc.anchor = GridBagConstraints.EAST;
-            add(rightPanel,gbc);
+            gridBag.gridy=1;
+            gridBag.gridx=2;
+            gridBag.anchor = GridBagConstraints.EAST;
+            add(rightPanel, gridBag);
 
             coverImg();
             title();
@@ -117,9 +105,8 @@ public class LViewPlayListPanel extends JPanel {
     }
     private void coverImg(){
         try{
-
-            ImageIcon originalIcon = new ImageIcon(FilePath.getPlayListCoverImgPath() +list[2]);
-            System.out.println("playlist img"+list[2]);
+            String playlistImg = list[2];
+            ImageIcon originalIcon = new ImageIcon(FilePath.getPlayListCoverImgPath() +playlistImg);
             Image scaledImg = originalIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
 
@@ -148,8 +135,8 @@ public class LViewPlayListPanel extends JPanel {
     }
     private void controlBtn(){
         try{
-            ImageIcon playIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/SrcImg/play.png");
-            ImageIcon stopIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/SrcImg/pause.png");
+            ImageIcon playIcon = new ImageIcon(FilePath.playBtn());
+            ImageIcon stopIcon = new ImageIcon(FilePath.stopBtn());
 
             playBtn = new JButton(playIcon);
             stopBtn = new JButton(stopIcon);
@@ -192,8 +179,7 @@ public class LViewPlayListPanel extends JPanel {
             for (String[] i : playlistSongs) {
                 JPanel songPanel = new JPanel(new BorderLayout());
                 songPanel.setBackground(new Color(232, 213, 255));
-                System.out.println(i[0] +","+i[1]);
-                JLabel songTitle = new JLabel("Song Title: " + i[1]);
+                JLabel songTitle = new JLabel( i[1]);
 
                 String songId = i[0];
                 songTitle.setPreferredSize(new Dimension(50, 30));

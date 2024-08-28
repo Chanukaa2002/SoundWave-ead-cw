@@ -2,7 +2,6 @@ package SoundWave.App.ListenerUI;
 
 import SoundWave.App.ListenerUI.Actions.LCreatePlayListBtnActions;
 import SoundWave.App.ListenerUI.Actions.LSideBarBtnActions;
-import SoundWave.App.ListenerUI.Actions.ListenSongBtnsActions;
 import SoundWave.User.Listener;
 
 import javax.swing.*;
@@ -11,17 +10,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class LSideBar extends JPanel {
-    GridBagConstraints gbc;
-    LMainContent mc;
-    JLabel listenerLabel, playListLabel;
-    JButton homeBtn, playListBtn,createPlaylistBtn,logOutBtn;
+    private GridBagConstraints gridBag;
+    private LMainContent mc;
+    private JLabel listenerLabel, playListLabel;
+    private JButton homeBtn, playListBtn,createPlaylistBtn,logOutBtn;
     private String userName,listenerId;
     private Listener listener;
 
     public LSideBar(LMainContent mc,String userName) throws SQLException {
         this.mc = mc;
         this.userName = userName;
-
         listener = new Listener();
         listenerId = listener.getId(userName);
         UI();
@@ -32,33 +30,32 @@ public class LSideBar extends JPanel {
             setBackground(new Color(76, 83, 93));
             setPreferredSize(new Dimension(200, 600));
 
-            this.gbc = new GridBagConstraints();
-            gbc.insets = new Insets(10, 10, 10, 10);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+            this.gridBag = new GridBagConstraints();
+            gridBag.insets = new Insets(10, 10, 10, 10);
+            gridBag.fill = GridBagConstraints.HORIZONTAL;
 
 
-            gbc.gridy = 0;
-            gbc.gridx = 0;
+            gridBag.gridy = 0;
+            gridBag.gridx = 0;
             this.listenerLabel = new JLabel("Welcome "+userName, SwingConstants.CENTER);
             listenerLabel.setForeground(Color.WHITE);
             listenerLabel.addMouseListener(new LSideBarBtnActions(userName,mc));
-            add(listenerLabel, gbc);
+            add(listenerLabel, gridBag);
 
-            gbc.gridy++;
-            add(Box.createVerticalStrut(10), gbc);
+            gridBag.gridy++;
+            add(Box.createVerticalStrut(10), gridBag);
 
             homeBtn();
-            gbc.gridy++;
+            gridBag.gridy++;
 
             playListLabel();
-            gbc.gridy++;
+            gridBag.gridy++;
 
             playlists();
-
             createPlayListBtn();
 
-            gbc.weighty = 1.0;
-            add(Box.createVerticalGlue(), gbc);
+            gridBag.weighty = 1.0;
+            add(Box.createVerticalGlue(), gridBag);
             logOutBtn();
 
             revalidate();
@@ -79,8 +76,8 @@ public class LSideBar extends JPanel {
             homeBtn.setActionCommand("Home");
             homeBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
 
-            gbc.gridy++;
-            add(homeBtn, gbc);
+            gridBag.gridy++;
+            add(homeBtn, gridBag);
         } catch (Exception e) {
             System.out.println("Side Bar home Btn method Error: " + e);
         }
@@ -91,8 +88,8 @@ public class LSideBar extends JPanel {
             playListLabel.setForeground(Color.WHITE);
             playListLabel.setFont(new Font("Font.SERIF", Font.BOLD, 17));
 
-            gbc.gridy++;
-            add(playListLabel, gbc);
+            gridBag.gridy++;
+            add(playListLabel, gridBag);
         } catch (Exception e) {
             System.out.println("Side Bar playList Label method Error: " + e);
         }
@@ -102,15 +99,18 @@ public class LSideBar extends JPanel {
             Listener listener = new Listener();
             ArrayList<String[]> playlists = listener.viewAllPlayList(listenerId);
             for (String[] i : playlists) {
-                this.playListBtn = new JButton(i[1]);
+                String playlistName = i[1];
+                String playlistId = i[0];
+
+                this.playListBtn = new JButton(playlistName);
                 playListBtn.setBackground(new Color(224, 143, 255));
                 playListBtn.setFocusPainted(false);
                 playListBtn.setBorderPainted(false);
                 playListBtn.setActionCommand("PlayList");
-                 playListBtn.addActionListener(new LSideBarBtnActions(mc,i[0],listenerId));
+                 playListBtn.addActionListener(new LSideBarBtnActions(mc,playlistId,listenerId));
 
-                gbc.gridy++;
-                add(playListBtn, gbc);
+                gridBag.gridy++;
+                add(playListBtn, gridBag);
             }
         } catch (Exception e) {
             System.out.println("Side Bar playlists method Error: " + e);
@@ -118,7 +118,7 @@ public class LSideBar extends JPanel {
     }
     private void createPlayListBtn(){
         try{
-            gbc.gridy++;
+            gridBag.gridy++;
             this.createPlaylistBtn = new JButton("Create PlayList");
             createPlaylistBtn.setMargin(new Insets(7,1,7,1));
             createPlaylistBtn.setSize(new Dimension(40,20));
@@ -130,7 +130,7 @@ public class LSideBar extends JPanel {
             createPlaylistBtn.addActionListener(new LCreatePlayListBtnActions( listenerId, this));
             createPlaylistBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
 
-            add(createPlaylistBtn,gbc);
+            add(createPlaylistBtn, gridBag);
         }catch (Exception e){
             System.out.println("Side Bar create playlist method Error: "+e);
         }
@@ -141,8 +141,8 @@ public class LSideBar extends JPanel {
     }
     private void logOutBtn(){
         try {
-            gbc.weighty = 0;
-            gbc.gridy++;
+            gridBag.weighty = 0;
+            gridBag.gridy++;
             this.logOutBtn = new JButton("LogOut");
             logOutBtn.setMargin(new Insets(7, 10, 7, 10));
             logOutBtn.setBackground(new Color(224, 143, 255));
@@ -151,7 +151,7 @@ public class LSideBar extends JPanel {
             logOutBtn.setFocusPainted(false);
             logOutBtn.setActionCommand("LogOut");
             logOutBtn.addActionListener(new LSideBarBtnActions(mc,null,listenerId));
-            add(logOutBtn, gbc);
+            add(logOutBtn, gridBag);
         }catch (Exception e){
             System.out.println("Side Bar Panel logoutBtn method Error: "+e);
         }

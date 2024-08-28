@@ -22,6 +22,7 @@ public class Artist extends User{
     public void setArtistId(String artistId) {
         this.artistId = artistId;
     }
+
     public Artist(){
         try{
             conn= DBConnection.getConnection();
@@ -140,56 +141,6 @@ public class Artist extends User{
         }
         return status;
     }//checked
-//    public boolean updateSong(String songId, String title, String duration, InputStream coverImgStream,String imgFileExtension) throws SQLException {
-//        boolean status=false;
-//        try {
-//            conn.setAutoCommit(false);
-//            String sql1 = "SELECT CoverImg,Song FROM song WHERE SongId=?";
-//            String sql2 = "UPDATE song SET Title=?, Duration=?, CoverImg=? WHERE SongId=?";
-//            //delete old coverImg
-//
-//            PreparedStatement selectStatement = conn.prepareStatement(sql1);
-//            selectStatement.setString(1,songId);
-//            ResultSet result = selectStatement.executeQuery();
-//
-//            if (result.next()) {
-//                String oldCoverImg = result.getString("CoverImg");
-//                String oldDpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/SongCoverImage/" + oldCoverImg;
-//                File oldFile = new File(oldDpFilePath);
-//                if (oldFile.exists()) {
-//                    oldFile.delete();
-//                }
-//            }
-//            //Update data
-//            PreparedStatement updateStatement = conn.prepareStatement(sql2);
-//            updateStatement.setString(1,title);
-//            updateStatement.setString(2,duration);
-//            updateStatement.setString(3,coverImg);
-//            updateStatement.setString(4,songId);
-//
-//            int rowsAffected = updateStatement.executeUpdate();
-//
-//            if (rowsAffected > 0) {
-//                //update DP
-//                String dpFilePath = "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/" + coverImg;
-//                boolean isDpSaved = saveFile(coverImgStream, dpFilePath);
-//                conn.commit();
-//                status = true;
-//                System.out.println("Song update successful.");
-//            } else {
-//                conn.rollback();
-//                System.out.println("Song update unsuccessful.");
-//            }
-//        } catch (Exception e) {
-//            conn.rollback();
-//            System.out.println("Error" +e);
-//        }
-//        finally {
-//            conn.setAutoCommit(true);
-//            conn.close();
-//        }
-//        return status;
-//    }//checked
     public boolean removeSong(String songId) throws SQLException {
         boolean status=false;
         try {
@@ -218,8 +169,6 @@ public class Artist extends User{
 
                 File image = new File(oldDpFilePath);
                 File song = new File(oldSongFilePath);
-                System.out.println("Image Path: " + oldDpFilePath);
-                System.out.println("Song Path: " + oldSongFilePath);
 
                 if (image.exists() && song.exists()) {
 

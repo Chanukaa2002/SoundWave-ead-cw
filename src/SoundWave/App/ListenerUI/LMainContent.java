@@ -37,7 +37,6 @@ public class LMainContent extends JPanel {
     }
     public void setContentPanel(JPanel newPanel,String titleName) {
         try {
-//            System.out.println("Come to Here");
             scrollPane.setViewportView(newPanel);
             contentPanel = newPanel;
             headerLabel.setText(titleName);
