@@ -1,6 +1,7 @@
 package SoundWave.App.UserUI;
 
 public class FilePath {
+    //file handling paths
     public static String getDpImgPath(){
         return "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/Dp/";
     }
@@ -14,6 +15,7 @@ public class FilePath {
         return "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/Images/PlayListCoverImage/";
     }
 
+    //src files paths
     public static String playBtn(){
         return "C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/SrcImg/play.png";
     }

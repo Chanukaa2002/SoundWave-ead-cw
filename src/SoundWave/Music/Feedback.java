@@ -1,7 +1,6 @@
 package SoundWave.Music;
 
 import SoundWave.DBConnection.DBConnection;
-
 import java.sql.*;
 
 public class Feedback {
@@ -11,7 +10,7 @@ public class Feedback {
         try {
             conn = DBConnection.getConnection();
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
+            System.out.println("Feedback constructor Error: " + e);
         }
     }
 
@@ -27,8 +26,9 @@ public class Feedback {
             if (result.next()) {
                 totCount = result.getString("TotalLikes");
             }
+            result.close();
         } catch (Exception e) {
-            System.out.println("Error getFeedbackDetails: " + e);
+            System.out.println("Feedback Class getFeedbackDetails method Error: " + e);
         } finally {
             conn.close();
         }
@@ -48,7 +48,7 @@ public class Feedback {
                 isLiked = true;
             }
         } catch (Exception e) {
-            System.out.println("Error Is Liked: " + e);
+            System.out.println("Feedback class id Liked method Error: " + e);
         } finally {
             conn.close();
         }

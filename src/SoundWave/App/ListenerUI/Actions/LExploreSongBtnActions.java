@@ -2,7 +2,6 @@ package SoundWave.App.ListenerUI.Actions;
 
 import SoundWave.App.ListenerUI.LListenSongPanel;
 import SoundWave.App.ListenerUI.LMainContent;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -26,15 +25,12 @@ public class LExploreSongBtnActions implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
-        switch(command){
-            case "Song":
-                try {
-                    mc.setContentPanel(new LListenSongPanel(mc,songId,listenerId),songName);
-                } catch (SQLException ex) {
-                    System.out.println("LExploreSongBtnActions actionPerformed method Error: "+ex);
-                }
-                break;
+        if (command.equals("Song")) {
+            try {
+                mc.setContentPanel(new LListenSongPanel(songId, listenerId), songName);
+            } catch (SQLException ex) {
+                System.out.println("LExploreSongBtnActions actionPerformed method Error: " + ex);
+            }
         }
-
     }
 }

@@ -21,11 +21,12 @@ public class LoginPageActions implements ActionListener {
     private JFrame loginFrame;
 
 
+    //from clicking create btn
     public LoginPageActions(JFrame loginFrame){
         this.loginFrame = loginFrame;
     }
 
-
+    //form clicking login btn
     public LoginPageActions(JTextField userNameTxt, JPasswordField passwordTxt, JFrame loginFrame) {
         this.userNameTxt = userNameTxt;
         this.passwordTxt = passwordTxt;
@@ -34,7 +35,7 @@ public class LoginPageActions implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        User user = null;
+        User user;
         String command = e.getActionCommand();
         if(command=="LogIn"){
             String userName = userNameTxt.getText();

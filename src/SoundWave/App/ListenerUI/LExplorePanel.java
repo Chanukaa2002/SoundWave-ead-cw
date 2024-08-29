@@ -68,7 +68,7 @@ public class LExplorePanel extends JPanel {
             }
 
 
-            add(gridPanel, borderLayout.CENTER);
+            add(gridPanel,borderLayout.CENTER);
         }catch (Exception e){
             System.out.println("Explore panel song Grid method Error: "+e);
         }

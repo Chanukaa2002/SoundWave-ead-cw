@@ -7,14 +7,13 @@ import java.awt.*;
 
 public class LCreatePlayListPanel extends JPanel {
     private JButton coverImageBtn,createBtn,cancelBtn;
-    private LMainContent mc;
     private GridBagConstraints gbc;
     private JPanel bottomPanel;
     private JTextField playListText;
     private String listenerId;
 
-    public LCreatePlayListPanel(LMainContent mc,String listenerId){
-        this.mc = mc;
+    //from login btn action
+    public LCreatePlayListPanel(String listenerId){
         this.listenerId = listenerId;
         UI();
     }

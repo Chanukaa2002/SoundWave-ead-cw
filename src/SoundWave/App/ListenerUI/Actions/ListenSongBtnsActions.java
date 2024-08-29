@@ -19,11 +19,11 @@ public class ListenSongBtnsActions implements ActionListener, ChangeListener {
     private Listener listener = new Listener();
     private String listenerId;
 
+    //for event actions
     public ListenSongBtnsActions(LListenSongPanel panel,String listenerId) {
         this.panel = panel;
         this.listenerId = listenerId;
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -47,15 +47,14 @@ public class ListenSongBtnsActions implements ActionListener, ChangeListener {
                 panel.getPlayBtn().setVisible(true);
                 panel.getPauseBtn().setVisible(false);
                 stopProgressBar();
-
             }catch(Exception ex){
                 System.out.println("ListenSongBtnActions action performed  Stop command Error: "+ex);
             }
         }
         else if(cmd=="Like"){
-
             try {
-               listener.unlikeSong(panel.getSongDetails()[0],listenerId);
+                String songId = panel.getSongDetails()[0];
+                listener.unlikeSong(songId,listenerId);
                 panel.getLikedBtn().setVisible(false);
                 panel.getDisLikedBtn().setVisible(true);
 
@@ -80,9 +79,9 @@ public class ListenSongBtnsActions implements ActionListener, ChangeListener {
 
         song.start(FilePath.getSongPath()+ panel.getSongDetails()[2]);
         progressTimer = new Timer(1000, new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
+                //set up the progress bar
                 try{
                     int durationInSeconds = (int) Float.parseFloat(panel.getSongDetails()[3]);
                     if (elapsedSeconds <= durationInSeconds) {

@@ -17,7 +17,6 @@ public class LViewPlayListPanel extends JPanel {
     private JButton playBtn,stopBtn;
     private JScrollPane playlistSongScroll,exploreSongScroll;
     private JPanel topPanel,leftPanel,rightPanel;
-    private LMainContent mc;
     private PlayList playlist;
     private Listener listener;
     private String playlistId;
@@ -45,9 +44,8 @@ public class LViewPlayListPanel extends JPanel {
         revalidate();
         repaint();
     }
-    public  LViewPlayListPanel(LMainContent mc,String playlistId) {
+    public  LViewPlayListPanel(String playlistId) {
         try{
-            this.mc = mc;
             this.playlistId = playlistId;
             this.playlist = new PlayList();
             this.listener = new Listener();

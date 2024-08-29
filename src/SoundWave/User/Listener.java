@@ -57,7 +57,6 @@ public class Listener extends User{
             String sql1 = "SELECT DP FROM user WHERE UserName=?";
             String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, DP=? WHERE UserName=?";
 
-            //delete old DP
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
             selectStatement.setString(1,userName);
             ResultSet result = selectStatement.executeQuery();
@@ -70,8 +69,6 @@ public class Listener extends User{
                     oldFile.delete();
                 }
             }
-
-            //Update data
             PreparedStatement updateStatement  = conn.prepareStatement(sql2);
             updateStatement.setString(1,password);
             updateStatement.setString(2,name);
@@ -80,14 +77,12 @@ public class Listener extends User{
             updateStatement.setString(5,userName);
             int rowsAffected = updateStatement.executeUpdate();
             if (rowsAffected > 0) {
-                //update DP
                 String dpFilePath = FilePath.getDpImgPath() + dp + "." + fileExtension;
-                boolean isDpSaved = saveFile(dpInputStream, dpFilePath);
-                isAuthenticated = true;
+                isAuthenticated = saveFile(dpInputStream, dpFilePath);
             }
             result.close();
         } catch (Exception e) {
-            System.out.println("Error: "+e);
+            System.out.println("Listener class edit profiles method Error: "+e);
         }
         finally{
             conn.close();
@@ -124,7 +119,6 @@ public class Listener extends User{
 
             String sql1 ="Select Max(PlayListId) from playlist";
             String sql2 = "Insert into playlist (PlayListId,Name,CoverImg,ListenerId) values(?,?,?,?)";
-                //auto increment id
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
             ResultSet result = selectStatement.executeQuery();
 
@@ -151,7 +145,6 @@ public class Listener extends User{
                 int rowsAffected= inputStatement.executeUpdate();
 
                 if(rowsAffected>0){
-                    //upload image into local storage
                     String coverImgPath = FilePath.getPlayListCoverImgPath() + coverImg;
                     boolean isDpSaved = saveFile(inputCoverImg,coverImgPath);
                     if(isDpSaved){
@@ -159,7 +152,6 @@ public class Listener extends User{
                         status=true;
                     }else {
                         conn.rollback();
-                        System.out.println("Failed to save cover Image.");
                     }
                 }
             }
@@ -171,7 +163,7 @@ public class Listener extends User{
             try {
                 conn.setAutoCommit(true);
             } catch (SQLException ex) {
-                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
+                System.out.println("Failed to restore auto commit in Listener createPlaylist method: " + ex);
             }
         }
         return status;
@@ -230,7 +222,7 @@ public class Listener extends User{
             System.out.println("Listener View Playlist Error: "+e);
         }
         return playlistDetail;
-    }
+    }//checked
     public void likeSong(String songId, String listenerId) throws SQLException {
         try{
             String sql1 = "Select Max(FeedbackId) from feedback";
@@ -241,6 +233,7 @@ public class Listener extends User{
             checkStatement.setString(1,songId);
             checkStatement.setString(2,listenerId);
             ResultSet res = checkStatement.executeQuery();
+
             if(res.next()){
                 unlikeSong(songId,listenerId);
             }
@@ -270,7 +263,7 @@ public class Listener extends User{
         }
         catch(Exception e){
 
-            System.out.println("Error: "+e);
+            System.out.println("Listener Class likeSong method Error: "+e);
         }
         finally{
             conn.close();
@@ -285,7 +278,7 @@ public class Listener extends User{
             deleteStatement.executeUpdate();
         }
         catch(Exception e){
-            System.out.println("Error: " + e);
+            System.out.println("Listener class unlike song method Error: " + e);
         }
         finally{
             conn.close();
@@ -312,7 +305,7 @@ public class Listener extends User{
             System.out.println("Listener view All Playlist Error: "+e);
         }
         return playLists;
-    }
+    }//checked
     public ArrayList<String[]> exploreSongPlaylist(String playlistId){
         ArrayList<String[]> songList = new ArrayList<>();
         try{
@@ -336,10 +329,10 @@ public class Listener extends User{
             }
         }
         catch (Exception e){
-            System.out.println("Error:"+e);
+            System.out.println("Listener class explore song playlist method error:"+e);
         }
         return songList;
-    }
+    }//checked
     public ArrayList<String[]> exploreSong(){
         ArrayList<String[]> songList = new ArrayList<>();
         try{
@@ -363,10 +356,10 @@ public class Listener extends User{
             }
         }
         catch (Exception e){
-            System.out.println("Error:"+e);
+            System.out.println("Listener class explore song Error: "+e);
         }
         return songList;
-    }//checked-
+    }//checked
     public  boolean register(String userName, String password, String name, String email, String contactNo, InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
             String sql1 = "Select * from user where UserName=?";
@@ -374,27 +367,19 @@ public class Listener extends User{
             String sql3 = "Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values(?,?,?,?,?,?)";
             String sql4 = "Insert into listener(ListenerId,UserName) values(?,?)";
 
-
-            //initialize Listener Id for inset sql
             String ListenerId;
             String dp;
 
-
-            //sql command-1
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
             selectStatement.setString(1,userName);
             ResultSet result1 = selectStatement.executeQuery();
 
             if(!(result1.next())){
-
-                    //auto increment id
-                //sql command-2
                 PreparedStatement selectMaxIDStatement = conn.prepareStatement(sql2);
                 ResultSet result2 = selectMaxIDStatement.executeQuery();
 
                 if(result2.next()){
                     String maxId = result2.getString(1);
-
                     if(maxId!=null){
                         int numaricPart = Integer.parseInt(maxId.substring(1));
                         numaricPart++;
@@ -405,7 +390,6 @@ public class Listener extends User{
                         ListenerId = "L001";
                         dp = "DP-L001";
                     }
-                    //insert sql command
                     PreparedStatement insertStatementOne = conn.prepareStatement(sql3);
                     insertStatementOne.setString(1,userName);
                     insertStatementOne.setString(2,password);
@@ -427,21 +411,18 @@ public class Listener extends User{
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             isAuthenticated=true;
-                        }else {
-                            System.out.println("Failed to save display picture.");
                         }
                     }
                 }
             }
             else{
-                System.out.println("User Name has been used!");
                 isAuthenticated=false;
             }
             result1.close();
         }
         catch(Exception e){
             isAuthenticated=false;
-            System.out.println("Error "+e);
+            System.out.println("Listener class register method Error: "+e);
         }
         finally{
             conn.close();

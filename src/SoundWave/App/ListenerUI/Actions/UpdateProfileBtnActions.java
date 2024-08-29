@@ -103,7 +103,7 @@ public class UpdateProfileBtnActions implements ActionListener {
             String name = nameTxt.getText();
             String password = passwordTxt.getText();
             String email = emailTxt.getText();
-            boolean isUpdate=false;
+            boolean isUpdate;
 
             this.user = new Listener();
             try {
@@ -112,7 +112,7 @@ public class UpdateProfileBtnActions implements ActionListener {
                     JOptionPane.showMessageDialog(null, "Profile has Updated!.");
                 }
             } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+                System.out.println("Update profile btn actions class action preformed method Error: "+ex);
             }
 
         }

@@ -21,10 +21,11 @@ public class LCreatePlayListBtnActions implements ActionListener {
     private static String listenerId;
     private static LSideBar sideBar;
 
+    //for set sidebar
     public LCreatePlayListBtnActions( String listenerId, LSideBar sideBar) {
         try{
-            this.listenerId = listenerId;
-            this.sideBar = sideBar;
+            LCreatePlayListBtnActions.listenerId = listenerId;
+            LCreatePlayListBtnActions.sideBar = sideBar;
 
         }catch(Exception e){
             System.out.println("LCreatePlayListBtnActions constructor Error: "+e);
@@ -33,7 +34,7 @@ public class LCreatePlayListBtnActions implements ActionListener {
     public LCreatePlayListBtnActions(JTextField playListTxt, String listenerId) {
         try{
             this.playListTxt = playListTxt;
-            this.listenerId = listenerId;
+            LCreatePlayListBtnActions.listenerId = listenerId;
 
         }catch(Exception e){
             System.out.println("LCreatePlayListBtnActions constructor Error: "+e);
@@ -72,19 +73,18 @@ public class LCreatePlayListBtnActions implements ActionListener {
             catch(Exception ex){
                 System.out.println("Create payList Action class Upload CoveImg Error: "+ex);
             }
-
         }
         else if(command == "Create"){
             try{
                 this.coverImgInputStream = new FileInputStream(coverImgPath);
 
+                //validating
                 if(Validations.isFieldEmpty(playListTxt)){
                     JOptionPane.showMessageDialog(null, "Title is required.");
                 }
                 Listener user = new Listener();
-
                 String title = playListTxt.getText();
-                boolean status = false;
+                boolean status;
 
                 status = user.createPlayList(title,coverImgInputStream,listenerId,imgExtension);
                 if (status) {

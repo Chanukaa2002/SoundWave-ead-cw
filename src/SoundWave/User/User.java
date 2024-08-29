@@ -11,11 +11,7 @@ public abstract class User implements Authentication {
 
     //data members
     protected String userName;
-    protected String name;
-    protected String email;
     protected String password;
-    protected String DP;
-    protected String contactNo;
     private Connection conn;
     protected boolean isAuthenticated = false;
     public User(){
@@ -40,8 +36,9 @@ public abstract class User implements Authentication {
     public String getPassword() {
         return password;
     }
+
     //methods
-    public String[]  viewProfile(String userName) throws SQLException{
+    public String[] viewProfile(String userName) throws SQLException{
         String[] userDetails = new String[6];
         try{
             String sql ="Select * from User where UserName=?";
@@ -56,16 +53,14 @@ public abstract class User implements Authentication {
                 userDetails[4] = result.getString("ContactNo");
                 userDetails[5] = result.getString("Email");
             }
-
             result.close();
         }catch (Exception e){
-            System.out.println("Error: "+e);
+            System.out.println("User class View Profile method Error: "+e);
         }finally{
             conn.close();
         }
         return userDetails;
-    };//Checked
-    //interface methods
+    }//Checked
     public boolean login(String userName, String password) throws SQLException {
         try{
             String sql = "Select * from user where UserName=? and Password=?";
@@ -75,13 +70,12 @@ public abstract class User implements Authentication {
 
             ResultSet result = selectStatement.executeQuery();
             if(result.next()){
-//                setUserName(userName);
                 this.isAuthenticated=true;
             }
             result.close();
         }
         catch(Exception e){
-            System.out.println(e);
+            System.out.println("User Class login method Error: "+e);
         }
         finally {
             conn.close();
@@ -95,7 +89,7 @@ public abstract class User implements Authentication {
             Files.copy(inputStream, Paths.get(filePath));
             return true;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("User class saveFile method Error: " + e);
             return false;
         }
     }//Checked

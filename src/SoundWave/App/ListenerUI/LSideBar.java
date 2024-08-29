@@ -21,7 +21,7 @@ public class LSideBar extends JPanel {
         this.mc = mc;
         this.userName = userName;
         listener = new Listener();
-        listenerId = listener.getId(userName);
+        this.listenerId = listener.getId(userName);
         UI();
     }
     private void UI() {
@@ -33,7 +33,6 @@ public class LSideBar extends JPanel {
             this.gridBag = new GridBagConstraints();
             gridBag.insets = new Insets(10, 10, 10, 10);
             gridBag.fill = GridBagConstraints.HORIZONTAL;
-
 
             gridBag.gridy = 0;
             gridBag.gridx = 0;

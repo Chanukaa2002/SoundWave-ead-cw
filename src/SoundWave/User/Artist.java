@@ -13,22 +13,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class Artist extends User{
-//-----------------------------------------------------------------------|DONE|------------------------------------------------
     private Connection conn;
-    public String getArtistId() {
-        return artistId;
-    }
-    private String artistId;
-    public void setArtistId(String artistId) {
-        this.artistId = artistId;
-    }
 
     public Artist(){
         try{
             conn= DBConnection.getConnection();
         }
         catch(SQLException e){
-            System.out.println(e);
+            System.out.println("Artist class constructor Error: "+e);
         }
     }
     //methods
@@ -46,7 +38,7 @@ public class Artist extends User{
         result.close();
     }
     catch(Exception e){
-        System.out.println(e);
+        System.out.println("Artist Class isUser method Error: "+e);
     }
     finally {
         conn.close();
@@ -67,7 +59,7 @@ public class Artist extends User{
             result.close();
         }
         catch(Exception e){
-            System.out.println(e);
+            System.out.println("Artist class getId method Error: "+e);
         }
         finally {
             conn.close();
@@ -86,7 +78,6 @@ public class Artist extends User{
             String coverImg;
             String songName;
 
-            //auto increment id
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
             ResultSet result = selectStatement.executeQuery();
 
@@ -124,19 +115,18 @@ public class Artist extends User{
                         status=true;
                     }else {
                         conn.rollback();
-                        System.out.println("Failed to save cover Image or song.");
                     }
                 }
             }
 
         }catch(Exception e){
             conn.rollback();
-            System.out.println("Error" +e);
+            System.out.println("Artist class upload song method Error: " +e);
         }finally {
             try {
-                conn.setAutoCommit(true);  // Restore auto-commit mode
+                conn.setAutoCommit(true);
             } catch (SQLException ex) {
-                System.out.println("Failed to restore auto-commit: " + ex.getMessage());
+                System.out.println("Failed to restore auto commit in upload Song: " + ex);
             }
         }
         return status;
@@ -146,7 +136,7 @@ public class Artist extends User{
         try {
             String sqlSelect = "SELECT CoverImg, Song FROM song WHERE SongId=?";
             String sqlDeleteFeedback = "DELETE FROM feedback WHERE SongId=?";
-            String sqlDeletePlaListSong = "DELETE FROM playlist_song WHERE SongId=?";
+            String sqlDeletePlaListSong = "DELETE FROM playlist_song WHERE SongId=? and PlayListId=?";
             String sqlDeleteSong = "DELETE FROM song WHERE SongId=?";
             conn.setAutoCommit(false);
 
@@ -158,12 +148,11 @@ public class Artist extends User{
                 String oldCoverImg = result.getString("CoverImg");
                 String songName = result.getString("Song");
 
-                //get the Extension
-                String imgFileExtension="";
-                int dotIndex = oldCoverImg.lastIndexOf('.');
-                if (dotIndex > 0 && dotIndex < oldCoverImg.length() - 1) {
-                    imgFileExtension = oldCoverImg.substring(dotIndex + 1).toLowerCase();
-                }
+//                String imgFileExtension="";
+//                int dotIndex = oldCoverImg.lastIndexOf('.');
+//                if (dotIndex > 0 && dotIndex < oldCoverImg.length() - 1) {
+//                    imgFileExtension = oldCoverImg.substring(dotIndex + 1).toLowerCase();
+//                }
                 String oldDpFilePath = FilePath.getSongCoverImgPath() + oldCoverImg;
                 String oldSongFilePath = FilePath.getSongPath() + songName;
 
@@ -188,7 +177,6 @@ public class Artist extends User{
                         image.delete();
                         song.delete();
                         conn.commit();
-                        System.out.println("Song removed successfully!");
                         status=true;
                     } else {
                         conn.rollback();
@@ -201,7 +189,7 @@ public class Artist extends User{
 
         } catch (Exception e) {
             conn.rollback();
-            System.out.println("Error: " + e);
+            System.out.println("Artist class remove song method Error: " + e);
         } finally {
             conn.setAutoCommit(true);
             conn.close();
@@ -217,20 +205,13 @@ public class Artist extends User{
             String sql3 = "Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values(?,?,?,?,?,?)";
             String sql4 = "Insert into artist(ArtistId,UserName) values(?,?)";
 
-            //initialize Listener Id for inset sql
             String ArtistId;
             String dp;
-
-
-            //sql command-1
             PreparedStatement selectStatement = conn.prepareStatement(sql1);
             selectStatement.setString(1,userName);
             ResultSet result1 = selectStatement.executeQuery();
 
             if(!(result1.next())){
-
-                //auto increment id
-                //sql command-2
                 PreparedStatement selectMacIDStatement = conn.prepareStatement(sql2);
                 ResultSet result2 = selectMacIDStatement.executeQuery();
 
@@ -246,7 +227,6 @@ public class Artist extends User{
                         ArtistId = "A001";
                         dp = "DP-A001";
                     }
-                    //insert sql command
                     PreparedStatement insertStatementOne = conn.prepareStatement(sql3);
                     insertStatementOne.setString(1,userName);
                     insertStatementOne.setString(2,password);
@@ -263,7 +243,7 @@ public class Artist extends User{
 
                     int rowsAffected2 = insertStatementTwo.executeUpdate();
                     if(rowsAffected1>0 && rowsAffected2>0){
-                        //uploading image into local file
+
                         String dpFilePath = FilePath.getDpImgPath() + dp+"."+fileExtension;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
@@ -271,19 +251,17 @@ public class Artist extends User{
                             isAuthenticated=true;
                         }else {
                             conn.rollback();
-                            System.out.println("Failed to save display picture.");
                         }
                     }
                 }
             }
             else{
                 conn.rollback();
-                System.out.println("User Name has been used!");
             }
         }
         catch(Exception e){
             conn.rollback();
-            System.out.println("Error" +e);
+            System.out.println("Artist class register method Error: " +e);
         }finally {
             conn.setAutoCommit(true);
             conn.close();
@@ -295,7 +273,7 @@ public class Artist extends User{
             Files.copy(inputStream, Paths.get(filePath));
             return true;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("artist class saveSong method Error: " + e);
             return false;
         }
     }//checked

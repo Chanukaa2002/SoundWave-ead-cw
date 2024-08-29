@@ -2,7 +2,6 @@ package SoundWave.App.ListenerUI.Actions;
 
 import SoundWave.App.ListenerUI.*;
 import SoundWave.App.UserUI.LogInPanel;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,13 +9,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
 
-
-
 public class LSideBarBtnActions implements ActionListener, MouseListener {
     private LMainContent mc;
     private String playlistId,userName,listenerId;
     private static ListenerMainPanel lmp;
 
+    //for event actions
     public LSideBarBtnActions(LMainContent mc,String playListId,String listenerId){
         try {
             this.mc = mc;
@@ -27,6 +25,8 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
             System.out.println("Listener Side Bar Btn Actions constructor Error: "+e);
         }
     }
+
+    //for mouse click
     public LSideBarBtnActions(String userName,LMainContent mc){
         try {
             this.mc = mc;
@@ -36,6 +36,8 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
             System.out.println("Listener Side Bar Btn Actions constructor Error: "+e);
         }
     }
+
+    //for logout
     public LSideBarBtnActions(ListenerMainPanel lmp) {
         this.lmp = lmp;
     }
@@ -46,13 +48,13 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
         try{
             switch(command){
                 case "CreatePlayList":
-                    mc.setContentPanel(new LCreatePlayListPanel(mc,listenerId),"Create PlayList");
+                    mc.setContentPanel(new LCreatePlayListPanel(listenerId),"Create PlayList");
                     break;
                 case "Home":
                     mc.setContentPanel(new LExplorePanel(mc,listenerId),"Explore Songs");
                     break;
                 case "PlayList":
-                    mc.setContentPanel(new LViewPlayListPanel(mc,playlistId),"PlayList");
+                    mc.setContentPanel(new LViewPlayListPanel(playlistId),"PlayList");
                     break;
                 case "LogOut":
                     int response = JOptionPane.showConfirmDialog(null, "Are you sure you want LogOut?", "Confirm logout",
@@ -72,7 +74,7 @@ public class LSideBarBtnActions implements ActionListener, MouseListener {
     public void mouseClicked(MouseEvent e) {
         if(e.getSource() instanceof JLabel){
             try {
-                mc.setContentPanel(new UpdateProfilePanel(mc,userName),"Update Profile");
+                mc.setContentPanel(new UpdateProfilePanel(userName),"Update Profile");
             } catch (SQLException ex) {
                 System.out.println("LSideBarBtnActions mouseClicked Error: "+ex);
             }

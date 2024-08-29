@@ -18,13 +18,13 @@ public class LMainContent extends JPanel {
             setLayout(new BorderLayout());
             setBackground(new Color(58, 65, 74));
 
-            headerLabel = new JLabel("Explore Songs", SwingConstants.CENTER);
+            this.headerLabel = new JLabel("Explore Songs", SwingConstants.CENTER);
             headerLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 24));
             headerLabel.setForeground(Color.WHITE);
             add(headerLabel, BorderLayout.NORTH);
 
 
-            contentPanel = new LExplorePanel(this,listenerId);
+            this.contentPanel = new LExplorePanel(this,listenerId);
             scrollPane = new JScrollPane(contentPanel);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -37,9 +37,9 @@ public class LMainContent extends JPanel {
     }
     public void setContentPanel(JPanel newPanel,String titleName) {
         try {
-            scrollPane.setViewportView(newPanel);
-            contentPanel = newPanel;
-            headerLabel.setText(titleName);
+            this.scrollPane.setViewportView(newPanel);
+            this.contentPanel = newPanel;
+            this.headerLabel.setText(titleName);
 
             revalidate();
             repaint();

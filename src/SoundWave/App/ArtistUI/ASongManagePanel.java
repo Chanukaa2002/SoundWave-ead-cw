@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class ASongManagePanel extends JPanel {
     private JLabel titleLbl,likeLbl,likeCountLbl;
-    private JButton coverImgBtn,editBtn,deleteBtn;
+    private JButton coverImgBtn,deleteBtn;
     private GridBagConstraints gbc;
     private AMainContentPanel mcp;
     private String songId;

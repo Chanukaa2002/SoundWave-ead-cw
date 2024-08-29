@@ -24,15 +24,16 @@ public class RegisterPageActions implements ActionListener {
     private JLabel dpImageLabel;
     private static String fileExtension = "";
     private JComboBox<String> userTypeCombo;
-    User user;
+    private User user;
     private JFrame regPanel;
 
 
+    //from register dp btn
     public RegisterPageActions(JLabel dpImage) {
         this.dpImageLabel = dpImage;
     }
 
-
+    //from clicking signup btn
     public RegisterPageActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JPasswordField passwordTxt, JPasswordField confirmPasswordTxt,JTextField contactNo,JComboBox<String> userTypeCombo,JFrame regPanel) {
         this.userNameTxt = userNameTxt;
         this.nameTxt = nameTxt;
@@ -43,6 +44,8 @@ public class RegisterPageActions implements ActionListener {
         this.userTypeCombo = userTypeCombo;
         this.regPanel = regPanel;
     }
+
+    //from clicking login btn
     public RegisterPageActions(JFrame regPanel){
         this.regPanel = regPanel;
     }
@@ -52,7 +55,6 @@ public class RegisterPageActions implements ActionListener {
         String command = e.getActionCommand();
 
         if ("ImportDP".equals(command)) {
-
 
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
@@ -64,7 +66,6 @@ public class RegisterPageActions implements ActionListener {
                     BufferedImage img = ImageIO.read(selectedFile);
 
                     this.dpPath = selectedFile.getAbsolutePath();
-                    System.out.println(dpPath);
 
                     Image scaledImg = img.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
 

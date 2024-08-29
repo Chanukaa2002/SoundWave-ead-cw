@@ -10,26 +10,11 @@ import javax.sound.sampled.*;
 
 public class Song {
 
-
-
-
     public String getSongId() {
         return songId;
     }
     public void setSongId(String songId) {
         this.songId = songId;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getArtistName() {
-        return artistName;
-    }
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
     }
     public String getImage() {
         return image;
@@ -37,20 +22,12 @@ public class Song {
     public void setImage(String image) {
         this.image = image;
     }
-    public double getDuration() {
-        return duration;
-    }
-    public void setDuration(double duration) {
-        this.duration = duration;
-    }
 
     //data members
-    private String songId,title,artistName,image;
-    private double duration;
-    Connection conn;
+    private String songId,image;
+    private Connection conn;
     private static Clip  clip;
     private AudioInputStream audioInput;
-    public float currentVol=0;
     public static FloatControl fc;
 
     //methods
@@ -59,14 +36,12 @@ public class Song {
             conn= DBConnection.getConnection();
         }
         catch(SQLException e){
-            System.out.println(e);
+            System.out.println("Song class constructor Error: "+e);
         }
     }
-
     public void start(String path) {
         try {
             if (clip != null) {
-                //pause();
                 clip.stop();
                 clip.close();
             }
@@ -78,25 +53,19 @@ public class Song {
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         } catch (Exception e) {
-            System.out.println("Error: "+e);
+            System.out.println("Song class start method Error: "+e);
         }
     }//checked
     public void stop() {
         try {
-            System.out.println("come to stop");
             if (clip != null && clip.isRunning()) {
                 clip.stop();
                 clip.close();
-            } else {
-                System.out.println("Clip is either null or not running.");
             }
         } catch (Exception e) {
-            System.out.println("Error stopping the clip: " + e);
+            System.out.println("Song class stop method Error: " + e);
         }
     }//checked
-    //-------------------------work on this-------------------------
-    public void next(){}
-    public void back(){}
     public String[] getDetails(String songId) {
         String[] details = new String[7];
         try {
@@ -123,7 +92,7 @@ public class Song {
                 details = null;
             }
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Song class getDetails method Error: " + e);
         }
         return details;
     }//checked

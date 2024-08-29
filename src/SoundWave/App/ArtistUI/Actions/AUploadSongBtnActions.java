@@ -104,7 +104,6 @@ public class AUploadSongBtnActions implements ActionListener {
                             float frameRate = format.getFrameRate();
                             durationInSeconds = (audioFileLength / (frameSize * frameRate));
 
-                            System.out.println(durationInSeconds);
                         } else {
                             JOptionPane.showMessageDialog(null, "Please Select Wav File!.");
                         }

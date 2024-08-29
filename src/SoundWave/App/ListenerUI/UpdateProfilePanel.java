@@ -14,11 +14,9 @@ public class UpdateProfilePanel extends JPanel {
     private JTextField nameTxt,userNameTxt,passwordTxt,confirmPasswordTxt,emailTxt;
     private JLabel nameLbl,userNameLbl,passwordLbl,confirmPasswordLbl,emailLbl,dpLbl;
     private GridBagConstraints gbc;
-    private LMainContent mc;
     String[] userDetails;
 
-    public UpdateProfilePanel(LMainContent mc,String userName) throws SQLException {
-        this.mc = mc;
+    public UpdateProfilePanel(String userName) throws SQLException {
         User user = new Listener(); // find solution
         userDetails = user.viewProfile(userName);
         UI();

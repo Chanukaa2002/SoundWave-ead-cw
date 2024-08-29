@@ -17,7 +17,6 @@ public class LListenSongPanel extends JPanel {
     private JLabel likeCountLbl,titleLbl;
     private JProgressBar songProgressBar;
     private JSlider volumeSlider;
-    private LMainContent mc;
     private String songId;
     private String likeCount;
     private String songDetails[];
@@ -46,8 +45,8 @@ public class LListenSongPanel extends JPanel {
         return songDetails;
     }
 
-    public LListenSongPanel(LMainContent mc,String songId,String listenerId) throws SQLException {
-        this.mc = mc;
+    //from L explore song action
+    public LListenSongPanel(String songId,String listenerId) throws SQLException {
         this.songId = songId;
         this.listenerId = listenerId;
         Song song = new Song();
@@ -98,9 +97,10 @@ public class LListenSongPanel extends JPanel {
 
 
             String title = songDetails[1];
+            String artistName = songDetails[5];
             gridBag.gridy=1;
             gridBag.gridx=0;
-            titleLbl = new JLabel(title);
+            titleLbl = new JLabel(title + " By "+ artistName);
             titleLbl.setForeground(Color.WHITE);
             titleLbl.setFont(new Font("Font.SERIF",Font.ITALIC,16));
             add(titleLbl, gridBag);
