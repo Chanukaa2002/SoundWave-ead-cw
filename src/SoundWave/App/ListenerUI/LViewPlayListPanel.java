@@ -1,16 +1,36 @@
 package SoundWave.App.ListenerUI;
 
+import SoundWave.App.ListenerUI.Actions.LViewPlaylistBtnActions;
+import SoundWave.App.UserUI.FilePath;
+import SoundWave.Music.PlayList;
+import SoundWave.User.Listener;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LViewPlayListPanel extends JPanel {
 
-    GridBagConstraints gbc;
-    JLabel coverImg,titleLbl,playlistSongLbl,exploreSongLbl;
-    JButton playBtn,stopBtn;
-    JScrollPane playlistSongScroll,exploreSongScroll;
-    JPanel topPanel,leftPanel,rightPanel;
-    LMainContent mc;
+    private GridBagConstraints gridBag;
+    private JLabel coverImg,titleLbl,playlistSongLbl,exploreSongLbl;
+    private JButton playBtn,stopBtn;
+    private JScrollPane playlistSongScroll,exploreSongScroll;
+    private JPanel topPanel,leftPanel,rightPanel;
+    private PlayList playlist;
+    private Listener listener;
+    private String playlistId;
+    private ArrayList<String[]> playlistSongs;
+    private String[] list;
+    private List<String[]> songList;
+
+    public JButton getPlayBtn() {
+        return playBtn;
+    }
+    public JButton getStopBtn() {
+        return stopBtn;
+    }
+
 
     private void customizeButton(JButton button) {
         button.setFocusPainted(false);
@@ -18,18 +38,31 @@ public class LViewPlayListPanel extends JPanel {
         button.setContentAreaFilled(false);
         button.setOpaque(false);
     }
-
-    public  LViewPlayListPanel(LMainContent mc){
-        this.mc = mc;
+    public void refreshPanel(){
+        removeAll();
         UI();
+        revalidate();
+        repaint();
+    }
+    public  LViewPlayListPanel(String playlistId) {
+        try{
+            this.playlistId = playlistId;
+            this.playlist = new PlayList();
+            this.listener = new Listener();
+            list = listener.viewPlayList(playlistId);
+            UI();
+        }
+        catch (Exception e){
+            System.out.println("LViewPlayListPanel constructor error: "+e);
+        }
     }
     private void UI(){
         try {
             setLayout(new GridBagLayout());
             setBackground(new Color(58, 65, 74));
-            this.gbc = new GridBagConstraints();
-            gbc.insets = new Insets(10, 10, 10, 10);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+            this.gridBag = new GridBagConstraints();
+            gridBag.insets = new Insets(10, 10, 10, 10);
+            gridBag.fill = GridBagConstraints.HORIZONTAL;
 
             topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             topPanel.setBackground(new Color(58, 65, 74));
@@ -40,22 +73,22 @@ public class LViewPlayListPanel extends JPanel {
             rightPanel = new JPanel(new BorderLayout());
             rightPanel.setBackground(new Color(224, 143, 255));
 
-            gbc.gridy=0;
-            gbc.gridx=0;
-            gbc.gridwidth=3;
-            gbc.anchor = GridBagConstraints.NORTH;
-            add(topPanel,gbc);
+            gridBag.gridy=0;
+            gridBag.gridx=0;
+            gridBag.gridwidth=3;
+            gridBag.anchor = GridBagConstraints.NORTH;
+            add(topPanel, gridBag);
 
-            gbc.gridy=1;
-            gbc.gridx=0;
-            gbc.gridwidth=1;
-            gbc.anchor = GridBagConstraints.WEST;
-            add(leftPanel,gbc);
+            gridBag.gridy=1;
+            gridBag.gridx=0;
+            gridBag.gridwidth=1;
+            gridBag.anchor = GridBagConstraints.WEST;
+            add(leftPanel, gridBag);
 
-            gbc.gridy=1;
-            gbc.gridx=2;
-            gbc.anchor = GridBagConstraints.EAST;
-            add(rightPanel,gbc);
+            gridBag.gridy=1;
+            gridBag.gridx=2;
+            gridBag.anchor = GridBagConstraints.EAST;
+            add(rightPanel, gridBag);
 
             coverImg();
             title();
@@ -70,8 +103,12 @@ public class LViewPlayListPanel extends JPanel {
     }
     private void coverImg(){
         try{
-            ImageIcon icon = new ImageIcon();
-            coverImg = new JLabel("hello world");
+            String playlistImg = list[2];
+            ImageIcon originalIcon = new ImageIcon(FilePath.getPlayListCoverImgPath() +playlistImg);
+            Image scaledImg = originalIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImg);
+
+            coverImg = new JLabel(scaledIcon);
             coverImg.setPreferredSize(new Dimension(150,150));
             coverImg.setBackground(new Color(224, 143, 255));
             coverImg.setOpaque(true);
@@ -84,7 +121,7 @@ public class LViewPlayListPanel extends JPanel {
     }
     private void title(){
         try{
-            titleLbl = new JLabel("Title");
+            titleLbl = new JLabel(list[1]);
             titleLbl.setForeground(Color.WHITE);
             titleLbl.setFont(new Font("Font.SERIF", Font.BOLD,18));
 
@@ -96,8 +133,8 @@ public class LViewPlayListPanel extends JPanel {
     }
     private void controlBtn(){
         try{
-            ImageIcon playIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/SrcImg/play.png");
-            ImageIcon stopIcon = new ImageIcon("C:/Chanuka/NIBM/EAD/EAD-CW/SoundWave/src/SrcImg/pause.png");
+            ImageIcon playIcon = new ImageIcon(FilePath.playBtn());
+            ImageIcon stopIcon = new ImageIcon(FilePath.stopBtn());
 
             playBtn = new JButton(playIcon);
             stopBtn = new JButton(stopIcon);
@@ -113,8 +150,11 @@ public class LViewPlayListPanel extends JPanel {
             playBtn.setActionCommand("Play");
             stopBtn.setActionCommand("Stop");
 
+            playBtn.setActionCommand("Play");
+            stopBtn.setActionCommand("Stop");
 
-
+            playBtn.addActionListener(new LViewPlaylistBtnActions(null,playlistId,this));
+            stopBtn.addActionListener(new LViewPlaylistBtnActions(null,playlistId,this));
         }
         catch (Exception e){
             System.out.println("View Playlist controlBtn method Error: "+e);
@@ -130,11 +170,13 @@ public class LViewPlayListPanel extends JPanel {
             playlistSongsPanel.setLayout(new BoxLayout(playlistSongsPanel, BoxLayout.Y_AXIS));
             playlistSongsPanel.setBackground(new Color(232, 213, 255));
 
-            for (int i = 0; i < 400; i++) {
+            this.playlistSongs =  playlist.getSongList(playlistId);
+            for (String[] i : playlistSongs) {
                 JPanel songPanel = new JPanel(new BorderLayout());
                 songPanel.setBackground(new Color(232, 213, 255));
+                JLabel songTitle = new JLabel( i[1]);
 
-                JLabel songTitle = new JLabel("Song Title: " + (i + 1));
+                String songId = i[0];
                 songTitle.setPreferredSize(new Dimension(50, 30));
                 songPanel.add(songTitle, BorderLayout.CENTER);
 
@@ -142,6 +184,8 @@ public class LViewPlayListPanel extends JPanel {
                 deleteBtn.setPreferredSize(new Dimension(50, 30));
                 deleteBtn.setBackground(Color.RED);
                 deleteBtn.setForeground(Color.WHITE);
+                deleteBtn.setActionCommand("Delete");
+                deleteBtn.addActionListener(new LViewPlaylistBtnActions(songId,playlistId,this));
                 songPanel.add(deleteBtn, BorderLayout.EAST);
 
                 playlistSongsPanel.add(songPanel);
@@ -167,19 +211,28 @@ public class LViewPlayListPanel extends JPanel {
             exploreSongPanel.setLayout(new BoxLayout(exploreSongPanel, BoxLayout.Y_AXIS));
             exploreSongPanel.setBackground(new Color(232, 213, 255));
 
-            for (int i = 0; i < 40; i++) {
+            this.songList =  listener.exploreSongPlaylist(playlistId);
+
+
+            for (String[] i : songList) {
                 JPanel songPanel = new JPanel(new BorderLayout());
                 songPanel.setBackground(new Color(232, 213, 255));
 
-                JLabel songTitle = new JLabel("Song Title: " + (i + 1));
+                JLabel songTitle = new JLabel(i[1]);
                 songTitle.setPreferredSize(new Dimension(75, 30));
                 songPanel.add(songTitle, BorderLayout.CENTER);
 
-                JButton deleteBtn = new JButton("Add");
-                deleteBtn.setPreferredSize(new Dimension(75, 30));
-                deleteBtn.setBackground(Color.GREEN);
-                deleteBtn.setForeground(Color.WHITE);
-                songPanel.add(deleteBtn, BorderLayout.EAST);
+                JButton addBtn = new JButton("Add");
+                addBtn.setPreferredSize(new Dimension(75, 30));
+                addBtn.setBackground(Color.GREEN);
+                addBtn.setForeground(Color.WHITE);
+                addBtn.setActionCommand("Add");
+
+                String songId = i[0];
+
+                addBtn.addActionListener( new LViewPlaylistBtnActions(songId,playlistId,this));
+                songPanel.add(addBtn, BorderLayout.EAST);
+
 
                 exploreSongPanel.add(songPanel);
             }

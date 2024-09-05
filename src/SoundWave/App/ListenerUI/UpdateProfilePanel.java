@@ -1,17 +1,23 @@
 package SoundWave.App.ListenerUI;
 
+import SoundWave.App.ListenerUI.Actions.UpdateProfileBtnActions;
+import SoundWave.App.UserUI.FilePath;
+import SoundWave.User.Listener;
+import SoundWave.User.User;
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 public class UpdateProfilePanel extends JPanel {
     private JButton dpBtn,updateBtn;
     private JTextField nameTxt,userNameTxt,passwordTxt,confirmPasswordTxt,emailTxt;
     private JLabel nameLbl,userNameLbl,passwordLbl,confirmPasswordLbl,emailLbl,dpLbl;
     private GridBagConstraints gbc;
-    private LMainContent mc;
+    String[] userDetails;
 
-    public UpdateProfilePanel(LMainContent mc){
-        this.mc = mc;
+    public UpdateProfilePanel(String userName) throws SQLException {
+        User user = new Listener();
+        userDetails = user.viewProfile(userName);
         UI();
     }
     private void UI(){
@@ -45,14 +51,17 @@ public class UpdateProfilePanel extends JPanel {
             dpLbl.setFont(new Font("Font.SERIF",Font.BOLD,14));
             add(dpLbl,gbc);
 
-            //btn
             gbc.gridy=0;
             gbc.gridx=1;
-            dpBtn = new JButton();
+            ImageIcon originalIcon = new ImageIcon(FilePath.getDpImgPath() + userDetails[3]);
+            Image scaledImg = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImg);
+            dpBtn = new JButton(scaledIcon);
             dpBtn.setBackground(new Color(216,191,216));
-            dpBtn.setPreferredSize(new Dimension(100,100));
             dpBtn.setFocusPainted(false);
             dpBtn.setBorderPainted(false);
+            dpBtn.setActionCommand("UpdateDp");
+            dpBtn.addActionListener(new UpdateProfileBtnActions(dpBtn));
             add(dpBtn,gbc);
         }
         catch(Exception e){
@@ -73,6 +82,7 @@ public class UpdateProfilePanel extends JPanel {
             gbc.gridy=1;
             gbc.gridx=1;
             nameTxt = new JTextField(20);
+            nameTxt.setText(userDetails[1]);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             add(nameTxt,gbc);
 
@@ -95,6 +105,7 @@ public class UpdateProfilePanel extends JPanel {
             gbc.gridy=2;
             gbc.gridx=1;
             userNameTxt = new JTextField(20);
+            userNameTxt.setText(userDetails[0]);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             add(userNameTxt,gbc);
         }catch(Exception e){
@@ -115,6 +126,7 @@ public class UpdateProfilePanel extends JPanel {
             gbc.gridy=3;
             gbc.gridx=1;
             passwordTxt = new JTextField(20);
+            passwordTxt.setText(userDetails[2]);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             add(passwordTxt,gbc);
         }
@@ -136,6 +148,7 @@ public class UpdateProfilePanel extends JPanel {
             gbc.gridy=4;
             gbc.gridx=1;
             confirmPasswordTxt = new JTextField(20);
+            confirmPasswordTxt.setText(userDetails[2]);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             add(confirmPasswordTxt,gbc);
         }catch(Exception e){
@@ -156,6 +169,7 @@ public class UpdateProfilePanel extends JPanel {
             gbc.gridy=5;
             gbc.gridx=1;
             emailTxt = new JTextField(20);
+            emailTxt.setText(userDetails[5]);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             add(emailTxt,gbc);
         }catch(Exception e){
@@ -170,6 +184,8 @@ public class UpdateProfilePanel extends JPanel {
             updateBtn.setBackground(new Color(224, 143, 255));
             updateBtn.setFocusPainted(false);
             updateBtn.setBorderPainted(false);
+            updateBtn.setActionCommand("UpdateProfile");
+            updateBtn.addActionListener(new UpdateProfileBtnActions(userNameTxt,nameTxt,emailTxt,passwordTxt,confirmPasswordTxt));
             add(updateBtn,gbc);
         }
         catch(Exception e){

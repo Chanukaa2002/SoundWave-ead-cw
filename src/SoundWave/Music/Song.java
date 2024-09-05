@@ -6,28 +6,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Scanner;
 import javax.sound.sampled.*;
 
 public class Song {
+
     public String getSongId() {
         return songId;
     }
     public void setSongId(String songId) {
         this.songId = songId;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getArtistName() {
-        return artistName;
-    }
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
     }
     public String getImage() {
         return image;
@@ -35,35 +22,20 @@ public class Song {
     public void setImage(String image) {
         this.image = image;
     }
-    public double getDuration() {
-        return duration;
-    }
-    public void setDuration(double duration) {
-        this.duration = duration;
-    }
 
     //data members
-    private String songId,title,artistName,image;
-    private double duration;
-    Connection conn;
-    Clip clip;
+    private String songId,image;
+    private Connection conn;
+    private static Clip  clip;
     private AudioInputStream audioInput;
+    public static FloatControl fc;
 
     //methods
     public Song(){
-        try{
-            conn= DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println(e);
-        }
     }
-
-//stay for java swing coding after gui was code, implement that correctly
     public void start(String path) {
         try {
             if (clip != null) {
-                //pause();
                 clip.stop();
                 clip.close();
             }
@@ -72,53 +44,58 @@ public class Song {
             clip = AudioSystem.getClip();
             clip.open(audioInput);
             clip.start();
-            clip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the clip continuously
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            fc.setValue(6.0f);
         } catch (Exception e) {
-            System.out.println("Error: "+e);
+            System.out.println("Song class start method Error: "+e);
         }
-    }//-------------------------work on this-------------------------
-    public void pause() {
-        if (clip != null && clip.isRunning()) {
-            clip.stop(); // Stop the clip (simulate pause)
-        }
-    }//-------------------------work on this-------------------------
-    public void resume() {
-        if (clip != null && !clip.isRunning()) {
-            clip.start(); // Start the clip (resume from pause)
-        }
-    }//-------------------------work on this-------------------------
+    }//checked
     public void stop() {
-        if (clip != null) {
-            clip.stop(); // Stop the clip
-            clip.close(); // Close the clip and release resources
+        try {
+            if (clip != null && clip.isRunning()) {
+                clip.stop();
+                clip.close();
+            }
+        } catch (Exception e) {
+            System.out.println("Song class stop method Error: " + e);
         }
-    }//-------------------------work on this-------------------------
+    }//checked
     public void next(){}
     public void back(){}
-    public void volume(){}
-    public String[] getDetails(String songId){
-        String[] details = new String[6];
-        try{
-            String sql = "SELECT s.SongId s.Title, s.Song, s.Duration, s.CoverImg,u.Name  FROM song s INNER JOIN artist a ON s.ArtistId = a.ArtistId" +
-                    "INNER JOIN user u ON a.UserName = u.UserName" +
+    public String[] getDetails(String songId) throws SQLException{
+        String[] details = new String[7];
+        try {
+            conn= DBConnection.getConnection();
+
+            String sql = "SELECT s.SongId, s.Title, s.Song, s.Duration, s.CoverImg, u.Name,s.ArtistId " +
+                    "FROM song s " +
+                    "INNER JOIN artist a ON s.ArtistId = a.ArtistId " +
+                    "INNER JOIN user u ON a.UserName = u.UserName " +
                     "WHERE s.SongId = ?;";
+
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1,songId);
+            statement.setString(1, songId);
+
             ResultSet result = statement.executeQuery();
-            if(result.next()){
-                for(int i=0;i<6;i++){
-                    details[i] = result.getString((i+1));
-                }
-                //song
-            }
-            else{
+            if (result.next()) {
+                details[0] = result.getString("SongId");
+                details[1] = result.getString("Title");
+                details[2] = result.getString("Song");
+                details[3] = result.getString("Duration");
+                details[4] = result.getString("CoverImg");
+                details[5] = result.getString("Name");
+                details[6] = result.getString("ArtistId");
+            } else {
                 details = null;
             }
+        } catch (Exception e) {
+            System.out.println("Song class getDetails method Error: " + e);
         }
-        catch(Exception e){
-            System.out.println("Error:"+e);
+        finally{
+            conn.close();
         }
         return details;
-    }//-----------------Not checked--------------
+    }//checked
 
 }
