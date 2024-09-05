@@ -24,6 +24,7 @@ public class ListenerMainPanel extends JFrame{
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setSize(1000, 700);
             setLocationRelativeTo(null);
+            setResizable(false);
             setLayout(new BorderLayout());
 
             LMainContent mainContentPanel = new LMainContent(listenerId);

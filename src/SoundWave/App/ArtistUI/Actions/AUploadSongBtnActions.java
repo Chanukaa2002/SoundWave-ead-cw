@@ -59,10 +59,8 @@ public class AUploadSongBtnActions implements ActionListener {
                     this.coverImgPath = selectedFile.getAbsolutePath();
                     Image scaledImg = img.getScaledInstance(215, 200, Image.SCALE_SMOOTH);
 
-
                     coverImage.setIcon(new ImageIcon(scaledImg));
                     String fileName = selectedFile.getName();
-
 
                     int dotIndex = fileName.lastIndexOf('.');
                     if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
@@ -131,7 +129,7 @@ public class AUploadSongBtnActions implements ActionListener {
 
                 String title = titleTxt.getText();
 
-                boolean isRegister=false;
+                boolean isRegister;
                 isRegister=user.uploadSong(title,durationInSeconds,coverImgInputStream,artistId,songInputStream,fileName,imgFileExtension);
                 if (isRegister) {
                     JOptionPane.showMessageDialog(null, "New Song has been Released!");

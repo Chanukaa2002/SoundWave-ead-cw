@@ -61,7 +61,7 @@ public class RegisterPageActions implements ActionListener {
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 try {
-                File selectedFile = fileChooser.getSelectedFile();
+                    File selectedFile = fileChooser.getSelectedFile();
 
                     BufferedImage img = ImageIO.read(selectedFile);
 

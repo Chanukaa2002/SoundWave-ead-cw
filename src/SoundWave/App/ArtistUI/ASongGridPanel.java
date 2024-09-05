@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class ASongGridPanel extends JPanel {
     AMainContentPanel mainContentPanel;
     JButton songButton;
-    private String artistId;
+    String artistId;
     JLabel songTitle;
 
     public ASongGridPanel(AMainContentPanel mainContentPanel,String artistId) {
@@ -21,36 +21,39 @@ public class ASongGridPanel extends JPanel {
     }
     private void UI(){
         try{
-        setLayout(new GridLayout(0, 4, 20, 20)); // 4 columns, dynamic rows
-        setBackground(new Color(58, 65, 74)); // Darker grey background
+            setLayout(new GridLayout(0, 4, 20, 20));
+            setBackground(new Color(58, 65, 74));
 
             Artist artist = new Artist();
             ArrayList<String[]> songs = artist.viewMyAllSong(artistId);
 
-        for (String[] i: songs) {
-            ImageIcon originalIcon = new ImageIcon(FilePath.getSongCoverImgPath() + i[4]);
+            for (String[] i: songs) {
 
-            Image scaledImg = originalIcon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(scaledImg);
-            songButton = new JButton(scaledIcon);
-            songButton.setPreferredSize(new Dimension(120, 120));
-            songButton.setBackground(new Color(235, 215, 255));
-            songButton.setForeground(Color.BLACK);
-            songButton.setBorderPainted(false);
-            songButton.setFocusPainted(false);
-            songButton.setActionCommand("Song");
-            songButton.addActionListener(new ASongGridBtnActions(mainContentPanel,i[0],i[1]));
-            add(songButton);
+                String songId = i[0];
+                String songName = i[1];
+                String songImg = i[4];
 
-            songTitle = new JLabel(i[1]);
-            songTitle.setForeground(Color.WHITE);
-            add(songTitle);
+                ImageIcon originalIcon = new ImageIcon(FilePath.getSongCoverImgPath() + songImg);
+                Image scaledImg = originalIcon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImg);
 
-        }
+                songButton = new JButton(scaledIcon);
+                songButton.setPreferredSize(new Dimension(120, 120));
+                songButton.setBackground(new Color(235, 215, 255));
+                songButton.setForeground(Color.BLACK);
+                songButton.setBorderPainted(false);
+                songButton.setFocusPainted(false);
+                songButton.setActionCommand("Song");
+                songButton.addActionListener(new ASongGridBtnActions(mainContentPanel,songId,songName));
+                add(songButton);
+
+                songTitle = new JLabel(songName);
+                songTitle.setForeground(Color.WHITE);
+                add(songTitle);
+            }
         }
         catch(Exception e){
             System.out.println("Song Grid Panel UI function  Error: "+e);
-            e.getStackTrace()[0].getLineNumber();
         }
     }
 }

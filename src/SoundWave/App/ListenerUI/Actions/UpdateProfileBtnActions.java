@@ -114,7 +114,6 @@ public class UpdateProfileBtnActions implements ActionListener {
             } catch (SQLException ex) {
                 System.out.println("Update profile btn actions class action preformed method Error: "+ex);
             }
-
         }
     }
 }

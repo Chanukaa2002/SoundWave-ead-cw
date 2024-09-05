@@ -155,8 +155,6 @@ public class LViewPlayListPanel extends JPanel {
 
             playBtn.addActionListener(new LViewPlaylistBtnActions(null,playlistId,this));
             stopBtn.addActionListener(new LViewPlaylistBtnActions(null,playlistId,this));
-
-
         }
         catch (Exception e){
             System.out.println("View Playlist controlBtn method Error: "+e);
@@ -172,7 +170,6 @@ public class LViewPlayListPanel extends JPanel {
             playlistSongsPanel.setLayout(new BoxLayout(playlistSongsPanel, BoxLayout.Y_AXIS));
             playlistSongsPanel.setBackground(new Color(232, 213, 255));
 
-            this.playlist = new PlayList();
             this.playlistSongs =  playlist.getSongList(playlistId);
             for (String[] i : playlistSongs) {
                 JPanel songPanel = new JPanel(new BorderLayout());
@@ -214,7 +211,6 @@ public class LViewPlayListPanel extends JPanel {
             exploreSongPanel.setLayout(new BoxLayout(exploreSongPanel, BoxLayout.Y_AXIS));
             exploreSongPanel.setBackground(new Color(232, 213, 255));
 
-            this.listener = new Listener();
             this.songList =  listener.exploreSongPlaylist(playlistId);
 
 

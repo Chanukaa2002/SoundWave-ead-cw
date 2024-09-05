@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class LCreatePlayListPanel extends JPanel {
     private JButton coverImageBtn,createBtn,cancelBtn;
-    private GridBagConstraints gbc;
+    private GridBagConstraints gridBag;
     private JPanel bottomPanel;
     private JTextField playListText;
     private String listenerId;
@@ -21,16 +21,16 @@ public class LCreatePlayListPanel extends JPanel {
         try{
             setLayout(new GridBagLayout());
             setBackground(new Color(58, 65, 74));
-            this.gbc = new GridBagConstraints();
-            gbc.insets = new Insets(10,10,10,10);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+            this.gridBag = new GridBagConstraints();
+            gridBag.insets = new Insets(10,10,10,10);
+            gridBag.fill = GridBagConstraints.HORIZONTAL;
 
             coverImg();
             txt();
             bottomBtnPanel();
 
-            gbc.gridy++;
-            gbc.gridwidth = 2;
+            gridBag.gridy++;
+            gridBag.gridwidth = 2;
 
         }
         catch (Exception e){
@@ -39,8 +39,8 @@ public class LCreatePlayListPanel extends JPanel {
     }
     private void coverImg(){
         try{
-            gbc.gridx=0;
-            gbc.gridy=0;
+            gridBag.gridx=0;
+            gridBag.gridy=0;
 
             coverImageBtn = new JButton("Add ImageCover");
             coverImageBtn.setBackground(new Color(224, 143, 255));
@@ -50,7 +50,7 @@ public class LCreatePlayListPanel extends JPanel {
             coverImageBtn.setBorderPainted(false);
             coverImageBtn.setActionCommand("CoverImage");
             coverImageBtn.addActionListener(new LCreatePlayListBtnActions(coverImageBtn));
-            add(coverImageBtn,gbc);
+            add(coverImageBtn, gridBag);
 
         }
         catch (Exception e){
@@ -59,8 +59,8 @@ public class LCreatePlayListPanel extends JPanel {
     }
     private void bottomBtnPanel(){
         try{
-            gbc.gridy++;
-            gbc.gridx--;
+            gridBag.gridy++;
+            gridBag.gridx--;
             bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,10));
             bottomPanel.setBackground(new Color(58,65,74));
 
@@ -78,7 +78,7 @@ public class LCreatePlayListPanel extends JPanel {
             cancelBtn.setBorderPainted(false);
             cancelBtn.setActionCommand("Cancel");
             bottomPanel.add(cancelBtn);
-            add(bottomPanel,gbc);
+            add(bottomPanel, gridBag);
         }
         catch (Exception e){
             System.out.println("Create PlayList panel bottom Panel method Error: "+e);
@@ -86,11 +86,11 @@ public class LCreatePlayListPanel extends JPanel {
     }
     private void txt(){
         try{
-            gbc.gridy++;
-            gbc.gridx--;
+            gridBag.gridy++;
+            gridBag.gridx--;
             playListText = new JTextField(15);
             playListText.setBackground(Color.WHITE);
-            add(playListText,gbc);
+            add(playListText, gridBag);
 
         }
         catch (Exception e){

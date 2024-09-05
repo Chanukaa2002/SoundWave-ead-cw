@@ -49,7 +49,6 @@ public class LCreatePlayListBtnActions implements ActionListener {
         String command = e.getActionCommand();
 
         if(command == "CoverImage"){
-
             try{
                 JFileChooser fileChooser = new JFileChooser();
                 int returnValue = fileChooser.showOpenDialog(null);

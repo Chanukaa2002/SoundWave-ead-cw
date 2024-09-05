@@ -26,9 +26,7 @@ public class LExplorePanel extends JPanel {
             this.borderLayout = new BorderLayout();
             setLayout(borderLayout);
             setBackground(new Color(58,65,74));
-
             songGrid();
-
         }
         catch (Exception e){
             System.out.println("Explore Song UI Method error: "+e);
@@ -45,6 +43,7 @@ public class LExplorePanel extends JPanel {
 
             for (String[] i : songs) {
                 String songId = i[0];
+
                 String songName = i[1];
                 String songImg = i[4];
                 ImageIcon originalIcon = new ImageIcon(FilePath.getSongCoverImgPath() +songImg);

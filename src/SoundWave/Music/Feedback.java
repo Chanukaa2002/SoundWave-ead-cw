@@ -7,18 +7,15 @@ public class Feedback {
     private Connection conn;
 
     public Feedback() {
-        try {
-            conn = DBConnection.getConnection();
-        } catch (SQLException e) {
-            System.out.println("Feedback constructor Error: " + e);
-        }
+
     }
 
     public String getFeedbackDetails(String songId) throws SQLException {
         String totCount="0";
         try {
-            String sql = "SELECT  SUM(Likes) AS TotalLikes from feedback WHERE SongId = ? GROUP BY SongId";
+            conn = DBConnection.getConnection();
 
+            String sql = "SELECT  SUM(Likes) AS TotalLikes from feedback WHERE SongId = ? GROUP BY SongId";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1, songId);
 
@@ -29,7 +26,8 @@ public class Feedback {
             result.close();
         } catch (Exception e) {
             System.out.println("Feedback Class getFeedbackDetails method Error: " + e);
-        } finally {
+        }
+        finally{
             conn.close();
         }
         return totCount;
@@ -37,8 +35,9 @@ public class Feedback {
     public boolean isLiked(String songId,String listenerId) throws  SQLException{
         boolean isLiked = false;
         try {
-            String sql = "Select * from feedback where SongId=? and ListenerId=?";
+            conn = DBConnection.getConnection();
 
+            String sql = "Select * from feedback where SongId=? and ListenerId=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1, songId);
             selectStatement.setString(2, listenerId);

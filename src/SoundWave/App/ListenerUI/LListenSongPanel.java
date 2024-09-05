@@ -19,9 +19,10 @@ public class LListenSongPanel extends JPanel {
     private JSlider volumeSlider;
     private String songId;
     private String likeCount;
-    private String songDetails[];
+    private String[] songDetails;
     private String listenerId;
     private Feedback feedback;
+    private ListenSongBtnsActions listenSongBtnsActions;
 
     public JSlider getVolumeSlider() {
         return volumeSlider;
@@ -53,6 +54,8 @@ public class LListenSongPanel extends JPanel {
         songDetails =  song.getDetails(songId);
         feedback = new Feedback();
         likeCount= feedback.getFeedbackDetails(songId);
+
+        listenSongBtnsActions = new ListenSongBtnsActions(this,listenerId);
         UI();
     }
     private void UI(){
@@ -127,13 +130,14 @@ public class LListenSongPanel extends JPanel {
             gridBag.gridy = 1;
             gridBag.gridx = 2;
             gridBag.gridheight = 2;
-            volumeSlider = new JSlider(JSlider.VERTICAL, 0, 2000, 1000);
+            volumeSlider = new JSlider(JSlider.VERTICAL, 0, 2000, 2000);
+            volumeSlider.setValue(2000);
             volumeSlider.setPaintTicks(false);
             volumeSlider.setPaintLabels(false);
             volumeSlider.setPreferredSize(new Dimension(20, 125));
             volumeSlider.setBackground(new Color(58, 65, 74));
             volumeSlider.setForeground(new Color(58, 65, 74));
-            volumeSlider.addChangeListener(new ListenSongBtnsActions(this,listenerId));
+            volumeSlider.addChangeListener(listenSongBtnsActions);
 
             add(volumeSlider, gridBag);
         }catch(Exception e){
@@ -142,7 +146,6 @@ public class LListenSongPanel extends JPanel {
     }
     private void likeCount(){
         try{
-            feedback = new Feedback();
             boolean isLiked = feedback.isLiked(songId,listenerId);
             ImageIcon likedIcon = new ImageIcon(FilePath.like());
             ImageIcon unLikedIcon = new ImageIcon(FilePath.dislike());
@@ -169,10 +172,10 @@ public class LListenSongPanel extends JPanel {
 
 
             likedBtn.setActionCommand("Like");
-            likedBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
+            likedBtn.addActionListener(listenSongBtnsActions);
 
             disLikedBtn.setActionCommand("DisLike");
-            disLikedBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
+            disLikedBtn.addActionListener(listenSongBtnsActions);
 
             add(likePanel, gridBag);
 
@@ -223,16 +226,16 @@ public class LListenSongPanel extends JPanel {
             gridBag.anchor=GridBagConstraints.CENTER;
 
             playBtn.setActionCommand("Play");
-            playBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
+            playBtn.addActionListener(listenSongBtnsActions);
 
             pauseBtn.setActionCommand("Stop");
-            pauseBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
+            pauseBtn.addActionListener(listenSongBtnsActions);
 
             nextBtn.setActionCommand("Next");
-            nextBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
+            nextBtn.addActionListener(listenSongBtnsActions);
 
             previousBtn.setActionCommand("Back");
-            previousBtn.addActionListener(new ListenSongBtnsActions(this,listenerId));
+            previousBtn.addActionListener(listenSongBtnsActions);
 
             add(controlPanel, gridBag);
         }catch(Exception e){

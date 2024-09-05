@@ -3,7 +3,6 @@ package SoundWave.App.ListenerUI;
 import SoundWave.App.ListenerUI.Actions.LCreatePlayListBtnActions;
 import SoundWave.App.ListenerUI.Actions.LSideBarBtnActions;
 import SoundWave.User.Listener;
-
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
@@ -14,7 +13,8 @@ public class LSideBar extends JPanel {
     private LMainContent mc;
     private JLabel listenerLabel, playListLabel;
     private JButton homeBtn, playListBtn,createPlaylistBtn,logOutBtn;
-    private String userName,listenerId;
+    private String userName;
+    private String listenerId;
     private Listener listener;
 
     public LSideBar(LMainContent mc,String userName) throws SQLException {
@@ -95,7 +95,6 @@ public class LSideBar extends JPanel {
     }
     private void playlists() {
         try {
-            Listener listener = new Listener();
             ArrayList<String[]> playlists = listener.viewAllPlayList(listenerId);
             for (String[] i : playlists) {
                 String playlistName = i[1];
@@ -106,7 +105,7 @@ public class LSideBar extends JPanel {
                 playListBtn.setFocusPainted(false);
                 playListBtn.setBorderPainted(false);
                 playListBtn.setActionCommand("PlayList");
-                 playListBtn.addActionListener(new LSideBarBtnActions(mc,playlistId,listenerId));
+                playListBtn.addActionListener(new LSideBarBtnActions(mc,playlistId,listenerId));
 
                 gridBag.gridy++;
                 add(playListBtn, gridBag);
@@ -118,6 +117,7 @@ public class LSideBar extends JPanel {
     private void createPlayListBtn(){
         try{
             gridBag.gridy++;
+
             this.createPlaylistBtn = new JButton("Create PlayList");
             createPlaylistBtn.setMargin(new Insets(7,1,7,1));
             createPlaylistBtn.setSize(new Dimension(40,20));

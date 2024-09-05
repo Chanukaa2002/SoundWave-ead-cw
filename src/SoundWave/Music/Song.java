@@ -32,12 +32,6 @@ public class Song {
 
     //methods
     public Song(){
-        try{
-            conn= DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println("Song class constructor Error: "+e);
-        }
     }
     public void start(String path) {
         try {
@@ -52,6 +46,7 @@ public class Song {
             clip.start();
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            fc.setValue(6.0f);
         } catch (Exception e) {
             System.out.println("Song class start method Error: "+e);
         }
@@ -66,9 +61,12 @@ public class Song {
             System.out.println("Song class stop method Error: " + e);
         }
     }//checked
-    public String[] getDetails(String songId) {
+    public void next(){}
+    public void back(){}
+    public String[] getDetails(String songId) throws SQLException{
         String[] details = new String[7];
         try {
+            conn= DBConnection.getConnection();
 
             String sql = "SELECT s.SongId, s.Title, s.Song, s.Duration, s.CoverImg, u.Name,s.ArtistId " +
                     "FROM song s " +
@@ -93,6 +91,9 @@ public class Song {
             }
         } catch (Exception e) {
             System.out.println("Song class getDetails method Error: " + e);
+        }
+        finally{
+            conn.close();
         }
         return details;
     }//checked

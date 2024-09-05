@@ -41,7 +41,7 @@ public class RegisterPanel extends JFrame {
             contentPanel.add(appName, gridBag);
 
             dpImage = new JLabel();
-            dpImage.setForeground(Color.WHITE);
+//            dpImage.setForeground(Color.WHITE);
             dpImage.setPreferredSize(new Dimension(75, 75));
             gridBag.gridx = 0;
             gridBag.gridy = 1;

@@ -15,6 +15,7 @@ public class ASongGridBtnActions implements ActionListener {
         try {
             this.songId = songId;
             this.mcp = mcp;
+            this.songName = songName;
         }
         catch(Exception e){
             System.out.println("Song Grid Btn Actions constructor Error: "+e);

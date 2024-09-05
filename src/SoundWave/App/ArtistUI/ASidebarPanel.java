@@ -12,10 +12,9 @@ public class ASidebarPanel extends JPanel {
     AMainContentPanel mainContentPanel;
     JLabel artistLabel;
     JButton homeButton,uploadButton,logoutButton;
-    private Artist artist;
 
     private String userName,artistId;
-    public ASidebarPanel(AMainContentPanel mainContentPanel, String userName,String artistId) throws SQLException {
+    public ASidebarPanel(AMainContentPanel mainContentPanel, String userName,String artistId){
         this.mainContentPanel = mainContentPanel;
         this.userName = userName;
         this.artistId = artistId;
@@ -24,35 +23,30 @@ public class ASidebarPanel extends JPanel {
     private void UI(){
         try {
             setLayout(new GridBagLayout());
-            setBackground(new Color(76, 83, 93)); // Dark grey background
+            setBackground(new Color(76, 83, 93));
             setPreferredSize(new Dimension(200, 600));
 
             this.gbc = new GridBagConstraints();
             gbc.gridx = 0;
-            gbc.gridy = 0; // Start from the first row
+            gbc.gridy = 0;
             gbc.insets = new Insets(10, 10, 10, 10);
             gbc.fill = GridBagConstraints.HORIZONTAL;
 
-            // Artist Username
             this.artistLabel = new JLabel("Welcome "+userName, SwingConstants.CENTER);
             artistLabel.setForeground(Color.WHITE);
             add(artistLabel, gbc);
 
-            // Spacer
-            gbc.gridy++; // Move to the next row
+            gbc.gridy++;
             add(Box.createVerticalStrut(20), gbc);
 
-            // Home Button
-            gbc.gridy++; // Move to the next row
+            gbc.gridy++;
             homeBtn();
-            // Upload Song Button
             uploadBtn();
-            // Add vertical glue to push the LogOut button to the bottom
+
             gbc.weighty = 1.0;
             gbc.gridy++;
             add(Box.createVerticalGlue(), gbc);
             logOutBtn();
-            // Force revalidate and repaint to ensure proper layout
             revalidate();
             repaint();
         }
@@ -65,7 +59,7 @@ public class ASidebarPanel extends JPanel {
             this.homeButton = new JButton("Home");
 
             homeButton.setMargin(new Insets(7, 10, 7, 10));
-            homeButton.setBackground(new Color(224, 143, 255)); // Light purple background
+            homeButton.setBackground(new Color(224, 143, 255));
             homeButton.setForeground(Color.BLACK);
             homeButton.setBorderPainted(false);
             homeButton.setFocusPainted(false);
@@ -79,10 +73,10 @@ public class ASidebarPanel extends JPanel {
     }
     private void uploadBtn(){
         try {
-            gbc.gridy++; // Move to the next row
+            gbc.gridy++;
             this.uploadButton = new JButton("Upload Song");
             uploadButton.setMargin(new Insets(7, 10, 7, 10));
-            uploadButton.setBackground(new Color(224, 143, 255)); // Light purple background
+            uploadButton.setBackground(new Color(224, 143, 255));
             uploadButton.setForeground(Color.BLACK);
             uploadButton.setBorderPainted(false);
             uploadButton.setFocusPainted(false);
@@ -100,7 +94,7 @@ public class ASidebarPanel extends JPanel {
             gbc.gridy++;
             this.logoutButton = new JButton("LogOut");
             logoutButton.setMargin(new Insets(7, 10, 7, 10));
-            logoutButton.setBackground(new Color(224, 143, 255)); // Light purple background
+            logoutButton.setBackground(new Color(224, 143, 255));
             logoutButton.setForeground(Color.BLACK);
             logoutButton.setBorderPainted(false);
             logoutButton.setFocusPainted(false);

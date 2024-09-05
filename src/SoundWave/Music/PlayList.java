@@ -14,12 +14,6 @@ public class PlayList implements Runnable {
     private Thread runningThread;
 
     public PlayList(){
-        try{
-            conn= DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println("Playlist class constructor Error"+e);
-        }
     }
 
     //getter setter
@@ -32,10 +26,12 @@ public class PlayList implements Runnable {
     public void setImage(String image) {
         this.image = image;
     }
+
     //methods
-    public void playAll(String playlistId) {
+    public void playAll(String playlistId) throws SQLException{
         this.runningThread = Thread.currentThread();
         try {
+            conn= DBConnection.getConnection();
             ArrayList<String[]> songList = getSongList(playlistId);
 
             if (songList.isEmpty()) {
@@ -45,8 +41,8 @@ public class PlayList implements Runnable {
             Song song = new Song();
             for (String[] songDetails : songList) {
                 String songTitle = songDetails[1];
-                String songName = songDetails[3];
                 float duration = Float.parseFloat(songDetails[2]);
+                String songName = songDetails[3];
                 String songPath = FilePath.getSongPath() + songName;
 
                 System.out.println("Now playing: " + songTitle); // add into UI<<--------------------------------------------------------------
@@ -63,17 +59,29 @@ public class PlayList implements Runnable {
         } catch (Exception e) {
             System.out.println("Error in PlayList playAll method: " + e);
         }
+        finally{
+            conn.close();
+        }
     }//checked
-    public void stopAll() {
-        if(runningThread != null){
-            runningThread.interrupt();
-            runningThread = null;
+    public void stopAll() throws SQLException {
+        try{
+            conn= DBConnection.getConnection();
+            if(runningThread != null){
+                runningThread.interrupt();
+                runningThread = null;
+            }
+        }catch (Exception e){
+            System.out.println("Playlist stopAll method Error: "+e);
+        }
+        finally{
+            conn.close();
         }
     }//working
     public ArrayList<String[]> getSongList(String playlistId) {
         ArrayList<String[]> songs = new ArrayList<>();
         try
         {
+            conn= DBConnection.getConnection();
             String sql = "SELECT s.SongId, s.Title, s.Duration, s.Song FROM song s JOIN playlist_song ps ON s.SongId = ps.SongId WHERE ps.PlayListId = ?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, playlistId);
@@ -93,6 +101,10 @@ public class PlayList implements Runnable {
     }//checked
     @Override
     public void run() {
-        playAll(playlistId);
+        try {
+            playAll(playlistId);
+        } catch (SQLException e) {
+            System.out.println("Playlist run method Error: "+e);
+        }
     }
 }

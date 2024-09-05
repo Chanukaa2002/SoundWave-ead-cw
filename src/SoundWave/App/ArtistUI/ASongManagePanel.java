@@ -33,7 +33,7 @@ public class ASongManagePanel extends JPanel {
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.gridx = 0;
             gbc.gridy = 0;
-            fetchSongDetails(songId);
+            SongDetails(songId);
             coverImg();
             titleLbl();
             likes();
@@ -43,23 +43,22 @@ public class ASongManagePanel extends JPanel {
             System.out.println("ASongManagePanel UI Function Error: "+e);
         }
     }
-    private void fetchSongDetails(String songId) throws SQLException {
+    private void SongDetails(String songId) throws SQLException {
         Feedback feedback = new Feedback();
         likeCount = feedback.getFeedbackDetails(songId);
         Song song = new Song();
         songDetails = song.getDetails(songId);
 
-
     }
     private void titleLbl(){
         try{
-        titleLbl = new JLabel(songDetails[1]);
-        titleLbl.setFont(new Font(Font.SERIF,Font.BOLD,20));
-        titleLbl.setForeground(Color.WHITE);
-        gbc.gridx=1;
-        gbc.gridy=0;
-        add(titleLbl,gbc);
-    }catch(Exception e){
+            titleLbl = new JLabel(songDetails[1]);
+            titleLbl.setFont(new Font(Font.SERIF,Font.BOLD,20));
+            titleLbl.setForeground(Color.WHITE);
+            gbc.gridx=1;
+            gbc.gridy=0;
+            add(titleLbl,gbc);
+        }catch(Exception e){
             System.out.println("SOng Model Panel titleLbl function Error: "+e);
         }
     }
@@ -87,12 +86,11 @@ public class ASongManagePanel extends JPanel {
     }
     private void coverImg(){
         try {
-        ImageIcon i = new ImageIcon(FilePath.getSongCoverImgPath()+songDetails[4]);
+            ImageIcon i = new ImageIcon(FilePath.getSongCoverImgPath()+songDetails[4]);
             Image scaledImg = i.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
             coverImgBtn = new JButton(scaledIcon);
             coverImgBtn.setPreferredSize(new Dimension(200, 200));
-            coverImgBtn.setBackground(new Color(216, 191, 216));//replace in img
             coverImgBtn.setFocusPainted(false);
             coverImgBtn.setBorderPainted(false);
 
@@ -107,23 +105,13 @@ public class ASongManagePanel extends JPanel {
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
             buttonPanel.setBackground(new Color(58, 65, 74));
 
-            // Release Button
-//            editBtn = new JButton("Edit");
-//            editBtn.setBackground(new Color(224, 143, 255));
-//            buttonPanel.add(editBtn);
-//            editBtn.setFocusPainted(false);
-//            editBtn.setBorderPainted(false);
-//            editBtn.setActionCommand("Edit");
-//            editBtn.addActionListener(new ASongManageBtnAction(mcp));
-//            buttonPanel.add(editBtn);
-
-            // Cancel Button
-            deleteBtn = new JButton("Delete");
+            this.deleteBtn = new JButton("Delete");
             deleteBtn.setBackground(new Color(224, 143, 255));
             deleteBtn.setBorderPainted(false);
             deleteBtn.setFocusPainted(false);
             deleteBtn.setActionCommand("Delete");
-            deleteBtn.addActionListener(new ASongManageBtnAction(mcp,songId,songDetails[6]));
+            String artistId = songDetails[6];
+            deleteBtn.addActionListener(new ASongManageBtnAction(mcp,songId,artistId));
             buttonPanel.add(deleteBtn);
 
             gbc.gridx = 1;

@@ -15,12 +15,12 @@ public abstract class User implements Authentication {
     private Connection conn;
     protected boolean isAuthenticated = false;
     public User(){
-        try{
-            conn=DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println("Error User constructor: "+e);
-        }
+//        try{
+//            conn=DBConnection.getConnection();
+//        }
+//        catch(SQLException e){
+//            System.out.println("Error User constructor: "+e);
+//        }
     }
 
     //getters and setters
@@ -41,6 +41,8 @@ public abstract class User implements Authentication {
     public String[] viewProfile(String userName) throws SQLException{
         String[] userDetails = new String[6];
         try{
+            conn= DBConnection.getConnection();
+
             String sql ="Select * from User where UserName=?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1,userName);
@@ -63,6 +65,8 @@ public abstract class User implements Authentication {
     }//Checked
     public boolean login(String userName, String password) throws SQLException {
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "Select * from user where UserName=? and Password=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,userName);

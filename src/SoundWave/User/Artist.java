@@ -16,38 +16,34 @@ public class Artist extends User{
     private Connection conn;
 
     public Artist(){
-        try{
-            conn= DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println("Artist class constructor Error: "+e);
-        }
     }
     //methods
     public boolean isUser(String userName) throws SQLException {
-    boolean status=false;
-    try{
-        String sql = "Select * from artist where UserName=?";
-        PreparedStatement selectStatement = conn.prepareStatement(sql);
-        selectStatement.setString(1,userName);
+        boolean status=false;
+        try{
+            conn= DBConnection.getConnection();
+            String sql = "Select * from artist where UserName=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1,userName);
 
-        ResultSet result = selectStatement.executeQuery();
-        if(result.next()){
-            status=true;
+            ResultSet result = selectStatement.executeQuery();
+            if(result.next()){
+                status=true;
+            }
+            result.close();
         }
-        result.close();
+        catch(Exception e){
+            System.out.println("Artist Class isUser method Error: "+e);
+        }
+        finally {
+            conn.close();
+        }
+        return  status;
     }
-    catch(Exception e){
-        System.out.println("Artist Class isUser method Error: "+e);
-    }
-    finally {
-        conn.close();
-    }
-    return  status;
-}
     public String getId(String userName)throws  SQLException{
         String artistId="";
         try{
+            conn= DBConnection.getConnection();
             String sql = "Select ArtistId from artist where UserName=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,userName);
@@ -69,6 +65,7 @@ public class Artist extends User{
     public boolean uploadSong(String title,float duration,InputStream coverImgStream,String artistId,InputStream songStream,String song,String imgFileExtension) throws SQLException {
         boolean status=false;
         try{
+            conn= DBConnection.getConnection();
             conn.setAutoCommit(false);
 
             String songId;
@@ -123,20 +120,19 @@ public class Artist extends User{
             conn.rollback();
             System.out.println("Artist class upload song method Error: " +e);
         }finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException ex) {
-                System.out.println("Failed to restore auto commit in upload Song: " + ex);
-            }
+            conn.setAutoCommit(true);
+            conn.close();
         }
         return status;
     }//checked
     public boolean removeSong(String songId) throws SQLException {
         boolean status=false;
         try {
+            conn= DBConnection.getConnection();
+
             String sqlSelect = "SELECT CoverImg, Song FROM song WHERE SongId=?";
             String sqlDeleteFeedback = "DELETE FROM feedback WHERE SongId=?";
-            String sqlDeletePlaListSong = "DELETE FROM playlist_song WHERE SongId=? and PlayListId=?";
+            String sqlDeletePlaListSong = "DELETE FROM playlist_song WHERE SongId=?";
             String sqlDeleteSong = "DELETE FROM song WHERE SongId=?";
             conn.setAutoCommit(false);
 
@@ -147,12 +143,6 @@ public class Artist extends User{
             if (result.next()) {
                 String oldCoverImg = result.getString("CoverImg");
                 String songName = result.getString("Song");
-
-//                String imgFileExtension="";
-//                int dotIndex = oldCoverImg.lastIndexOf('.');
-//                if (dotIndex > 0 && dotIndex < oldCoverImg.length() - 1) {
-//                    imgFileExtension = oldCoverImg.substring(dotIndex + 1).toLowerCase();
-//                }
                 String oldDpFilePath = FilePath.getSongCoverImgPath() + oldCoverImg;
                 String oldSongFilePath = FilePath.getSongPath() + songName;
 
@@ -199,6 +189,7 @@ public class Artist extends User{
     }//checked
     public  boolean register(String userName, String password, String name, String email, String contactNo, InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
+            conn= DBConnection.getConnection();
             conn.setAutoCommit(false);
             String sql1 = "Select * from user where UserName=?";
             String sql2 = "Select Max(ArtistId) from artist";
@@ -221,11 +212,11 @@ public class Artist extends User{
                         int numericPart = Integer.parseInt(maxId.substring(1));
                         numericPart++;
                         ArtistId = String.format("A%03d",numericPart);
-                        dp = "DP-"+ArtistId;
+                        dp = "DP-"+ArtistId+"."+fileExtension;
                     }
                     else{
                         ArtistId = "A001";
-                        dp = "DP-A001";
+                        dp = "DP-A001."+fileExtension;
                     }
                     PreparedStatement insertStatementOne = conn.prepareStatement(sql3);
                     insertStatementOne.setString(1,userName);
@@ -244,7 +235,7 @@ public class Artist extends User{
                     int rowsAffected2 = insertStatementTwo.executeUpdate();
                     if(rowsAffected1>0 && rowsAffected2>0){
 
-                        String dpFilePath = FilePath.getDpImgPath() + dp+"."+fileExtension;
+                        String dpFilePath = FilePath.getDpImgPath() + dp;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             conn.commit();
@@ -277,9 +268,11 @@ public class Artist extends User{
             return false;
         }
     }//checked
-    public ArrayList<String[]> viewMyAllSong(String artistId){
+    public ArrayList<String[]> viewMyAllSong(String artistId) throws SQLException {
         ArrayList<String[]> songList = new ArrayList<>();
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "select * from song where ArtistId=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,artistId);
@@ -297,6 +290,9 @@ public class Artist extends User{
             }
         }catch (Exception e){
             System.out.println("Artist view All Playlist Error: "+e);
+        }
+        finally{
+            conn.close();
         }
         return songList;
     }

@@ -15,12 +15,12 @@ public class Listener extends User{
     private String listenerId;
     private Connection conn;
     public Listener(){
-        try{
-            conn= DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println("Listener Constructor Error : "+e);
-        }
+//        try{
+//            conn= DBConnection.getConnection();
+//        }
+//        catch(SQLException e){
+//            System.out.println("Listener Constructor Error : "+e);
+//        }
     }
 
     public String getListenerId() {
@@ -34,6 +34,8 @@ public class Listener extends User{
     public boolean isUser(String userName) throws SQLException {
         boolean status=false;
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "Select * from listener where UserName=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,userName);
@@ -54,6 +56,8 @@ public class Listener extends User{
     }
     public boolean editProfile(String userName,String password, String name, String email,String dp,InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
+            conn= DBConnection.getConnection();
+
             String sql1 = "SELECT DP FROM user WHERE UserName=?";
             String sql2 = "UPDATE user SET Password=?, Name=?, Email=?, DP=? WHERE UserName=?";
 
@@ -92,6 +96,8 @@ public class Listener extends User{
     public String getId(String userName)throws  SQLException{
         String artistId="";
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "Select ListenerId from listener where UserName=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,userName);
@@ -103,7 +109,7 @@ public class Listener extends User{
             result.close();
         }
         catch(Exception e){
-            System.out.println(e);
+            System.out.println("Listener class getId method Error: "+e);
         }
         finally {
             conn.close();
@@ -113,6 +119,7 @@ public class Listener extends User{
     public boolean createPlayList(String name,InputStream inputCoverImg,String listenerId,String imgExtension) throws SQLException {
         boolean status = false;
         try{
+            conn= DBConnection.getConnection();
             conn.setAutoCommit(false);
             String playlistId;
             String coverImg;
@@ -126,11 +133,10 @@ public class Listener extends User{
                 String maxId = result.getString(1);
 
                 if (maxId != null) {
-                    int numaricPart = Integer.parseInt(maxId.substring(1));
-                    numaricPart++;
-                    playlistId = String.format("P%03d", numaricPart);
+                    int numericPart = Integer.parseInt(maxId.substring(1));
+                    numericPart++;
+                    playlistId = String.format("P%03d", numericPart);
                     coverImg = "PlayList-CoverImg-"+playlistId+"."+imgExtension;
-
                 }
                 else
                 {
@@ -160,17 +166,15 @@ public class Listener extends User{
             conn.rollback();
             System.out.println("Error in Listener Create Playlist: "+e);
         }finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException ex) {
-                System.out.println("Failed to restore auto commit in Listener createPlaylist method: " + ex);
-            }
+            conn.setAutoCommit(true);
+            conn.close();
         }
         return status;
     }//checked
-    public boolean addSongToPlayList(String playlistId, String songId){
+    public boolean addSongToPlayList(String playlistId, String songId) throws SQLException {
         boolean status = false;
         try{
+            conn= DBConnection.getConnection();
             String sql = "insert into playlist_song (PlayListId,SongId) values(?,?)";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1,playlistId);
@@ -183,11 +187,16 @@ public class Listener extends User{
         }catch(Exception e){
             System.out.println("Listener AddSong method Error: "+e);
         }
+        finally{
+            conn.close();
+        }
         return status;
     }//checked
-    public boolean removeSongFromPlayList(String playlistId, String songId){
+    public boolean removeSongFromPlayList(String playlistId, String songId) throws SQLException {
         boolean status=false;
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "delete from playlist_song where PlayListId=? and SongId=?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1,playlistId);
@@ -200,11 +209,16 @@ public class Listener extends User{
         }catch(Exception e){
             System.out.println("PlayList removeSong method Error: "+e);
         }
+        finally{
+            conn.close();
+        }
         return status;
     }//checked
-    public String[] viewPlayList(String playlistId){
+    public String[] viewPlayList(String playlistId) throws SQLException {
         String[] playlistDetail = new String[4];
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "Select * from playlist where PlayListId=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,playlistId);
@@ -221,10 +235,15 @@ public class Listener extends User{
         }catch (Exception e){
             System.out.println("Listener View Playlist Error: "+e);
         }
+        finally{
+            conn.close();
+        }
         return playlistDetail;
     }//checked
     public void likeSong(String songId, String listenerId) throws SQLException {
         try{
+            conn= DBConnection.getConnection();
+
             String sql1 = "Select Max(FeedbackId) from feedback";
             String sql2 = "Insert into feedback(FeedbackId,Likes,SongId,ListenerId) values(?,?,?,?)";
             String sql3 = "Select FeedbackId from feedback where SongId=? and ListenerId=?";
@@ -243,9 +262,9 @@ public class Listener extends User{
                 if(result.next()){
                     String maxId = result.getString(1);
                     if(maxId!=null){
-                        int numaricPart = Integer.parseInt(maxId.substring(1));
-                        numaricPart++;
-                        feedBackId = String.format("F%03d",numaricPart);
+                        int numericPart = Integer.parseInt(maxId.substring(1));
+                        numericPart++;
+                        feedBackId = String.format("F%03d",numericPart);
                     }
                     else{
                         feedBackId = "F001";
@@ -259,7 +278,6 @@ public class Listener extends User{
                 }
                 result.close();
             }
-
         }
         catch(Exception e){
 
@@ -271,6 +289,8 @@ public class Listener extends User{
     }//checked
     public void unlikeSong(String songId, String listenerId) throws SQLException {
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "Delete from feedback where ListenerId=? and SongId = ?";
             PreparedStatement deleteStatement = conn.prepareStatement(sql);
             deleteStatement.setString(1,listenerId);
@@ -284,9 +304,11 @@ public class Listener extends User{
             conn.close();
         }
     }//checked
-    public ArrayList<String[]> viewAllPlayList(String listenerId){
+    public ArrayList<String[]> viewAllPlayList(String listenerId) throws SQLException {
         ArrayList<String[]> playLists = new ArrayList<>();
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "select * from playlist where ListenerId=?";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
             selectStatement.setString(1,listenerId);
@@ -304,11 +326,16 @@ public class Listener extends User{
         }catch (Exception e){
             System.out.println("Listener view All Playlist Error: "+e);
         }
+        finally{
+            conn.close();
+        }
         return playLists;
     }//checked
-    public ArrayList<String[]> exploreSongPlaylist(String playlistId){
+    public ArrayList<String[]> exploreSongPlaylist(String playlistId) throws SQLException {
         ArrayList<String[]> songList = new ArrayList<>();
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "SELECT s.SongId, s.Title, s.Song, s.Duration, s.CoverImg, s.ArtistId " +
                     "FROM song s " +
                     "WHERE s.SongId NOT IN (SELECT ps.SongId FROM playlist_song ps WHERE ps.PlaylistId = ?)";
@@ -331,11 +358,16 @@ public class Listener extends User{
         catch (Exception e){
             System.out.println("Listener class explore song playlist method error:"+e);
         }
+        finally{
+            conn.close();
+        }
         return songList;
     }//checked
-    public ArrayList<String[]> exploreSong(){
+    public ArrayList<String[]> exploreSong() throws SQLException {
         ArrayList<String[]> songList = new ArrayList<>();
         try{
+            conn= DBConnection.getConnection();
+
             String sql = "SELECT s.SongId,s.Title, s.Song, s.Duration, s.CoverImg,s.ArtistId,u.Name " +
                     "FROM song s " +
                     "INNER JOIN artist a ON s.ArtistId = a.ArtistId " +
@@ -358,10 +390,15 @@ public class Listener extends User{
         catch (Exception e){
             System.out.println("Listener class explore song Error: "+e);
         }
+        finally{
+            conn.close();
+        }
         return songList;
     }//checked
     public  boolean register(String userName, String password, String name, String email, String contactNo, InputStream dpInputStream,String fileExtension) throws SQLException {
         try {
+            conn= DBConnection.getConnection();
+
             String sql1 = "Select * from user where UserName=?";
             String sql2 = "Select Max(ListenerId) from listener";
             String sql3 = "Insert into user (UserName,Password,Name,Email,ContactNo,Dp) values(?,?,?,?,?,?)";
@@ -381,14 +418,14 @@ public class Listener extends User{
                 if(result2.next()){
                     String maxId = result2.getString(1);
                     if(maxId!=null){
-                        int numaricPart = Integer.parseInt(maxId.substring(1));
-                        numaricPart++;
-                        ListenerId = String.format("L%03d",numaricPart);
-                        dp = "DP-"+ListenerId;
+                        int numericPart = Integer.parseInt(maxId.substring(1));
+                        numericPart++;
+                        ListenerId = String.format("L%03d",numericPart);
+                        dp = "DP-"+ListenerId+"."+fileExtension;
                     }
                     else{
                         ListenerId = "L001";
-                        dp = "DP-L001";
+                        dp = "DP-L001."+fileExtension;
                     }
                     PreparedStatement insertStatementOne = conn.prepareStatement(sql3);
                     insertStatementOne.setString(1,userName);
@@ -407,7 +444,7 @@ public class Listener extends User{
                     int rowsAffected2 = insertStatementTwo.executeUpdate();
 
                     if(rowsAffected1>0 && rowsAffected2>0){
-                        String dpFilePath = FilePath.getDpImgPath() + dp+"."+fileExtension;
+                        String dpFilePath = FilePath.getDpImgPath() + dp;
                         boolean isDpSaved = saveFile(dpInputStream,dpFilePath);
                         if(isDpSaved){
                             isAuthenticated=true;

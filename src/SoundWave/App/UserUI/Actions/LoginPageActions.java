@@ -71,5 +71,4 @@ public class LoginPageActions implements ActionListener {
             new RegisterPanel();
         }
     }
-
 }

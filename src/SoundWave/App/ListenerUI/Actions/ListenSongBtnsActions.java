@@ -78,38 +78,33 @@ public class ListenSongBtnsActions implements ActionListener, ChangeListener {
         elapsedSeconds = 0;
 
         song.start(FilePath.getSongPath()+ panel.getSongDetails()[2]);
-        progressTimer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //set up the progress bar
-                try{
-                    int durationInSeconds = (int) Float.parseFloat(panel.getSongDetails()[3]);
-                    if (elapsedSeconds <= durationInSeconds) {
+        progressTimer = new Timer(1000, e -> {
+            try{
+                int durationInSeconds = (int) Float.parseFloat(panel.getSongDetails()[3]);
+                if (elapsedSeconds <= durationInSeconds) {
 
-                        int progress = (int) ((elapsedSeconds / (float) durationInSeconds) * 100);
-                        panel.getSongProgressBar().setValue(progress);
-                        elapsedSeconds++;
-                    } else {
-                        song.stop();
-                        panel.getPlayBtn().setVisible(true);
-                        panel.getPauseBtn().setVisible(false);
-                        panel.getSongProgressBar().setValue(0);
-                        ((Timer) e.getSource()).stop();
-                    }
-                }catch(Exception ex){
-                    System.out.println("ListenSOng Action startProgressBar Error: "+ex);
+                    int progress = (int) ((elapsedSeconds / (float) durationInSeconds) * 100);
+                    panel.getSongProgressBar().setValue(progress);
+                    elapsedSeconds++;
+                } else {
+                    song.stop();
+                    panel.getPlayBtn().setVisible(true);
+                    panel.getPauseBtn().setVisible(false);
+                    panel.getSongProgressBar().setValue(0);
+                    ((Timer) e.getSource()).stop();
                 }
+            }catch(Exception ex){
+                System.out.println("ListenSOng Action startProgressBar Error: "+ex);
             }
         });
         progressTimer.start();
     }
     private void stopProgressBar() {
-        if (progressTimer != null) {
-            if (progressTimer.isRunning()) {
-                song.stop();
-                progressTimer.stop();
-            }
+        if (progressTimer != null && progressTimer.isRunning()) {
+            song.stop();
+            progressTimer.stop();
         }
+
     }
 
     //volume
@@ -117,10 +112,10 @@ public class ListenSongBtnsActions implements ActionListener, ChangeListener {
     public void stateChanged(ChangeEvent e) {
         int sliderValue = panel.getVolumeSlider().getValue();
 
-        float minDb = -80.0f;
+        float minDb = -30.0f;
         float maxDb = 6.0f;
         float volumeValue = minDb + (maxDb - minDb) * (sliderValue / 2000.0f);
-        song.fc.setValue(volumeValue);
+        Song.fc.setValue(volumeValue);
 
     }
 

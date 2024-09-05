@@ -4,7 +4,6 @@ import SoundWave.App.ListenerUI.Actions.UpdateProfileBtnActions;
 import SoundWave.App.UserUI.FilePath;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
-
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
@@ -17,7 +16,7 @@ public class UpdateProfilePanel extends JPanel {
     String[] userDetails;
 
     public UpdateProfilePanel(String userName) throws SQLException {
-        User user = new Listener(); // find solution
+        User user = new Listener();
         userDetails = user.viewProfile(userName);
         UI();
     }
@@ -55,7 +54,7 @@ public class UpdateProfilePanel extends JPanel {
             gbc.gridy=0;
             gbc.gridx=1;
             ImageIcon originalIcon = new ImageIcon(FilePath.getDpImgPath() + userDetails[3]);
-            Image scaledImg = originalIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            Image scaledImg = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImg);
             dpBtn = new JButton(scaledIcon);
             dpBtn.setBackground(new Color(216,191,216));
