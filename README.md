@@ -1,15 +1,15 @@
-# [Sound Wave]🎵
+# Sound Wave🎵
 
 Welcome to the Sound Wave! This java,javaswing base  system allows you to Listen and upload your fav songs 
 
 ## Features 🚀
-[
+
 - **Add books to the library inventory** 📖
 - **Register members to the library system** 📝
 - **Enable members to borrow books** 📚
 - **Facilitate the return of borrowed books** ↩️
 - **View available books and registered members** 🧾
-  ]
+  
 
 ## How to Use 🛠️
 
