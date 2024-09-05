@@ -6,13 +6,15 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AUploadSongPanel extends JPanel {
-    private JButton uploadBtn, coverImgBtn, releaseBtn, cancelBtn;
+    private JButton uploadBtn, coverImgBtn, releaseBtn, clearBtn;
     private JTextField songNameTxt;
     private JLabel titleLbl;
     private JPanel buttonPanel;
     private GridBagConstraints gbc;
+    private String artistId;
 
-    public AUploadSongPanel() {
+    public AUploadSongPanel(String artistId) {
+        this.artistId = artistId;
         UI();
     }
     private void UI() {
@@ -25,30 +27,24 @@ public class AUploadSongPanel extends JPanel {
             gbc.gridx = 0;
             gbc.gridy = 0;
 
-            // Cover Image Button
             setUpCoverImgBtn();
-            // Upload Your Song Button
             setUpUploadBtn();
-            // Song
             setUpSongUploading();
-            // Spacer
             gbc.gridy = 4;
             gbc.gridwidth = 2;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             add(Box.createVerticalStrut(20), gbc);
 
-            // Create bottom btn panel
             setUpBottomBtnPanel();
 
         }
         catch(Exception e){
             System.out.println("Upload song Panel UI method Error: "+e);
-            e.getStackTrace()[0].getLineNumber();
         }
     }
     private void setUpCoverImgBtn() {
         try {
-            coverImgBtn = new JButton("Cover Image");
+            this.coverImgBtn = new JButton("Cover Image");
             coverImgBtn.setPreferredSize(new Dimension(200, 200));
             coverImgBtn.setBackground(new Color(216, 191, 216));
             coverImgBtn.setFocusPainted(false);
@@ -79,21 +75,21 @@ public class AUploadSongPanel extends JPanel {
             this.buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
             buttonPanel.setBackground(new Color(58, 65, 74));
 
-            // Release Button
             releaseBtn = new JButton("Release");
             releaseBtn.setBackground(new Color(224, 143, 255));
             releaseBtn.setFocusPainted(false);
             releaseBtn.setBorderPainted(false);
             releaseBtn.setActionCommand("Release");
-            releaseBtn.addActionListener(new AUploadSongBtnActions(songNameTxt));
+            releaseBtn.addActionListener(new AUploadSongBtnActions(songNameTxt,artistId));
             buttonPanel.add(releaseBtn);
 
-            // Cancel Button
-            cancelBtn = new JButton("Cancel");
-            cancelBtn.setBackground(new Color(224, 143, 255));
-            cancelBtn.setBorderPainted(false);
-            cancelBtn.setFocusPainted(false);
-            buttonPanel.add(cancelBtn);
+            clearBtn = new JButton("Clear");
+            clearBtn.setBackground(new Color(224, 143, 255));
+            clearBtn.setBorderPainted(false);
+            clearBtn.setFocusPainted(false);
+            clearBtn.setActionCommand("Clear");
+            clearBtn.addActionListener( new AUploadSongBtnActions(songNameTxt,artistId));
+            buttonPanel.add(clearBtn);
 
             gbc.gridx = 1;
             gbc.gridy = 5;

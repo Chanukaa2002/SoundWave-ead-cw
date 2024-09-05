@@ -1,47 +1,56 @@
 package SoundWave.Music;
 
 import SoundWave.DBConnection.DBConnection;
-
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Feedback {
-    public String feedbackId,userId,songId;
-    public double rating;
-    Connection conn;
+    private Connection conn;
 
-    public Feedback(){
-        try{
-            conn= DBConnection.getConnection();
-        }
-        catch(SQLException e){
-            System.out.println("Error: "+e);
-        }
+    public Feedback() {
+
     }
-    //methods
-    public ArrayList<String[]> getFeedbackDetails(String artistId) throws SQLException {
-        ArrayList<String[]> FeedbackList = new ArrayList<>();
-        try{
-            String sql ="SELECT s.Title,SUM(f.Likes) AS TotalLikes FROM feedback f INNER JOIN song s ON s.SongId = f.SongId where s.ArtistId=? GROUP BY s.Title";
 
+    public String getFeedbackDetails(String songId) throws SQLException {
+        String totCount="0";
+        try {
+            conn = DBConnection.getConnection();
+
+            String sql = "SELECT  SUM(Likes) AS TotalLikes from feedback WHERE SongId = ? GROUP BY SongId";
             PreparedStatement selectStatement = conn.prepareStatement(sql);
-            selectStatement.setString(1,artistId);
+            selectStatement.setString(1, songId);
 
             ResultSet result = selectStatement.executeQuery();
-            while(result.next()){
-                String[] details = new String[2];
-                details[0] = result.getString("Title");
-                details[1] = result.getString("TotalLikes");
-                FeedbackList.add(details);
+            if (result.next()) {
+                totCount = result.getString("TotalLikes");
             }
-        }
-        catch(Exception e){
-            System.out.println("Error: "+e);
+            result.close();
+        } catch (Exception e) {
+            System.out.println("Feedback Class getFeedbackDetails method Error: " + e);
         }
         finally{
             conn.close();
         }
-        return FeedbackList;
+        return totCount;
+    }
+    public boolean isLiked(String songId,String listenerId) throws  SQLException{
+        boolean isLiked = false;
+        try {
+            conn = DBConnection.getConnection();
+
+            String sql = "Select * from feedback where SongId=? and ListenerId=?";
+            PreparedStatement selectStatement = conn.prepareStatement(sql);
+            selectStatement.setString(1, songId);
+            selectStatement.setString(2, listenerId);
+
+            ResultSet result = selectStatement.executeQuery();
+            if (result.next()) {
+                isLiked = true;
+            }
+        } catch (Exception e) {
+            System.out.println("Feedback class id Liked method Error: " + e);
+        } finally {
+            conn.close();
+        }
+        return  isLiked;
     }
 }

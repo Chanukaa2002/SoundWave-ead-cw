@@ -1,4 +1,6 @@
 package SoundWave.App.UserUI.Actions;
+import SoundWave.App.UserUI.LogInPanel;
+import SoundWave.App.UserUI.RegisterPanel;
 import SoundWave.App.Validations;
 import SoundWave.User.Artist;
 import SoundWave.User.Listener;
@@ -22,12 +24,17 @@ public class RegisterPageActions implements ActionListener {
     private JLabel dpImageLabel;
     private static String fileExtension = "";
     private JComboBox<String> userTypeCombo;
-    User user;
+    private User user;
+    private JFrame regPanel;
 
+
+    //from register dp btn
     public RegisterPageActions(JLabel dpImage) {
         this.dpImageLabel = dpImage;
     }
-    public RegisterPageActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JPasswordField passwordTxt, JPasswordField confirmPasswordTxt,JTextField contactNo,JComboBox<String> userTypeCombo) {
+
+    //from clicking signup btn
+    public RegisterPageActions(JTextField userNameTxt, JTextField nameTxt, JTextField emailTxt, JPasswordField passwordTxt, JPasswordField confirmPasswordTxt,JTextField contactNo,JComboBox<String> userTypeCombo,JFrame regPanel) {
         this.userNameTxt = userNameTxt;
         this.nameTxt = nameTxt;
         this.emailTxt = emailTxt;
@@ -35,6 +42,12 @@ public class RegisterPageActions implements ActionListener {
         this.confirmPasswordTxt = confirmPasswordTxt;
         this.contactNoTxt = contactNo;
         this.userTypeCombo = userTypeCombo;
+        this.regPanel = regPanel;
+    }
+
+    //from clicking login btn
+    public RegisterPageActions(JFrame regPanel){
+        this.regPanel = regPanel;
     }
 
     @Override
@@ -42,22 +55,21 @@ public class RegisterPageActions implements ActionListener {
         String command = e.getActionCommand();
 
         if ("ImportDP".equals(command)) {
-            //choose file
+
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
                 try {
-                    // Load the image
+                    File selectedFile = fileChooser.getSelectedFile();
+
                     BufferedImage img = ImageIO.read(selectedFile);
-                    //getPath
+
                     this.dpPath = selectedFile.getAbsolutePath();
-                    System.out.println(dpPath);
-                    // Scale the image to fit the JLabel
+
                     Image scaledImg = img.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
 
-                    // Set the image as the icon of the JLabel
+
                     dpImageLabel.setIcon(new ImageIcon(scaledImg));
                     String fileName = selectedFile.getName();
 
@@ -67,13 +79,13 @@ public class RegisterPageActions implements ActionListener {
                     }
 
 
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
         }
-        if(command == "Register"){
-            // Make sure dpInputStream is not null before proceeding
+        else if(command == "Register"){
             try {
                 this.dpInputStream = new FileInputStream(dpPath);
             } catch (FileNotFoundException ex) {
@@ -82,27 +94,36 @@ public class RegisterPageActions implements ActionListener {
 
             //validating
             if (dpInputStream == null) {
-                System.out.println("Error: Display picture not selected.");
+                JOptionPane.showMessageDialog(null, "Display picture is not selected!");
                 return;
             }
             if(Validations.isFieldEmpty(nameTxt)){
                 JOptionPane.showMessageDialog(null, "Name is required.");
+                return;
             }
             if(Validations.isFieldEmpty(userNameTxt)){
                 JOptionPane.showMessageDialog(null, "User Name is required.");
+                return;
             }
             if(Validations.isFieldEmpty(passwordTxt)){
                 JOptionPane.showMessageDialog(null, "Password is required.");
+                return;
             }
             if(Validations.isFieldEmpty(confirmPasswordTxt)){
                 JOptionPane.showMessageDialog(null, "Confirm Password is required.");
+                return;
             }
-            if(Validations.PasswordsMatch(passwordTxt,confirmPasswordTxt))
-            if(Validations.isEmailValid(emailTxt)){
-                JOptionPane.showMessageDialog(null, "Password not Match is required.");
+            if(!Validations.PasswordsMatch(passwordTxt,confirmPasswordTxt)){
+                JOptionPane.showMessageDialog(null, "Passwords not match!.");
+            }
+
+            if(Validations.isFieldEmpty(emailTxt)){
+                JOptionPane.showMessageDialog(null, "Email not Match is required.");
+                return;
             }
             if(Validations.isFieldEmpty(contactNoTxt)){
                 JOptionPane.showMessageDialog(null, "Contact No is required.");
+                return;
             }
 
             String userName = userNameTxt.getText();
@@ -117,20 +138,28 @@ public class RegisterPageActions implements ActionListener {
                 if(userType == "Artist") {
                     user= new Artist();
                     isRegister = user.register(userName, password, name, email, contactNo, dpInputStream, fileExtension);
+
                 }
                 else if(userType == "Listener") {
                     user= new Listener();
                     isRegister = user.register(userName, password, name, email, contactNo, dpInputStream, fileExtension);
                 }
                 if (isRegister) {
-                    System.out.println("done");
-                } else {
-                    System.out.println("fail");
+                    regPanel.setVisible(false);
+                    new LogInPanel();
                 }
+                else{
+                    JOptionPane.showMessageDialog(null, "Registration Fail.");
+                }
+
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
 
+        }
+        else if(command == "LogIn"){
+            regPanel.setVisible(false);
+            new LogInPanel();
         }
     }
 }

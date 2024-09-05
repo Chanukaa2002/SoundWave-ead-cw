@@ -1,29 +1,45 @@
 package SoundWave.App.UserUI.Actions;
 
+import SoundWave.App.ArtistUI.ArtistMainPanel;
+import SoundWave.App.ListenerUI.ListenerMainPanel;
+import SoundWave.App.UserUI.LogInPanel;
+import SoundWave.App.UserUI.RegisterPanel;
 import SoundWave.User.Artist;
 import SoundWave.User.Listener;
 import SoundWave.User.User;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.SQLException;
+
 
 public class LoginPageActions implements ActionListener {
     private JTextField userNameTxt;
     private JPasswordField passwordTxt;
+    private JFrame loginFrame;
 
-    public LoginPageActions(JTextField userNameTxt,JPasswordField passwordTxt){
-        this.userNameTxt= userNameTxt;
-        this.passwordTxt = passwordTxt;
+
+    //from clicking create btn
+    public LoginPageActions(JFrame loginFrame){
+        this.loginFrame = loginFrame;
     }
+
+    //form clicking login btn
+    public LoginPageActions(JTextField userNameTxt, JPasswordField passwordTxt, JFrame loginFrame) {
+        this.userNameTxt = userNameTxt;
+        this.passwordTxt = passwordTxt;
+        this.loginFrame = loginFrame;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        User user = null;
-        String userName = userNameTxt.getText();
-        String password = passwordTxt.getText();
+        User user;
         String command = e.getActionCommand();
         if(command=="LogIn"){
+            String userName = userNameTxt.getText();
+            String password = passwordTxt.getText();
             try {
                 user = new Artist();
                 boolean isArtistLoggedIn = user.login(userName,password);
@@ -34,20 +50,25 @@ public class LoginPageActions implements ActionListener {
                 boolean listener = user.isUser(userName);
 
                 if(isArtistLoggedIn || isListenerLoggedIn){
-                    System.out.println("Pass!");
                     if(artist){
-                        //load artist panels
+                        loginFrame.setVisible(false);
+                        new ArtistMainPanel(userName);
                     }
                     else if(listener){
-                        //load listener panels
+                        loginFrame.setVisible(false);
+                        new ListenerMainPanel(userName);
                     }
                 }
                 else{
-                    System.out.println("Fail");
+                    JOptionPane.showMessageDialog(null, "Login Fail.");
                 }
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
+        }
+        else if(command=="Create"){
+            loginFrame.setVisible(false);
+            new RegisterPanel();
         }
     }
 }
